@@ -1,0 +1,51 @@
+import { useEffect, useState } from "react"
+import type { UseFormReturn } from "react-hook-form"
+
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import type { BusinessOnboardingInput } from "@/features/business-onboarding/schemas/businessOnboardingSchema"
+import { slugify } from "@/lib/slugify"
+
+export function BusinessDetailsStep({ form }: { form: UseFormReturn<BusinessOnboardingInput> }) {
+  const {
+    register,
+    setValue,
+    watch,
+    formState: { errors },
+  } = form
+  const [slugTouched, setSlugTouched] = useState(false)
+  const name = watch("name")
+
+  useEffect(() => {
+    if (!slugTouched) {
+      setValue("slug", slugify(name ?? ""), { shouldValidate: false })
+    }
+  }, [name, slugTouched, setValue])
+
+  return (
+    <FieldGroup>
+      <Field data-invalid={!!errors.name}>
+        <FieldLabel htmlFor="onboarding-name">Business name</FieldLabel>
+        <Input id="onboarding-name" {...register("name")} />
+        <FieldError errors={[errors.name]} />
+      </Field>
+      <Field data-invalid={!!errors.slug}>
+        <FieldLabel htmlFor="onboarding-slug">Booking URL</FieldLabel>
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+          <span>fast-appointment.com/</span>
+          <Input
+            id="onboarding-slug"
+            {...register("slug", { onChange: () => setSlugTouched(true) })}
+          />
+        </div>
+        <FieldError errors={[errors.slug]} />
+      </Field>
+      <Field data-invalid={!!errors.description}>
+        <FieldLabel htmlFor="onboarding-description">Description</FieldLabel>
+        <Textarea id="onboarding-description" rows={3} {...register("description")} />
+        <FieldError errors={[errors.description]} />
+      </Field>
+    </FieldGroup>
+  )
+}

@@ -1,0 +1,12 @@
+import { useQuery } from "@tanstack/react-query"
+
+import { queryKeys } from "@/api/queryKeys"
+import { businessApi } from "@/features/business/api/businessApi"
+
+export function useBusinessBySlug(slug: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.business.bySlug(slug ?? ""),
+    queryFn: () => businessApi.getBySlug(slug as string),
+    enabled: Boolean(slug),
+  })
+}
