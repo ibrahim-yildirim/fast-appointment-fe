@@ -60,6 +60,12 @@ export function CustomerLoginPage() {
             Register
           </Link>
         </p>
+        <p className="mt-2 text-center text-sm text-muted-foreground">
+          Booked as a guest?{" "}
+          <Link to="/booking-lookup" className="text-foreground underline underline-offset-4">
+            Find your booking
+          </Link>
+        </p>
       </CardContent>
     </Card>
   )

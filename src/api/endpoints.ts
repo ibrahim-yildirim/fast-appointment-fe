@@ -21,6 +21,7 @@ export const endpoints = {
       `/api/businesses/${businessId}/staff/${staffId}/time-off/${timeOffId}`,
   },
   bookings: {
+    lookup: () => `/api/bookings/lookup`,
     list: (businessId: string) => `/api/businesses/${businessId}/bookings`,
     byId: (businessId: string, bookingId: string) =>
       `/api/businesses/${businessId}/bookings/${bookingId}`,

@@ -55,10 +55,11 @@ export function useCalendarAppointments(businessId: string, filters: CalendarFil
       if (!service || !staffMember) return []
 
       const customer = customers.find((candidate) => candidate.id === booking.customerId)
+      const customerName = customer?.name ?? booking.guestName ?? "Unknown customer"
 
       const appointment: CalendarAppointment = {
         id: booking.id,
-        customerName: customer?.name ?? "Unknown customer",
+        customerName,
         serviceName: service.name,
         serviceId: service.id,
         price: service.price,

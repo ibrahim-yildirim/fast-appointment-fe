@@ -52,10 +52,29 @@ export function BookingConfirmationPage() {
             })}
           </span>
         </div>
+        <div className="flex flex-col items-center gap-1 rounded-lg border border-border bg-muted/30 p-4 text-center">
+          <span className="text-xs text-muted-foreground uppercase">Booking reference</span>
+          <span className="font-mono text-lg font-semibold tracking-wider">
+            {booking.reference}
+          </span>
+          {booking.customerId === null && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              Save this code — you'll need it with your phone number to view or cancel this
+              booking.
+            </p>
+          )}
+        </div>
+
         <div className="flex flex-col gap-2">
-          <Button asChild>
-            <Link to="/account/bookings">View my bookings</Link>
-          </Button>
+          {booking.customerId === null ? (
+            <Button asChild>
+              <Link to="/booking-lookup">Find my booking</Link>
+            </Button>
+          ) : (
+            <Button asChild>
+              <Link to="/account/bookings">View my bookings</Link>
+            </Button>
+          )}
           <Button variant="outline" asChild>
             <Link to={`/${business.slug}/book`}>Book another service</Link>
           </Button>

@@ -63,13 +63,19 @@ export function ServiceForm({
               id="service-duration"
               type="number"
               min={1}
-              {...register("durationMinutes")}
+              {...register("durationMinutes", { valueAsNumber: true })}
             />
             <FieldError errors={[errors.durationMinutes]} />
           </Field>
           <Field data-invalid={!!errors.price} className="flex-1">
             <FieldLabel htmlFor="service-price">Price ($)</FieldLabel>
-            <Input id="service-price" type="number" min={0} step={0.01} {...register("price")} />
+            <Input
+              id="service-price"
+              type="number"
+              min={0}
+              step={0.01}
+              {...register("price", { valueAsNumber: true })}
+            />
             <FieldError errors={[errors.price]} />
           </Field>
         </div>

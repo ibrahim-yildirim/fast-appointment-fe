@@ -21,6 +21,7 @@ import {
 import {
   BookingConfirmationPage,
   BookingConfirmPage,
+  BookingLookupPage,
   BusinessPublicProfilePage,
   ServiceBrowsePage,
   SlotPickerPage,
@@ -45,6 +46,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <MarketingLandingPage /> },
       { path: "businesses", element: <BusinessDirectoryPage /> },
+      { path: "booking-lookup", element: <BookingLookupPage /> },
       { path: "404", element: <NotFoundPage /> },
 
       {
@@ -92,11 +94,7 @@ export const router = createBrowserRouter([
               { index: true, element: <BusinessPublicProfilePage /> },
               { path: "book", element: <ServiceBrowsePage /> },
               { path: "book/:serviceId", element: <SlotPickerPage /> },
-              {
-                path: "book/:serviceId/confirm",
-                element: <RequireCustomerAuth />,
-                children: [{ index: true, element: <BookingConfirmPage /> }],
-              },
+              { path: "book/:serviceId/confirm", element: <BookingConfirmPage /> },
               { path: "booking/:bookingId/confirmation", element: <BookingConfirmationPage /> },
             ],
           },

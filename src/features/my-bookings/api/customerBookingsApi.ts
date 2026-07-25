@@ -2,21 +2,9 @@ import { apiClient } from "@/api/client"
 import { USE_FIXTURES } from "@/api/config"
 import { endpoints } from "@/api/endpoints"
 import { bookings, businesses, services, staff } from "@/fixtures"
-import type { BookingStatus } from "@/types"
+import type { BookingSummary } from "@/types"
 
-export type CustomerBookingView = {
-  id: string
-  businessId: string
-  businessName: string
-  businessSlug: string
-  serviceName: string
-  staffName: string
-  startsAt: string
-  endsAt: string
-  status: BookingStatus
-  price: number
-  notes: string
-}
+export type CustomerBookingView = BookingSummary
 
 export const customerBookingsApi = {
   list: async (customerId: string): Promise<CustomerBookingView[]> => {
@@ -29,6 +17,7 @@ export const customerBookingsApi = {
           const staffMember = staff.find((candidate) => candidate.id === booking.staffId)
           return {
             id: booking.id,
+            reference: booking.reference,
             businessId: booking.businessId,
             businessName: business?.name ?? "Unknown business",
             businessSlug: business?.slug ?? "",

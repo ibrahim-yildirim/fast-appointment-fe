@@ -1,4 +1,4 @@
-import { CalendarCheck, CalendarClock, LayoutDashboard, Users } from "lucide-react"
+import { CalendarCheck, CalendarClock, LayoutDashboard, Store, Users } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
@@ -25,13 +25,22 @@ const highlights = [
 export function MarketingLandingPage() {
   return (
     <>
-      <header className="flex items-center justify-between gap-4 border-b border-border px-4 py-4 sm:px-6">
+      <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-2 font-semibold">
           <CalendarCheck aria-hidden="true" className="h-5 w-5 shrink-0 text-primary" />
           <span className="truncate">fast-appointment</span>
         </div>
-        <ThemeToggle />
+        <div className="flex shrink-0 items-center gap-2">
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/login">Log in</Link>
+          </Button>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/business/login">Business log in</Link>
+          </Button>
+          <ThemeToggle />
+        </div>
       </header>
+
       <main className="mx-auto flex max-w-2xl flex-col items-center gap-6 px-4 py-16 text-center sm:px-6 sm:py-24">
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
           Appointment booking for any service business
@@ -40,14 +49,11 @@ export function MarketingLandingPage() {
           Manage services, staff availability, and bookings in one place.
         </p>
         <div className="flex flex-wrap justify-center gap-2">
-          <Button asChild>
+          <Button size="lg" asChild>
             <Link to="/businesses">Find a business</Link>
           </Button>
-          <Button variant="outline" asChild>
+          <Button size="lg" variant="outline" asChild>
             <Link to="/login">Log in</Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link to="/business/register">List your business</Link>
           </Button>
         </div>
 
@@ -59,6 +65,24 @@ export function MarketingLandingPage() {
               <p className="text-sm text-muted-foreground">{description}</p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-12 flex w-full flex-col items-center gap-4 rounded-xl border border-border bg-muted/30 p-6 text-center sm:p-8">
+          <Store aria-hidden="true" className="h-6 w-6 text-primary" />
+          <div>
+            <h2 className="font-medium">Own a service business?</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              List your services, manage staff schedules, and take bookings online.
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-2">
+            <Button asChild>
+              <Link to="/business/login">Business log in</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/business/register">List your business</Link>
+            </Button>
+          </div>
         </div>
       </main>
     </>
