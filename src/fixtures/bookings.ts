@@ -12,7 +12,7 @@ export const bookings: Booking[] = [
     guestPhone: null,
     guestEmail: null,
     startsAt: "2026-07-28T13:00:00.000Z",
-    endsAt: "2026-07-28T13:45:00.000Z",
+    endsAt: "2026-07-28T13:50:00.000Z",
     status: "confirmed",
     notes: "",
   },
@@ -29,7 +29,7 @@ export const bookings: Booking[] = [
     startsAt: "2026-07-29T15:00:00.000Z",
     endsAt: "2026-07-29T15:30:00.000Z",
     status: "pending",
-    notes: "First-time client.",
+    notes: "İlk kez geliyor.",
   },
   {
     id: "booking-3",
@@ -44,7 +44,7 @@ export const bookings: Booking[] = [
     startsAt: "2026-07-22T14:00:00.000Z",
     endsAt: "2026-07-22T16:00:00.000Z",
     status: "cancelled",
-    notes: "Rescheduling requested.",
+    notes: "Randevu değişikliği talep edildi.",
   },
   {
     id: "booking-4",
@@ -57,7 +57,7 @@ export const bookings: Booking[] = [
     guestPhone: null,
     guestEmail: null,
     startsAt: "2026-07-30T18:00:00.000Z",
-    endsAt: "2026-07-30T18:45:00.000Z",
+    endsAt: "2026-07-30T18:50:00.000Z",
     status: "confirmed",
     notes: "",
   },
@@ -89,6 +89,6 @@ export const bookings: Booking[] = [
     startsAt: "2026-07-31T11:00:00.000Z",
     endsAt: "2026-07-31T11:40:00.000Z",
     status: "confirmed",
-    notes: "Booked as a guest.",
+    notes: "Üye olmadan alındı.",
   },
 ]

@@ -23,6 +23,6 @@ export const staffAvailability: StaffAvailability[] = [
 ]
 
 export const timeOffExceptions: TimeOffException[] = [
-  { id: "off-1", staffId: "staff-1", date: "2026-08-03", reason: "Personal day" },
-  { id: "off-2", staffId: "staff-3", date: "2026-08-10", reason: "Conference" },
+  { id: "off-1", staffId: "staff-1", date: "2026-08-03", reason: "İzin günü" },
+  { id: "off-2", staffId: "staff-3", date: "2026-08-10", reason: "Kongre" },
 ]

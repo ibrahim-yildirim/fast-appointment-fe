@@ -6,16 +6,9 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
-import { formatDurationLabel, serviceDurationOptions } from "@/features/services/lib/durations"
+import { DurationField } from "@/features/services/components/DurationField"
 import {
   createServiceFormSchema,
   type ServiceFormInput,
@@ -72,48 +65,32 @@ export function ServiceForm({
           <Textarea id="service-description" rows={3} {...register("description")} />
           <FieldError errors={[errors.description]} />
         </Field>
-        <div className="flex gap-4">
-          <Field data-invalid={!!errors.durationMinutes} className="flex-1">
-            <FieldLabel required htmlFor="service-duration">
-              {t("services.duration")}
-            </FieldLabel>
-            <Controller
-              control={control}
-              name="durationMinutes"
-              render={({ field }) => (
-                <Select
-                  value={field.value ? String(field.value) : ""}
-                  onValueChange={(value) => field.onChange(Number(value))}
-                >
-                  <SelectTrigger id="service-duration" className="w-full">
-                    <SelectValue placeholder={t("services.durationPlaceholder")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {serviceDurationOptions.map((minutes) => (
-                      <SelectItem key={minutes} value={String(minutes)}>
-                        {formatDurationLabel(minutes, t)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            <FieldError errors={[errors.durationMinutes]} />
-          </Field>
-          <Field data-invalid={!!errors.price} className="flex-1">
-            <FieldLabel required htmlFor="service-price">
-              {t("services.price")}
-            </FieldLabel>
-            <Input
-              id="service-price"
-              type="number"
-              min={0}
-              step={0.01}
-              {...register("price", { valueAsNumber: true })}
-            />
-            <FieldError errors={[errors.price]} />
-          </Field>
-        </div>
+        <Field data-invalid={!!errors.durationMinutes}>
+          <FieldLabel required htmlFor="service-duration">
+            {t("services.duration")}
+          </FieldLabel>
+          <Controller
+            control={control}
+            name="durationMinutes"
+            render={({ field }) => (
+              <DurationField id="service-duration" value={field.value} onChange={field.onChange} />
+            )}
+          />
+          <FieldError errors={[errors.durationMinutes]} />
+        </Field>
+        <Field data-invalid={!!errors.price} className="max-w-xs">
+          <FieldLabel required htmlFor="service-price">
+            {t("services.price")}
+          </FieldLabel>
+          <Input
+            id="service-price"
+            type="number"
+            min={0}
+            step={0.01}
+            {...register("price", { valueAsNumber: true })}
+          />
+          <FieldError errors={[errors.price]} />
+        </Field>
         <Field orientation="horizontal">
           <FieldLabel htmlFor="service-active">{t("services.active")}</FieldLabel>
           <Controller
