@@ -1,22 +1,27 @@
+import type { TFunction } from "i18next"
 import { z } from "zod"
 
-export const businessLoginSchema = z.object({
-  email: z.email("Enter a valid email address."),
-  password: z.string().min(1, "Password is required."),
-})
-
-export type BusinessLoginInput = z.infer<typeof businessLoginSchema>
-
-export const businessRegisterSchema = z
-  .object({
-    name: z.string().min(1, "Name is required."),
-    email: z.email("Enter a valid email address."),
-    password: z.string().min(8, "Password must be at least 8 characters."),
-    confirmPassword: z.string().min(1, "Confirm your password."),
+export function createBusinessLoginSchema(t: TFunction) {
+  return z.object({
+    email: z.email(t("validation.email")),
+    password: z.string().min(1, t("validation.passwordRequired")),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match.",
-    path: ["confirmPassword"],
-  })
+}
 
-export type BusinessRegisterInput = z.infer<typeof businessRegisterSchema>
+export type BusinessLoginInput = z.infer<ReturnType<typeof createBusinessLoginSchema>>
+
+export function createBusinessRegisterSchema(t: TFunction) {
+  return z
+    .object({
+      name: z.string().min(1, t("validation.nameRequired")),
+      email: z.email(t("validation.email")),
+      password: z.string().min(8, t("validation.passwordLength")),
+      confirmPassword: z.string().min(1, t("validation.confirmPassword")),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("validation.passwordsMismatch"),
+      path: ["confirmPassword"],
+    })
+}
+
+export type BusinessRegisterInput = z.infer<ReturnType<typeof createBusinessRegisterSchema>>

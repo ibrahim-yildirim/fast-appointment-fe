@@ -5,6 +5,7 @@ import { AppointmentChip } from "@/features/dashboard-bookings/components/Appoin
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 import { hourRows } from "@/lib/calendarUtils"
 import { timeStringToMinutes, toDateKey } from "@/features/booking/lib/slotUtils"
+import { useFormatters } from "@/lib/datetime"
 
 export function WeekDayGrid({
   days,
@@ -17,6 +18,8 @@ export function WeekDayGrid({
   onSelectAppointment: (id: string) => void
   onReschedule: (id: string, dateKey: string, hour: number) => void
 }) {
+  const { locale } = useFormatters()
+
   const appointmentsByDateHour = useMemo(() => {
     const map = new Map<string, CalendarAppointment[]>()
     for (const appointment of appointments) {
@@ -41,7 +44,7 @@ export function WeekDayGrid({
             key={toDateKey(day)}
             className="border-r border-b border-border p-2 text-center text-sm font-medium last:border-r-0"
           >
-            {format(day, "EEE d")}
+            {format(day, "EEE d", { locale })}
           </div>
         ))}
         {hourRows.map((hour) => (

@@ -14,6 +14,7 @@ import {
   type CalendarFilters,
 } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 import { getWeekDays, navigateDate, type CalendarView } from "@/lib/calendarUtils"
+import { businessToday } from "@/lib/datetime"
 import { useServices } from "@/features/services/hooks/useServices"
 import { useStaff } from "@/features/staff-calendar/hooks/useStaff"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -21,7 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export function DashboardBookingsPage() {
   const business = useBusinessContext()
   const [view, setView] = useState<CalendarView>("month")
-  const [referenceDate, setReferenceDate] = useState(() => new Date())
+  const [referenceDate, setReferenceDate] = useState(() => businessToday())
   const [filters, setFilters] = useState<CalendarFilters>(defaultCalendarFilters)
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null)
 
@@ -66,7 +67,7 @@ export function DashboardBookingsPage() {
         onViewChange={setView}
         referenceDate={referenceDate}
         onNavigate={(direction) => setReferenceDate((current) => navigateDate(current, view, direction))}
-        onToday={() => setReferenceDate(new Date())}
+        onToday={() => setReferenceDate(businessToday())}
         filters={filters}
         onFiltersChange={setFilters}
         services={services ?? []}

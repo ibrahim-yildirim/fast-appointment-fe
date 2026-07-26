@@ -8,6 +8,7 @@ import type {
   CustomerRegisterInput,
 } from "@/features/auth/schemas/customerAuthSchemas"
 import { useAuthStore } from "@/stores/authStore"
+import i18n from "@/i18n"
 
 type LocationState = { from?: { pathname: string; search: string } }
 
@@ -26,7 +27,7 @@ export function useCustomerAuth() {
       setSession(session)
       navigate(redirectTo, { replace: true })
     },
-    onError: (error: Error) => toast.error(error.message),
+    onError: (error: Error) => toast.error(i18n.t(error.message)),
   })
 
   const register = useMutation({
@@ -35,7 +36,7 @@ export function useCustomerAuth() {
       setSession(session)
       navigate(redirectTo, { replace: true })
     },
-    onError: (error: Error) => toast.error(error.message),
+    onError: (error: Error) => toast.error(i18n.t(error.message)),
   })
 
   const logout = () => {

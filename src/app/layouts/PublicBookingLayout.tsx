@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom"
 
 import { BackButton } from "@/components/layout/BackButton"
+import { LanguageToggle } from "@/components/layout/LanguageToggle"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
 
@@ -14,7 +15,10 @@ export function PublicBookingLayout() {
           <BackButton />
           <div className="min-w-0 truncate font-semibold">{business.name}</div>
         </div>
-        <ThemeToggle />
+        <div className="flex shrink-0 items-center gap-2">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
       </header>
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
         <Outlet />

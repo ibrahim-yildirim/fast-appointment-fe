@@ -1,5 +1,9 @@
+import { useTranslation } from "react-i18next"
+
 import { PlaceholderPage } from "@/components/layout/PlaceholderPage"
 
 export function DashboardOverviewPage() {
-  return <PlaceholderPage title="Dashboard overview" />
+  const { t } = useTranslation()
+
+  return <PlaceholderPage title={t("dashboard.overview")} />
 }

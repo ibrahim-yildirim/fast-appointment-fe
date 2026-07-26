@@ -1,4 +1,5 @@
 import { parseISO } from "date-fns"
+import { useTranslation } from "react-i18next"
 import { CalendarPlus } from "lucide-react"
 import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
@@ -6,11 +7,13 @@ import { Link } from "react-router-dom"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { businessNow } from "@/lib/datetime"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { formatTimeLabel } from "@/features/booking/lib/slotUtils"
+
 import type { CustomerBookingView } from "@/features/my-bookings/api/customerBookingsApi"
 import { BookingDetailDialog } from "@/features/my-bookings/components/BookingDetailDialog"
 import { useCustomerBookings } from "@/features/my-bookings/hooks/useCustomerBookings"
+import { useFormatters } from "@/lib/datetime"
 
 const statusVariant = {
   confirmed: "secondary",
@@ -25,9 +28,12 @@ function BookingRow({
   booking: CustomerBookingView
   onSelect: (id: string) => void
 }) {
+  const { t } = useTranslation()
+  const { formatTime, formatDate } = useFormatters()
+
   const dateKey = booking.startsAt.slice(0, 10)
   const date = parseISO(dateKey)
-  const monthLabel = date.toLocaleDateString(undefined, { month: "short" })
+  const monthLabel = formatDate(date, { month: "short" })
   const dayLabel = date.getDate()
 
   return (
@@ -47,11 +53,12 @@ function BookingRow({
         <div className="truncate font-medium">{booking.serviceName}</div>
         <p className="truncate text-sm text-muted-foreground">{booking.businessName}</p>
         <p className="truncate text-sm text-muted-foreground">
-          with {booking.staffName} &middot; {formatTimeLabel(booking.startsAt.slice(11, 16))}
+          {t("booking.with", { name: booking.staffName })} &middot;{" "}
+          {formatTime(booking.startsAt.slice(11, 16))}
         </p>
       </div>
 
-      <Badge variant={statusVariant[booking.status]}>{booking.status}</Badge>
+      <Badge variant={statusVariant[booking.status]}>{t(`booking.status.${booking.status}`)}</Badge>
     </button>
   )
 }
@@ -67,6 +74,8 @@ function BookingList({
   onSelect: (id: string) => void
   showFindBusiness?: boolean
 }) {
+  const { t } = useTranslation()
+
   if (bookings.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border p-10 text-center">
@@ -74,7 +83,7 @@ function BookingList({
         <p className="text-sm text-muted-foreground">{emptyLabel}</p>
         {showFindBusiness && (
           <Button variant="outline" size="sm" asChild>
-            <Link to="/businesses">Find a business</Link>
+            <Link to="/businesses">{t("landing.findBusiness")}</Link>
           </Button>
         )}
       </div>
@@ -91,11 +100,12 @@ function BookingList({
 }
 
 export function MyBookingsPage() {
+  const { t } = useTranslation()
   const { data: bookings, isLoading } = useCustomerBookings()
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null)
 
   const { upcoming, past } = useMemo(() => {
-    const now = new Date()
+    const now = businessNow()
     const all = bookings ?? []
     const upcoming = all
       .filter((booking) => new Date(booking.startsAt) >= now)
@@ -110,13 +120,11 @@ export function MyBookingsPage() {
     <div className="flex max-w-2xl flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Bookings</h1>
-          <p className="text-sm text-muted-foreground">
-            Your appointments across every business.
-          </p>
+          <h1 className="text-xl font-semibold tracking-tight">{t("account.bookings")}</h1>
+          <p className="text-sm text-muted-foreground">{t("account.bookingsSubtitle")}</p>
         </div>
         <Button asChild>
-          <Link to="/businesses">Book a new appointment</Link>
+          <Link to="/businesses">{t("account.bookNew")}</Link>
         </Button>
       </div>
 
@@ -129,18 +137,18 @@ export function MyBookingsPage() {
         <Tabs defaultValue="upcoming">
           <TabsList className="group-data-horizontal/tabs:h-10">
             <TabsTrigger value="upcoming" className="px-5">
-              Upcoming
+              {t("account.upcoming")}
               <span className="ml-1.5 text-xs text-muted-foreground">{upcoming.length}</span>
             </TabsTrigger>
             <TabsTrigger value="past" className="px-5">
-              Past
+              {t("account.past")}
               <span className="ml-1.5 text-xs text-muted-foreground">{past.length}</span>
             </TabsTrigger>
           </TabsList>
           <TabsContent value="upcoming" className="mt-5">
             <BookingList
               bookings={upcoming}
-              emptyLabel="You have no upcoming appointments."
+              emptyLabel={t("account.noUpcoming")}
               onSelect={setSelectedBookingId}
               showFindBusiness
             />
@@ -148,7 +156,7 @@ export function MyBookingsPage() {
           <TabsContent value="past" className="mt-5">
             <BookingList
               bookings={past}
-              emptyLabel="You have no past appointments yet."
+              emptyLabel={t("account.noPast")}
               onSelect={setSelectedBookingId}
             />
           </TabsContent>

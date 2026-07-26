@@ -3,6 +3,7 @@ import { toast } from "sonner"
 
 import { queryKeys } from "@/api/queryKeys"
 import { availabilityApi } from "@/features/staff-calendar/api/availabilityApi"
+import i18n from "@/i18n"
 
 export function useRemoveTimeOff(businessId: string, staffId: string) {
   const queryClient = useQueryClient()
@@ -11,8 +12,8 @@ export function useRemoveTimeOff(businessId: string, staffId: string) {
     mutationFn: (timeOffId: string) => availabilityApi.removeTimeOff(businessId, staffId, timeOffId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.staff.timeOff(businessId, staffId) })
-      toast.success("Time off removed.")
+      toast.success(i18n.t("staff.timeOffRemovedToast"))
     },
-    onError: (error: Error) => toast.error(error.message),
+    onError: (error: Error) => toast.error(i18n.t(error.message)),
   })
 }

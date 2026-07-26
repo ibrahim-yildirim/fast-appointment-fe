@@ -1,13 +1,16 @@
+import type { TFunction } from "i18next"
 import { z } from "zod"
 
-export const guestBookingSchema = z.object({
-  guestName: z.string().min(1, "Name is required."),
-  guestPhone: z
-    .string()
-    .min(6, "Enter a valid phone number.")
-    .regex(/^[0-9+()\s-]+$/, "Enter a valid phone number."),
-  // Optional: empty string is allowed, anything else must look like an email.
-  guestEmail: z.union([z.literal(""), z.email("Enter a valid email address.")]),
-})
+export function createGuestBookingSchema(t: TFunction) {
+  return z.object({
+    guestName: z.string().min(1, t("validation.nameRequired")),
+    guestPhone: z
+      .string()
+      .min(6, t("validation.phoneRequired"))
+      .regex(/^[0-9+()\s-]+$/, t("validation.phoneRequired")),
+    // Optional: empty string is allowed, anything else must look like an email.
+    guestEmail: z.union([z.literal(""), z.email(t("validation.email"))]),
+  })
+}
 
-export type GuestBookingInput = z.infer<typeof guestBookingSchema>
+export type GuestBookingInput = z.infer<ReturnType<typeof createGuestBookingSchema>>

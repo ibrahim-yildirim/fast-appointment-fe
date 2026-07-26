@@ -25,7 +25,7 @@ function invalidCredentialsError(path: string): ApiError {
     timestamp: new Date().toISOString(),
     status: 401,
     error: "Unauthorized",
-    message: "Invalid email or password.",
+    message: "errors.invalidCredentials",
     path,
   })
 }
@@ -35,7 +35,7 @@ function emailTakenError(path: string): ApiError {
     timestamp: new Date().toISOString(),
     status: 409,
     error: "Conflict",
-    message: "An account with this email already exists.",
+    message: "errors.emailTaken",
     path,
   })
 }

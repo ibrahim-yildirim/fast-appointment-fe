@@ -9,6 +9,7 @@ import type {
 } from "@/features/auth/schemas/businessAuthSchemas"
 import { businesses } from "@/fixtures"
 import { useAuthStore } from "@/stores/authStore"
+import i18n from "@/i18n"
 
 type LocationState = { from?: { pathname: string; search: string } }
 
@@ -33,7 +34,7 @@ export function useBusinessAuth() {
       const redirectTo = from ? `${from.pathname}${from.search}` : fallbackRedirect(session.businessId)
       navigate(redirectTo, { replace: true })
     },
-    onError: (error: Error) => toast.error(error.message),
+    onError: (error: Error) => toast.error(i18n.t(error.message)),
   })
 
   const register = useMutation({
@@ -42,7 +43,7 @@ export function useBusinessAuth() {
       setSession(session)
       navigate(fallbackRedirect(session.businessId), { replace: true })
     },
-    onError: (error: Error) => toast.error(error.message),
+    onError: (error: Error) => toast.error(i18n.t(error.message)),
   })
 
   const logout = () => {

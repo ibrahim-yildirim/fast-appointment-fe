@@ -1,6 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Search } from "lucide-react"
+import { useMemo } from "react"
 import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
@@ -9,33 +11,37 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import { Input } from "@/components/ui/input"
 import { useCustomerAuth } from "@/features/auth/hooks/useCustomerAuth"
 import {
-  customerLoginSchema,
+  createCustomerLoginSchema,
   type CustomerLoginInput,
 } from "@/features/auth/schemas/customerAuthSchemas"
 import { useAuthStore } from "@/stores/authStore"
 
 export function CustomerLoginPage() {
+  const { t } = useTranslation()
   const { login } = useCustomerAuth()
   const navigate = useNavigate()
   const clearSession = useAuthStore((state) => state.clearSession)
+  const schema = useMemo(() => createCustomerLoginSchema(t), [t])
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CustomerLoginInput>({ resolver: zodResolver(customerLoginSchema) })
+  } = useForm<CustomerLoginInput>({ resolver: zodResolver(schema) })
 
   return (
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>Log in</CardTitle>
-          <CardDescription>Book and manage appointments across businesses.</CardDescription>
+          <CardTitle>{t("auth.customerLoginTitle")}</CardTitle>
+          <CardDescription>{t("auth.customerLoginSubtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit((values) => login.mutate(values))}>
             <FieldGroup>
               <Field data-invalid={!!errors.email}>
-                <FieldLabel required htmlFor="customer-login-email">Email</FieldLabel>
+                <FieldLabel required htmlFor="customer-login-email">
+                  {t("auth.email")}
+                </FieldLabel>
                 <Input
                   id="customer-login-email"
                   type="email"
@@ -45,7 +51,9 @@ export function CustomerLoginPage() {
                 <FieldError errors={[errors.email]} />
               </Field>
               <Field data-invalid={!!errors.password}>
-                <FieldLabel required htmlFor="customer-login-password">Password</FieldLabel>
+                <FieldLabel required htmlFor="customer-login-password">
+                  {t("auth.password")}
+                </FieldLabel>
                 <Input
                   id="customer-login-password"
                   type="password"
@@ -55,14 +63,14 @@ export function CustomerLoginPage() {
                 <FieldError errors={[errors.password]} />
               </Field>
               <Button type="submit" disabled={login.isPending}>
-                {login.isPending ? "Logging in..." : "Log in"}
+                {login.isPending ? t("auth.loggingIn") : t("auth.logIn")}
               </Button>
             </FieldGroup>
           </form>
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            No account?{" "}
+            {t("auth.noAccount")}{" "}
             <Link to="/register" className="text-foreground underline underline-offset-4">
-              Register
+              {t("auth.register")}
             </Link>
           </p>
           <Button
@@ -73,7 +81,7 @@ export function CustomerLoginPage() {
               navigate("/businesses")
             }}
           >
-            Log in as a guest
+            {t("auth.continueAsGuest")}
           </Button>
         </CardContent>
       </Card>
@@ -82,15 +90,13 @@ export function CustomerLoginPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Search aria-hidden="true" className="h-4 w-4 shrink-0 text-primary" />
-            Booked as a guest?
+            {t("booking.bookedAsGuest")}
           </CardTitle>
-          <CardDescription>
-            Find, view, or cancel your appointment with your booking reference — no account needed.
-          </CardDescription>
+          <CardDescription>{t("booking.lookupHint")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Button variant="outline" className="w-full" asChild>
-            <Link to="/booking-lookup">Find my booking</Link>
+            <Link to="/booking-lookup">{t("booking.findMyBooking")}</Link>
           </Button>
         </CardContent>
       </Card>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,9 +20,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { formatTimeLabel } from "@/features/booking/lib/slotUtils"
+
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 import type { Staff } from "@/types"
+import { useFormatters } from "@/lib/datetime"
+import { formatDurationLabel } from "@/features/services/lib/durations"
 
 const statusVariant = {
   confirmed: "secondary",
@@ -46,6 +49,9 @@ export function AppointmentDetailDialog({
   onCancel: () => void
   isSaving: boolean
 }) {
+  const { formatTime, formatMoney } = useFormatters()
+  const { t } = useTranslation()
+
   if (!appointment) return null
 
   return (
@@ -57,21 +63,23 @@ export function AppointmentDetailDialog({
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">{appointment.customerName}</span>
-            <Badge variant={statusVariant[appointment.status]}>{appointment.status}</Badge>
+            <Badge variant={statusVariant[appointment.status]}>
+              {t(`booking.status.${appointment.status}`)}
+            </Badge>
           </div>
           <div className="flex flex-col gap-1 text-sm text-muted-foreground">
             <span>{appointment.dateKey}</span>
             <span>
-              {formatTimeLabel(appointment.startTime)} - {formatTimeLabel(appointment.endTime)}
+              {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
             </span>
             <span>
-              {appointment.durationMinutes} min &middot; ${appointment.price.toFixed(2)}
+              {formatDurationLabel(appointment.durationMinutes, t)} &middot; {formatMoney(appointment.price)}
             </span>
-            {appointment.notes && <span>Notes: {appointment.notes}</span>}
+            {appointment.notes && <span>{t("account.notes", { notes: appointment.notes })}</span>}
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium">Staff</span>
+            <span className="text-sm font-medium">{t("dashboard.staff")}</span>
             <Select
               value={appointment.staffId}
               disabled={appointment.status === "cancelled" || isSaving}
@@ -94,20 +102,20 @@ export function AppointmentDetailDialog({
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" disabled={isSaving}>
-                  Cancel appointment
+                  {t("dashboard.cancelAppointment")}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Cancel this appointment?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("dashboard.cancelAppointmentTitle")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    {appointment.customerName} will need to be notified separately.
+                    {t("dashboard.cancelAppointmentBody", { name: appointment.customerName })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Keep it</AlertDialogCancel>
+                  <AlertDialogCancel>{t("booking.keepIt")}</AlertDialogCancel>
                   <AlertDialogAction variant="destructive" onClick={onCancel}>
-                    Cancel appointment
+                    {t("dashboard.cancelAppointment")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

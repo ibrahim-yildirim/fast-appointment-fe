@@ -1,15 +1,18 @@
 import { format, isSameMonth, isToday } from "date-fns"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { formatTimeLabel, toDateKey } from "@/features/booking/lib/slotUtils"
+import { toDateKey } from "@/features/booking/lib/slotUtils"
 import type { CustomerBookingView } from "@/features/my-bookings/api/customerBookingsApi"
 import { BookingDetailDialog } from "@/features/my-bookings/components/BookingDetailDialog"
 import { getMonthGridDays, navigateDate } from "@/lib/calendarUtils"
-import { weekdayOrder, weekdayShortLabels } from "@/lib/constants"
+import { weekdayOrder } from "@/lib/constants"
+import { businessToday } from "@/lib/datetime"
 import { cn } from "@/lib/utils"
+import { useFormatters } from "@/lib/datetime"
 
 const statusVariant = {
   confirmed: "secondary",
@@ -30,6 +33,9 @@ function BookingChip({
   booking: CustomerBookingView
   onSelect: (id: string) => void
 }) {
+  const { t } = useTranslation()
+  const { formatTime } = useFormatters()
+
   return (
     <div className="group/chip relative">
       <button
@@ -39,28 +45,32 @@ function BookingChip({
       >
         <span className={cn("size-2 shrink-0 rounded-full", statusDot[booking.status])} />
         <span className="truncate">
-          {formatTimeLabel(booking.startsAt.slice(11, 16))} &middot; {booking.businessName}
+          {formatTime(booking.startsAt.slice(11, 16))} &middot; {booking.businessName}
         </span>
       </button>
 
       <div className="invisible absolute left-0 top-full z-20 mt-1 w-56 rounded-lg border border-border bg-popover p-3 text-popover-foreground opacity-0 shadow-md ring-1 ring-foreground/10 transition-opacity group-hover/chip:visible group-hover/chip:opacity-100">
         <div className="flex items-center justify-between gap-2">
           <span className="font-medium">{booking.serviceName}</span>
-          <Badge variant={statusVariant[booking.status]}>{booking.status}</Badge>
+          <Badge variant={statusVariant[booking.status]}>{t(`booking.status.${booking.status}`)}</Badge>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">{booking.businessName}</p>
         <p className="text-xs text-muted-foreground">
-          {formatTimeLabel(booking.startsAt.slice(11, 16))} -{" "}
-          {formatTimeLabel(booking.endsAt.slice(11, 16))}
+          {formatTime(booking.startsAt.slice(11, 16))} -{" "}
+          {formatTime(booking.endsAt.slice(11, 16))}
         </p>
-        <p className="text-xs text-muted-foreground">with {booking.staffName}</p>
+        <p className="text-xs text-muted-foreground">
+          {t("booking.with", { name: booking.staffName })}
+        </p>
       </div>
     </div>
   )
 }
 
 export function MyBookingsCalendar({ bookings }: { bookings: CustomerBookingView[] }) {
-  const [referenceDate, setReferenceDate] = useState(() => new Date())
+  const { t } = useTranslation()
+  const { locale } = useFormatters()
+  const [referenceDate, setReferenceDate] = useState(() => businessToday())
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null)
 
   const days = useMemo(() => getMonthGridDays(referenceDate), [referenceDate])
@@ -80,13 +90,13 @@ export function MyBookingsCalendar({ bookings }: { bookings: CustomerBookingView
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" onClick={() => setReferenceDate(new Date())}>
-          Today
+        <Button variant="outline" size="sm" onClick={() => setReferenceDate(businessToday())}>
+          {t("account.today")}
         </Button>
         <Button
           variant="ghost"
           size="icon-sm"
-          aria-label="Previous month"
+          aria-label={t("account.previousMonth")}
           onClick={() => setReferenceDate((current) => navigateDate(current, "month", "prev"))}
         >
           <ChevronLeftIcon className="h-4 w-4" />
@@ -94,12 +104,12 @@ export function MyBookingsCalendar({ bookings }: { bookings: CustomerBookingView
         <Button
           variant="ghost"
           size="icon-sm"
-          aria-label="Next month"
+          aria-label={t("account.nextMonth")}
           onClick={() => setReferenceDate((current) => navigateDate(current, "month", "next"))}
         >
           <ChevronRightIcon className="h-4 w-4" />
         </Button>
-        <span className="text-sm font-medium">{format(referenceDate, "MMMM yyyy")}</span>
+        <span className="text-sm font-medium">{format(referenceDate, "MMMM yyyy", { locale })}</span>
       </div>
 
       <div className="grid grid-cols-7 gap-px overflow-hidden rounded-lg border border-border bg-border">
@@ -108,7 +118,7 @@ export function MyBookingsCalendar({ bookings }: { bookings: CustomerBookingView
             key={day}
             className="bg-muted px-2 py-1 text-center text-xs font-medium text-muted-foreground"
           >
-            {weekdayShortLabels[day]}
+            {t(`weekdayShort.${day}`)}
           </div>
         ))}
         {days.map((day) => {
@@ -124,7 +134,7 @@ export function MyBookingsCalendar({ bookings }: { bookings: CustomerBookingView
               )}
             >
               <span className={cn("text-xs", isToday(day) && "font-semibold text-foreground")}>
-                {format(day, "d")}
+                {format(day, "d", { locale })}
               </span>
               {dayBookings.map((booking) => (
                 <BookingChip

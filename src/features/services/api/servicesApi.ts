@@ -40,7 +40,7 @@ export const servicesApi = {
       const index = services.findIndex(
         (service) => service.businessId === businessId && service.id === serviceId,
       )
-      if (index === -1) throw new Error("Service not found.")
+      if (index === -1) throw new Error("errors.serviceNotFound")
       const updated: Service = { ...services[index], ...input }
       services[index] = updated
       return updated

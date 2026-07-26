@@ -4,6 +4,7 @@ import { toast } from "sonner"
 import { queryKeys } from "@/api/queryKeys"
 import { bookingsApi } from "@/features/booking/api/bookingsApi"
 import type { Booking } from "@/types"
+import i18n from "@/i18n"
 
 type UpdateBookingArgs = {
   bookingId: string
@@ -18,8 +19,8 @@ export function useUpdateBooking(businessId: string) {
       bookingsApi.update(businessId, bookingId, patch),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.bookings.list(businessId) })
-      toast.success("Booking updated.")
+      toast.success(i18n.t("dashboard.bookingUpdatedToast"))
     },
-    onError: (error: Error) => toast.error(error.message),
+    onError: (error: Error) => toast.error(i18n.t(error.message)),
   })
 }

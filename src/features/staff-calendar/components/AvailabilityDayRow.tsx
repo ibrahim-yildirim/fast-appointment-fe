@@ -1,12 +1,12 @@
 import { PlusIcon, XIcon } from "lucide-react"
 import { Controller, useFieldArray, type UseFormReturn } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
 import { FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import type { AvailabilityFormInput } from "@/features/staff-calendar/schemas/availabilityFormSchema"
-import { weekdayLabels } from "@/lib/constants"
 
 export function AvailabilityDayRow({
   form,
@@ -15,6 +15,7 @@ export function AvailabilityDayRow({
   form: UseFormReturn<AvailabilityFormInput>
   dayIndex: number
 }) {
+  const { t } = useTranslation()
   const { control, register, watch, formState } = form
   const { fields, append, remove } = useFieldArray({
     control,
@@ -33,7 +34,7 @@ export function AvailabilityDayRow({
           name={`weekly.${dayIndex}.enabled`}
           render={({ field }) => <Switch checked={field.value} onCheckedChange={field.onChange} />}
         />
-        <span className="w-24 text-sm font-medium">{weekdayLabels[day]}</span>
+        <span className="w-28 text-sm font-medium">{t(`weekday.${day}`)}</span>
         <div className="flex flex-1 flex-col gap-2">
           {fields.map((field, rangeIndex) => (
             <div key={field.id} className="flex items-center gap-2">
@@ -43,7 +44,7 @@ export function AvailabilityDayRow({
                 disabled={!enabled}
                 {...register(`weekly.${dayIndex}.ranges.${rangeIndex}.start`)}
               />
-              <span className="text-sm text-muted-foreground">to</span>
+              <span className="text-sm text-muted-foreground">{t("staff.rangeTo")}</span>
               <Input
                 type="time"
                 className="w-32"
@@ -56,7 +57,7 @@ export function AvailabilityDayRow({
                 size="icon-sm"
                 disabled={!enabled}
                 onClick={() => remove(rangeIndex)}
-                aria-label="Remove time range"
+                aria-label={t("staff.removeRange")}
               >
                 <XIcon className="h-4 w-4" />
               </Button>
@@ -71,7 +72,7 @@ export function AvailabilityDayRow({
             className="w-fit"
           >
             <PlusIcon className="h-4 w-4" />
-            Add range
+            {t("staff.addRange")}
           </Button>
         </div>
       </div>

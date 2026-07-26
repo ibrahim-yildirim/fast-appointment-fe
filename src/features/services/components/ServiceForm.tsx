@@ -1,5 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMemo } from "react"
 import { Controller, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
@@ -15,7 +17,7 @@ import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { formatDurationLabel, serviceDurationOptions } from "@/features/services/lib/durations"
 import {
-  serviceFormSchema,
+  createServiceFormSchema,
   type ServiceFormInput,
 } from "@/features/services/schemas/serviceFormSchema"
 import type { Staff } from "@/types"
@@ -33,13 +35,15 @@ export function ServiceForm({
   isSubmitting: boolean
   submitLabel: string
 }) {
+  const { t } = useTranslation()
+  const schema = useMemo(() => createServiceFormSchema(t), [t])
   const {
     register,
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<ServiceFormInput>({
-    resolver: zodResolver(serviceFormSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       description: "",
@@ -55,18 +59,24 @@ export function ServiceForm({
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       <FieldGroup>
         <Field data-invalid={!!errors.name}>
-          <FieldLabel required htmlFor="service-name">Name</FieldLabel>
+          <FieldLabel required htmlFor="service-name">
+            {t("services.name")}
+          </FieldLabel>
           <Input id="service-name" {...register("name")} />
           <FieldError errors={[errors.name]} />
         </Field>
         <Field data-invalid={!!errors.description}>
-          <FieldLabel required htmlFor="service-description">Description</FieldLabel>
+          <FieldLabel required htmlFor="service-description">
+            {t("services.description")}
+          </FieldLabel>
           <Textarea id="service-description" rows={3} {...register("description")} />
           <FieldError errors={[errors.description]} />
         </Field>
         <div className="flex gap-4">
           <Field data-invalid={!!errors.durationMinutes} className="flex-1">
-            <FieldLabel required htmlFor="service-duration">Duration</FieldLabel>
+            <FieldLabel required htmlFor="service-duration">
+              {t("services.duration")}
+            </FieldLabel>
             <Controller
               control={control}
               name="durationMinutes"
@@ -76,12 +86,12 @@ export function ServiceForm({
                   onValueChange={(value) => field.onChange(Number(value))}
                 >
                   <SelectTrigger id="service-duration" className="w-full">
-                    <SelectValue placeholder="Select a duration" />
+                    <SelectValue placeholder={t("services.durationPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {serviceDurationOptions.map((minutes) => (
                       <SelectItem key={minutes} value={String(minutes)}>
-                        {formatDurationLabel(minutes)}
+                        {formatDurationLabel(minutes, t)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -91,7 +101,9 @@ export function ServiceForm({
             <FieldError errors={[errors.durationMinutes]} />
           </Field>
           <Field data-invalid={!!errors.price} className="flex-1">
-            <FieldLabel required htmlFor="service-price">Price ($)</FieldLabel>
+            <FieldLabel required htmlFor="service-price">
+              {t("services.price")}
+            </FieldLabel>
             <Input
               id="service-price"
               type="number"
@@ -103,7 +115,7 @@ export function ServiceForm({
           </Field>
         </div>
         <Field orientation="horizontal">
-          <FieldLabel htmlFor="service-active">Active</FieldLabel>
+          <FieldLabel htmlFor="service-active">{t("services.active")}</FieldLabel>
           <Controller
             control={control}
             name="active"
@@ -117,7 +129,7 @@ export function ServiceForm({
           />
         </Field>
         <Field data-invalid={!!errors.eligibleStaffIds}>
-          <FieldLabel required>Eligible staff</FieldLabel>
+          <FieldLabel required>{t("services.eligibleStaff")}</FieldLabel>
           <Controller
             control={control}
             name="eligibleStaffIds"
@@ -150,7 +162,7 @@ export function ServiceForm({
           <FieldError errors={[errors.eligibleStaffIds]} />
         </Field>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : submitLabel}
+          {isSubmitting ? t("common.saving") : submitLabel}
         </Button>
       </FieldGroup>
     </form>

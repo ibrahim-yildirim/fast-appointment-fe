@@ -1,6 +1,7 @@
 import { apiClient } from "@/api/client"
 import { USE_FIXTURES } from "@/api/config"
 import { endpoints } from "@/api/endpoints"
+import { businessNow } from "@/lib/datetime"
 import { ApiError } from "@/api/types"
 import { bookings } from "@/fixtures"
 import { generateBookingReference } from "@/lib/bookingReference"
@@ -57,19 +58,19 @@ function assertGuestBookingAllowed(businessId: string, input: CreateBookingInput
       timestamp: new Date().toISOString(),
       status: 409,
       error: "Conflict",
-      message: "You already have this appointment booked.",
+      message: "errors.duplicateBooking",
       path: endpoints.bookings.list(businessId),
     })
   }
 
-  const now = Date.now()
+  const now = businessNow().getTime()
   const upcoming = sameContact.filter((booking) => new Date(booking.startsAt).getTime() >= now)
   if (upcoming.length >= GUEST_UPCOMING_LIMIT) {
     throw new ApiError({
       timestamp: new Date().toISOString(),
       status: 429,
       error: "Too Many Requests",
-      message: `This phone number already has ${GUEST_UPCOMING_LIMIT} upcoming appointments here. Please cancel one first or contact the business.`,
+      message: "errors.guestBookingLimit",
       path: endpoints.bookings.list(businessId),
     })
   }
@@ -132,7 +133,7 @@ export const bookingsApi = {
           booking.guestPhone !== null &&
           phoneKey(booking.guestPhone) === normalized,
       )
-      if (index === -1) throw new Error("Booking not found.")
+      if (index === -1) throw new Error("errors.bookingNotFound")
       bookings[index] = { ...bookings[index], status: "cancelled" }
       return
     }
@@ -148,7 +149,7 @@ export const bookingsApi = {
       const index = bookings.findIndex(
         (booking) => booking.businessId === businessId && booking.id === bookingId,
       )
-      if (index === -1) throw new Error("Booking not found.")
+      if (index === -1) throw new Error("errors.bookingNotFound")
       const updated: Booking = { ...bookings[index], ...patch }
       bookings[index] = updated
       return updated

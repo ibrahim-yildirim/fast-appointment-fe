@@ -1,20 +1,12 @@
 import { Controller, useFieldArray, type UseFormReturn } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import type { BusinessOnboardingInput } from "@/features/business-onboarding/schemas/businessOnboardingSchema"
 
-const dayLabels: Record<string, string> = {
-  mon: "Monday",
-  tue: "Tuesday",
-  wed: "Wednesday",
-  thu: "Thursday",
-  fri: "Friday",
-  sat: "Saturday",
-  sun: "Sunday",
-}
-
 export function BusinessHoursStep({ form }: { form: UseFormReturn<BusinessOnboardingInput> }) {
+  const { t } = useTranslation()
   const { control, register, watch } = form
   const { fields } = useFieldArray({ control, name: "hours" })
 
@@ -31,14 +23,14 @@ export function BusinessHoursStep({ form }: { form: UseFormReturn<BusinessOnboar
                 <Switch checked={switchField.value} onCheckedChange={switchField.onChange} />
               )}
             />
-            <span className="w-24 text-sm font-medium">{dayLabels[field.day]}</span>
+            <span className="w-28 text-sm font-medium">{t(`weekday.${field.day}`)}</span>
             <Input
               type="time"
               className="w-32"
               disabled={!enabled}
               {...register(`hours.${index}.start`)}
             />
-            <span className="text-sm text-muted-foreground">to</span>
+            <span className="text-sm text-muted-foreground">{t("staff.rangeTo")}</span>
             <Input
               type="time"
               className="w-32"

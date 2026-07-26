@@ -1,5 +1,9 @@
+import { useTranslation } from "react-i18next"
+
 import { PlaceholderPage } from "@/components/layout/PlaceholderPage"
 
 export function DashboardSettingsPage() {
-  return <PlaceholderPage title="Business settings" />
+  const { t } = useTranslation()
+
+  return <PlaceholderPage title={t("dashboard.settings")} />
 }

@@ -1,8 +1,10 @@
 import { useMemo } from "react"
 
 import { Badge } from "@/components/ui/badge"
-import { formatTimeLabel } from "@/features/booking/lib/slotUtils"
+
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
+import { useTranslation } from "react-i18next"
+import { useFormatters } from "@/lib/datetime"
 
 const statusVariant = {
   confirmed: "secondary",
@@ -17,6 +19,9 @@ export function ListView({
   appointments: CalendarAppointment[]
   onSelectAppointment: (id: string) => void
 }) {
+  const { t } = useTranslation()
+  const { formatTime } = useFormatters()
+
   const sorted = useMemo(
     () =>
       [...appointments].sort((a, b) =>
@@ -28,7 +33,7 @@ export function ListView({
   if (sorted.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-border p-6 text-center text-muted-foreground">
-        No appointments match these filters.
+        {t("dashboard.noAppointments")}
       </div>
     )
   }
@@ -49,11 +54,11 @@ export function ListView({
             />
             <div>
               <div className="font-medium">
-                {appointment.dateKey} &middot; {formatTimeLabel(appointment.startTime)}
+                {appointment.dateKey} &middot; {formatTime(appointment.startTime)}
               </div>
               <p className="text-muted-foreground">
-                {appointment.customerName} &middot; {appointment.serviceName} &middot; with{" "}
-                {appointment.staffName}
+                {appointment.customerName} &middot; {appointment.serviceName} &middot;{" "}
+                {t("booking.with", { name: appointment.staffName })}
               </p>
             </div>
           </div>

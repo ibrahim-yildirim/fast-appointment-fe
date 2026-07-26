@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { onboardingApi } from "@/features/business-onboarding/api/onboardingApi"
 import type { BusinessOnboardingInput } from "@/features/business-onboarding/schemas/businessOnboardingSchema"
 import { useAuthStore } from "@/stores/authStore"
+import i18n from "@/i18n"
 
 export function useCreateBusiness() {
   const navigate = useNavigate()
@@ -17,6 +18,6 @@ export function useCreateBusiness() {
       setBusinessId(business.id)
       navigate(`/${business.slug}/dashboard`, { replace: true })
     },
-    onError: (error: Error) => toast.error(error.message),
+    onError: (error: Error) => toast.error(i18n.t(error.message)),
   })
 }

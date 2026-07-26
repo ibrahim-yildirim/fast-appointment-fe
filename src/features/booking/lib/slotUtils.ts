@@ -16,19 +16,6 @@ export function minutesToTimeString(totalMinutes: number) {
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`
 }
 
-export function formatTimeLabel(time: string) {
-  const [hours, minutes] = time.split(":").map(Number)
-  const period = hours >= 12 ? "PM" : "AM"
-  const hour12 = hours % 12 === 0 ? 12 : hours % 12
-  return `${hour12}:${String(minutes).padStart(2, "0")} ${period}`
-}
-
-export function formatHourLabel(hour: number) {
-  const period = hour >= 12 ? "PM" : "AM"
-  const hour12 = hour % 12 === 0 ? 12 : hour % 12
-  return `${hour12} ${period}`
-}
-
 export function groupSlotsByHour<T extends { time: string }>(slots: T[]) {
   const groups = new Map<number, T[]>()
 

@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 import { Navigate, useNavigate } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
@@ -14,28 +15,25 @@ import {
   businessContactFields,
   businessDetailsFields,
   businessHoursFields,
-  businessOnboardingSchema,
+  createBusinessOnboardingSchema,
   weekdayOrder,
   type BusinessOnboardingInput,
 } from "@/features/business-onboarding/schemas/businessOnboardingSchema"
 import { businesses } from "@/fixtures"
 import { useAuthStore } from "@/stores/authStore"
 
-const steps = [
-  { title: "Business details", description: "What should customers see first?" },
-  { title: "Contact & location", description: "How customers and staff reach you." },
-  { title: "Default hours", description: "Your typical weekly hours. Staff can override this." },
-  { title: "Review", description: "Confirm everything looks right." },
-]
+const stepKeys = ["details", "contact", "hours", "review"] as const
 
 export function OnboardingPage() {
+  const { t } = useTranslation()
+  const schema = useMemo(() => createBusinessOnboardingSchema(t), [t])
   const navigate = useNavigate()
   const businessId = useAuthStore((state) => state.businessId)
   const [step, setStep] = useState(0)
   const createBusiness = useCreateBusiness()
 
   const form = useForm<BusinessOnboardingInput>({
-    resolver: zodResolver(businessOnboardingSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       slug: "",
@@ -43,7 +41,7 @@ export function OnboardingPage() {
       address: "",
       phone: "",
       email: "",
-      timezone: "America/New_York",
+      timezone: "Europe/Istanbul",
       hours: weekdayOrder.map((day) => ({
         day,
         enabled: day !== "sat" && day !== "sun",
@@ -58,7 +56,7 @@ export function OnboardingPage() {
     return <Navigate to={existingBusiness ? `/${existingBusiness.slug}/dashboard` : "/"} replace />
   }
 
-  const isLastStep = step === steps.length - 1
+  const isLastStep = step === stepKeys.length - 1
 
   async function handleNext() {
     const fieldsToValidate =
@@ -74,17 +72,15 @@ export function OnboardingPage() {
   return (
     <div className="mx-auto flex min-h-screen max-w-xl flex-col justify-center gap-6 px-6 py-12">
       <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>
-          Step {step + 1} of {steps.length}
-        </span>
+        <span>{t("onboarding.stepCounter", { current: step + 1, total: stepKeys.length })}</span>
         <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
-          Cancel
+          {t("common.cancel")}
         </Button>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>{steps[step].title}</CardTitle>
-          <CardDescription>{steps[step].description}</CardDescription>
+          <CardTitle>{t(`onboarding.steps.${stepKeys[step]}.title`)}</CardTitle>
+          <CardDescription>{t(`onboarding.steps.${stepKeys[step]}.description`)}</CardDescription>
         </CardHeader>
         <CardContent>
           <form
@@ -103,15 +99,15 @@ export function OnboardingPage() {
                 disabled={step === 0}
                 onClick={() => setStep((current) => current - 1)}
               >
-                Back
+                {t("onboarding.back")}
               </Button>
               {isLastStep ? (
                 <Button type="submit" disabled={createBusiness.isPending}>
-                  {createBusiness.isPending ? "Creating..." : "Create business"}
+                  {createBusiness.isPending ? t("onboarding.creating") : t("onboarding.finish")}
                 </Button>
               ) : (
                 <Button type="button" onClick={handleNext}>
-                  Next
+                  {t("onboarding.continue")}
                 </Button>
               )}
             </div>

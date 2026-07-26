@@ -7,21 +7,24 @@ import {
   Shield,
   User,
 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { NavLink, Outlet } from "react-router-dom"
 
+import { LanguageToggle } from "@/components/layout/LanguageToggle"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import { Button } from "@/components/ui/button"
 import { useCustomerAuth } from "@/features/auth/hooks/useCustomerAuth"
 import { cn } from "@/lib/utils"
 
 const navItems = [
-  { to: "/account/bookings", label: "Bookings", icon: CalendarDays },
-  { to: "/account/calendar", label: "Calendar", icon: CalendarRange },
-  { to: "/account/profile", label: "Profile", icon: User },
-  { to: "/account/settings", label: "Settings", icon: Settings },
+  { to: "/account/bookings", labelKey: "account.bookings", icon: CalendarDays },
+  { to: "/account/calendar", labelKey: "account.calendar", icon: CalendarRange },
+  { to: "/account/profile", labelKey: "account.profile", icon: User },
+  { to: "/account/settings", labelKey: "account.settings", icon: Settings },
 ]
 
 export function CustomerAccountLayout() {
+  const { t } = useTranslation()
   const { logout } = useCustomerAuth()
 
   return (
@@ -29,10 +32,10 @@ export function CustomerAccountLayout() {
       <aside className="flex flex-col border-r border-border px-4 py-6">
         <div className="mb-6 flex items-center gap-2 px-2 font-semibold">
           <CalendarCheck className="h-5 w-5 text-primary" />
-          fast-appointment
+          {t("common.appName")}
         </div>
         <nav className="flex flex-col gap-1">
-          {navItems.map(({ to, label, icon: Icon }) => (
+          {navItems.map(({ to, labelKey, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
@@ -46,7 +49,7 @@ export function CustomerAccountLayout() {
               }
             >
               <Icon className="h-4 w-4" />
-              {label}
+              {t(labelKey)}
             </NavLink>
           ))}
         </nav>
@@ -62,13 +65,14 @@ export function CustomerAccountLayout() {
           }
         >
           <Shield className="h-4 w-4" />
-          Privacy policy
+          {t("account.privacyPolicy")}
         </NavLink>
       </aside>
       <div className="flex flex-col">
         <header className="flex items-center justify-end gap-2 border-b border-border px-6 py-4">
+          <LanguageToggle />
           <ThemeToggle />
-          <Button variant="outline" size="icon" aria-label="Log out" onClick={logout}>
+          <Button variant="outline" size="icon" aria-label={t("common.logOut")} onClick={logout}>
             <LogOut className="h-4 w-4" />
           </Button>
         </header>

@@ -1,6 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { addMinutes } from "date-fns"
+import { useMemo } from "react"
 import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 import { Link, Navigate, useLocation, useParams, useSearchParams } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
@@ -11,16 +13,19 @@ import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
 import { useCreateBooking } from "@/features/booking/hooks/useCreateBooking"
-import { formatTimeLabel } from "@/features/booking/lib/slotUtils"
 import {
-  guestBookingSchema,
+  createGuestBookingSchema,
   type GuestBookingInput,
 } from "@/features/booking/schemas/guestBookingSchema"
+import { formatDurationLabel } from "@/features/services/lib/durations"
 import { useService } from "@/features/services/hooks/useService"
 import { useStaffMember } from "@/features/staff-calendar/hooks/useStaffMember"
+import { useFormatters } from "@/lib/datetime"
 import { useAuthStore } from "@/stores/authStore"
 
 export function BookingConfirmPage() {
+  const { t } = useTranslation()
+  const { formatTime, formatMoney, formatDate } = useFormatters()
   const business = useBusinessContext()
   const location = useLocation()
   const { serviceId } = useParams<{ serviceId: string }>()
@@ -37,12 +42,13 @@ export function BookingConfirmPage() {
   const { data: staff, isLoading: staffLoading } = useStaffMember(business.id, staffId ?? "")
   const createBooking = useCreateBooking(business.id, business.slug)
 
+  const schema = useMemo(() => createGuestBookingSchema(t), [t])
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<GuestBookingInput>({
-    resolver: zodResolver(guestBookingSchema),
+    resolver: zodResolver(schema),
     defaultValues: { guestName: "", guestPhone: "", guestEmail: "" },
   })
 
@@ -55,7 +61,7 @@ export function BookingConfirmPage() {
   }
 
   if (!service || !staff) {
-    return <p className="text-muted-foreground">This slot is no longer available.</p>
+    return <p className="text-muted-foreground">{t("booking.slotGone")}</p>
   }
 
   const startsAt = new Date(`${date}T${time}:00.000Z`)
@@ -77,51 +83,48 @@ export function BookingConfirmPage() {
 
   return (
     <Card className="max-w-md">
-      <h1 className="sr-only">Confirm booking</h1>
+      <h1 className="sr-only">{t("booking.confirmTitle")}</h1>
       <CardHeader>
-        <CardTitle>Confirm booking</CardTitle>
+        <CardTitle>{t("booking.confirmTitle")}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="flex flex-col gap-1 text-sm">
           <span className="font-medium">{service.name}</span>
-          <span className="text-muted-foreground">with {staff.name}</span>
+          <span className="text-muted-foreground">{t("booking.with", { name: staff.name })}</span>
           <span className="text-muted-foreground">
-            {startsAt.toLocaleDateString(undefined, {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-              timeZone: "UTC",
-            })}
+            {formatDate(startsAt, { weekday: "long", month: "long", day: "numeric" })}
           </span>
-          <span className="text-muted-foreground">{formatTimeLabel(time)}</span>
+          <span className="text-muted-foreground">{formatTime(time)}</span>
           <span className="text-muted-foreground">
-            {service.durationMinutes} min &middot; ${service.price.toFixed(2)}
+            {formatDurationLabel(service.durationMinutes, t)} &middot; {formatMoney(service.price)}
           </span>
         </div>
 
         {isCustomer ? (
           <Button disabled={createBooking.isPending} onClick={() => submitBooking(null)}>
-            {createBooking.isPending ? "Booking..." : "Confirm booking"}
+            {createBooking.isPending ? t("booking.confirming") : t("booking.confirm")}
           </Button>
         ) : (
           <>
             <Separator />
             <div>
-              <h2 className="text-sm font-medium">Your details</h2>
-              <p className="text-sm text-muted-foreground">
-                No account needed — we'll use these to confirm your appointment.
-              </p>
+              <h2 className="text-sm font-medium">{t("booking.yourDetails")}</h2>
+              <p className="text-sm text-muted-foreground">{t("booking.yourDetailsHint")}</p>
             </div>
 
             <form onSubmit={handleSubmit((values) => submitBooking(values))}>
               <FieldGroup>
                 <Field data-invalid={!!errors.guestName}>
-                  <FieldLabel required htmlFor="guest-name">Full name</FieldLabel>
+                  <FieldLabel required htmlFor="guest-name">
+                    {t("booking.fullName")}
+                  </FieldLabel>
                   <Input id="guest-name" autoComplete="name" {...register("guestName")} />
                   <FieldError errors={[errors.guestName]} />
                 </Field>
                 <Field data-invalid={!!errors.guestPhone}>
-                  <FieldLabel required htmlFor="guest-phone">Phone</FieldLabel>
+                  <FieldLabel required htmlFor="guest-phone">
+                    {t("booking.phone")}
+                  </FieldLabel>
                   <Input
                     id="guest-phone"
                     type="tel"
@@ -131,7 +134,7 @@ export function BookingConfirmPage() {
                   <FieldError errors={[errors.guestPhone]} />
                 </Field>
                 <Field data-invalid={!!errors.guestEmail}>
-                  <FieldLabel htmlFor="guest-email">Email (optional)</FieldLabel>
+                  <FieldLabel htmlFor="guest-email">{t("booking.emailOptional")}</FieldLabel>
                   <Input
                     id="guest-email"
                     type="email"
@@ -141,21 +144,21 @@ export function BookingConfirmPage() {
                   <FieldError errors={[errors.guestEmail]} />
                 </Field>
                 <Button type="submit" disabled={createBooking.isPending}>
-                  {createBooking.isPending ? "Booking..." : "Confirm booking"}
+                  {createBooking.isPending ? t("booking.confirming") : t("booking.confirm")}
                 </Button>
               </FieldGroup>
             </form>
 
             <p className="text-center text-sm text-muted-foreground">
-              Have an account?{" "}
+              {t("booking.haveAccountPrefix")}{" "}
               <Link
                 to="/login"
                 state={{ from: location }}
                 className="text-foreground underline underline-offset-4"
               >
-                Log in
+                {t("auth.logIn")}
               </Link>{" "}
-              to keep all your bookings in one place.
+              {t("booking.haveAccountSuffix")}
             </p>
           </>
         )}

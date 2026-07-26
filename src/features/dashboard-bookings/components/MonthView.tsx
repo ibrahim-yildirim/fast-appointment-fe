@@ -1,12 +1,14 @@
 import { format, isSameMonth, isToday } from "date-fns"
+import { useTranslation } from "react-i18next"
 import { useMemo } from "react"
 
 import { AppointmentChip } from "@/features/dashboard-bookings/components/AppointmentChip"
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 import { getMonthGridDays } from "@/lib/calendarUtils"
 import { toDateKey } from "@/features/booking/lib/slotUtils"
-import { weekdayOrder, weekdayShortLabels } from "@/lib/constants"
+import { weekdayOrder } from "@/lib/constants"
 import { cn } from "@/lib/utils"
+import { useFormatters } from "@/lib/datetime"
 
 const VISIBLE_LIMIT = 3
 
@@ -23,6 +25,9 @@ export function MonthView({
   onReschedule: (id: string, dateKey: string) => void
   onShowMore: (date: Date) => void
 }) {
+  const { t } = useTranslation()
+  const { locale } = useFormatters()
+
   const days = useMemo(() => getMonthGridDays(referenceDate), [referenceDate])
 
   const appointmentsByDate = useMemo(() => {
@@ -40,7 +45,7 @@ export function MonthView({
     <div className="grid grid-cols-7 gap-px overflow-hidden rounded-lg border border-border bg-border">
       {weekdayOrder.map((day) => (
         <div key={day} className="bg-muted px-2 py-1 text-center text-xs font-medium text-muted-foreground">
-          {weekdayShortLabels[day]}
+          {t(`weekdayShort.${day}`)}
         </div>
       ))}
       {days.map((day) => {
@@ -64,7 +69,7 @@ export function MonthView({
             )}
           >
             <span className={cn("text-xs", isToday(day) && "font-semibold text-foreground")}>
-              {format(day, "d")}
+              {format(day, "d", { locale })}
             </span>
             {visible.map((appointment) => (
               <AppointmentChip

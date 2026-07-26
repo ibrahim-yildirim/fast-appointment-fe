@@ -4,6 +4,7 @@ import { toast } from "sonner"
 import { queryKeys } from "@/api/queryKeys"
 import { staffApi } from "@/features/staff-calendar/api/staffApi"
 import type { StaffFormInput } from "@/features/staff-calendar/schemas/staffFormSchema"
+import i18n from "@/i18n"
 
 export function useUpdateStaff(businessId: string, staffId: string) {
   const queryClient = useQueryClient()
@@ -13,8 +14,8 @@ export function useUpdateStaff(businessId: string, staffId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.staff.list(businessId) })
       queryClient.invalidateQueries({ queryKey: queryKeys.staff.byId(businessId, staffId) })
-      toast.success("Staff member updated.")
+      toast.success(i18n.t("staff.updatedToast"))
     },
-    onError: (error: Error) => toast.error(error.message),
+    onError: (error: Error) => toast.error(i18n.t(error.message)),
   })
 }

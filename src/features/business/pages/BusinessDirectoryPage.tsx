@@ -1,7 +1,9 @@
 import { CalendarCheck } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { BackButton } from "@/components/layout/BackButton"
+import { LanguageToggle } from "@/components/layout/LanguageToggle"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useBusinesses } from "@/features/business/hooks/useBusinesses"
 
 export function BusinessDirectoryPage() {
+  const { t } = useTranslation()
   const { data: businesses, isLoading } = useBusinesses()
 
   return (
@@ -18,13 +21,16 @@ export function BusinessDirectoryPage() {
           <BackButton />
           <Link to="/" className="flex min-w-0 items-center gap-2 font-semibold">
             <CalendarCheck aria-hidden="true" className="h-5 w-5 shrink-0 text-primary" />
-            <span className="truncate">fast-appointment</span>
+            <span className="truncate">{t("common.appName")}</span>
           </Link>
         </div>
-        <ThemeToggle />
+        <div className="flex shrink-0 items-center gap-2">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
       </header>
       <main className="mx-auto flex max-w-2xl flex-col gap-4 px-4 py-8 sm:px-6">
-        <h1 className="text-2xl font-semibold">Find a business</h1>
+        <h1 className="text-2xl font-semibold">{t("directory.title")}</h1>
 
         {isLoading ? (
           <div className="flex flex-col gap-3">
@@ -42,7 +48,7 @@ export function BusinessDirectoryPage() {
                 <CardContent className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-sm text-muted-foreground">{business.address}</span>
                   <Button asChild>
-                    <Link to={`/${business.slug}/book`}>Book</Link>
+                    <Link to={`/${business.slug}/book`}>{t("booking.book")}</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -50,7 +56,7 @@ export function BusinessDirectoryPage() {
           </div>
         ) : (
           <div className="rounded-lg border border-dashed border-border p-6 text-center text-muted-foreground">
-            No businesses available right now.
+            {t("directory.empty")}
           </div>
         )}
       </main>

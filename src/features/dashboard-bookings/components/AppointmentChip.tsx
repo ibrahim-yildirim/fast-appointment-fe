@@ -1,7 +1,8 @@
 import { Badge } from "@/components/ui/badge"
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
-import { formatTimeLabel } from "@/features/booking/lib/slotUtils"
+
 import { cn } from "@/lib/utils"
+import { useFormatters } from "@/lib/datetime"
 
 const statusVariant = {
   confirmed: "secondary",
@@ -18,6 +19,8 @@ export function AppointmentChip({
   onSelect: (id: string) => void
   className?: string
 }) {
+  const { formatTime } = useFormatters()
+
   return (
     <div className="group/chip relative">
       <button
@@ -38,7 +41,7 @@ export function AppointmentChip({
           style={{ backgroundColor: appointment.staffColor }}
         />
         <span className="truncate">
-          {formatTimeLabel(appointment.startTime)} &middot; {appointment.customerName}
+          {formatTime(appointment.startTime)} &middot; {appointment.customerName}
         </span>
       </button>
 
@@ -49,7 +52,7 @@ export function AppointmentChip({
         </div>
         <p className="mt-1 text-xs text-muted-foreground">{appointment.serviceName}</p>
         <p className="text-xs text-muted-foreground">
-          {formatTimeLabel(appointment.startTime)} - {formatTimeLabel(appointment.endTime)}
+          {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
         </p>
         <p className="text-xs text-muted-foreground">with {appointment.staffName}</p>
       </div>

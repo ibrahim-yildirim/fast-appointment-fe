@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,6 +10,7 @@ import { useUpdateService } from "@/features/services/hooks/useUpdateService"
 import { useStaff } from "@/features/staff-calendar/hooks/useStaff"
 
 export function ServiceEditPage() {
+  const { t } = useTranslation()
   const business = useBusinessContext()
   const { serviceId } = useParams<{ serviceId: string }>()
   const { data: service, isLoading: serviceLoading } = useService(business.id, serviceId!)
@@ -20,20 +22,20 @@ export function ServiceEditPage() {
   return (
     <Card className="max-w-xl">
       <CardHeader>
-        <CardTitle>Edit service</CardTitle>
+        <CardTitle>{t("services.editService")}</CardTitle>
       </CardHeader>
       <CardContent>
         {isLoading ? (
           <Skeleton className="h-40 w-full" />
         ) : !service ? (
-          <p className="text-muted-foreground">Service not found.</p>
+          <p className="text-muted-foreground">{t("services.notFound")}</p>
         ) : (
           <ServiceForm
             defaultValues={service}
             staff={staff ?? []}
             onSubmit={(values) => updateService.mutate(values)}
             isSubmitting={updateService.isPending}
-            submitLabel="Save changes"
+            submitLabel={t("services.saveChanges")}
           />
         )}
       </CardContent>

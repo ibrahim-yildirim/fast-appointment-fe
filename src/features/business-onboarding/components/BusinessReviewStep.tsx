@@ -1,18 +1,10 @@
 import type { UseFormReturn } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 import type { BusinessOnboardingInput } from "@/features/business-onboarding/schemas/businessOnboardingSchema"
 
-const dayLabels: Record<string, string> = {
-  mon: "Mon",
-  tue: "Tue",
-  wed: "Wed",
-  thu: "Thu",
-  fri: "Fri",
-  sat: "Sat",
-  sun: "Sun",
-}
-
 export function BusinessReviewStep({ form }: { form: UseFormReturn<BusinessOnboardingInput> }) {
+  const { t } = useTranslation()
   const values = form.watch()
 
   return (
@@ -31,8 +23,8 @@ export function BusinessReviewStep({ form }: { form: UseFormReturn<BusinessOnboa
       <div className="flex flex-col gap-1">
         {values.hours?.map((day) => (
           <div key={day.day} className="flex justify-between text-muted-foreground">
-            <span>{dayLabels[day.day]}</span>
-            <span>{day.enabled ? `${day.start} - ${day.end}` : "Closed"}</span>
+            <span>{t(`weekdayShort.${day.day}`)}</span>
+            <span>{day.enabled ? `${day.start} - ${day.end}` : t("onboarding.closed")}</span>
           </div>
         ))}
       </div>

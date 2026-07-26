@@ -1,10 +1,13 @@
+import type { TFunction } from "i18next"
 import { z } from "zod"
 
-export const staffFormSchema = z.object({
-  name: z.string().min(1, "Name is required."),
-  email: z.email("Enter a valid email address."),
-  colorTag: z.string().min(1, "Pick a color."),
-  serviceIds: z.array(z.string()),
-})
+export function createStaffFormSchema(t: TFunction) {
+  return z.object({
+    name: z.string().min(1, t("staff.validation.nameRequired")),
+    email: z.email(t("validation.email")),
+    colorTag: z.string().min(1, t("staff.validation.colorRequired")),
+    serviceIds: z.array(z.string()),
+  })
+}
 
-export type StaffFormInput = z.infer<typeof staffFormSchema>
+export type StaffFormInput = z.infer<ReturnType<typeof createStaffFormSchema>>

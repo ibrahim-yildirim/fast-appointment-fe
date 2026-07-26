@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import {
@@ -26,6 +27,7 @@ import { useUpdateStaff } from "@/features/staff-calendar/hooks/useUpdateStaff"
 import type { Staff } from "@/types"
 
 export function StaffListPage() {
+  const { t } = useTranslation()
   const business = useBusinessContext()
   const { data: staff, isLoading } = useStaff(business.id)
   const { data: services } = useServices(business.id)
@@ -49,7 +51,7 @@ export function StaffListPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-end">
-        <Button onClick={openCreate}>Add staff</Button>
+        <Button onClick={openCreate}>{t("staff.addStaff")}</Button>
       </div>
 
       {isLoading ? (
@@ -87,32 +89,30 @@ export function StaffListPage() {
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" asChild>
                   <Link to={`/${business.slug}/dashboard/staff/${member.id}/availability`}>
-                    Availability
+                    {t("staff.availability")}
                   </Link>
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => openEdit(member)}>
-                  Edit
+                  {t("common.edit")}
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="destructive" size="sm">
-                      Delete
+                      {t("common.delete")}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Remove {member.name}?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This can't be undone. They'll no longer be assignable to bookings.
-                      </AlertDialogDescription>
+                      <AlertDialogTitle>{t("staff.removeTitle", { name: member.name })}</AlertDialogTitle>
+                      <AlertDialogDescription>{t("staff.removeBody")}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
                       <AlertDialogAction
                         variant="destructive"
                         onClick={() => deleteStaff.mutate(member.id)}
                       >
-                        Delete
+                        {t("common.delete")}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -123,20 +123,20 @@ export function StaffListPage() {
         </div>
       ) : (
         <div className="rounded-lg border border-dashed border-border p-6 text-center text-muted-foreground">
-          No staff yet.
+          {t("staff.empty")}
         </div>
       )}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingStaff ? "Edit staff" : "Add staff"}</DialogTitle>
+            <DialogTitle>{editingStaff ? t("staff.editStaff") : t("staff.addStaff")}</DialogTitle>
           </DialogHeader>
           <StaffForm
             defaultValues={editingStaff ?? undefined}
             services={services ?? []}
             isSubmitting={editingStaff ? updateStaff.isPending : createStaff.isPending}
-            submitLabel={editingStaff ? "Save changes" : "Add staff"}
+            submitLabel={editingStaff ? t("staff.saveChanges") : t("staff.addStaff")}
             onSubmit={(values) => {
               if (editingStaff) {
                 updateStaff.mutate(values, { onSuccess: () => setDialogOpen(false) })

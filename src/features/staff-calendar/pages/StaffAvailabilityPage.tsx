@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
@@ -17,13 +18,16 @@ import { useStaffMember } from "@/features/staff-calendar/hooks/useStaffMember"
 import { useTimeOff } from "@/features/staff-calendar/hooks/useTimeOff"
 import { useUpdateAvailability } from "@/features/staff-calendar/hooks/useUpdateAvailability"
 import {
-  availabilityFormSchema,
-  timeOffFormSchema,
+  createAvailabilityFormSchema,
+  createTimeOffFormSchema,
   type AvailabilityFormInput,
   type TimeOffFormInput,
 } from "@/features/staff-calendar/schemas/availabilityFormSchema"
 
 export function StaffAvailabilityPage() {
+  const { t } = useTranslation()
+  const availabilitySchema = useMemo(() => createAvailabilityFormSchema(t), [t])
+  const timeOffSchema = useMemo(() => createTimeOffFormSchema(t), [t])
   const business = useBusinessContext()
   const { staffId } = useParams<{ staffId: string }>()
   const { data: member } = useStaffMember(business.id, staffId!)
@@ -34,7 +38,7 @@ export function StaffAvailabilityPage() {
   const removeTimeOff = useRemoveTimeOff(business.id, staffId!)
 
   const form = useForm<AvailabilityFormInput>({
-    resolver: zodResolver(availabilityFormSchema),
+    resolver: zodResolver(availabilitySchema),
     defaultValues: { weekly: weekly ?? [] },
   })
 
@@ -45,7 +49,7 @@ export function StaffAvailabilityPage() {
   const { fields: weeklyFields } = useFieldArray({ control: form.control, name: "weekly" })
 
   const timeOffForm = useForm<TimeOffFormInput>({
-    resolver: zodResolver(timeOffFormSchema),
+    resolver: zodResolver(timeOffSchema),
     defaultValues: { date: "", reason: "" },
   })
 
@@ -61,7 +65,7 @@ export function StaffAvailabilityPage() {
     <div className="flex max-w-2xl flex-col gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>{member ? `${member.name}'s availability` : "Weekly availability"}</CardTitle>
+          <CardTitle>{member ? t("staff.memberAvailability", { name: member.name }) : t("staff.weeklyHours")}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -72,7 +76,7 @@ export function StaffAvailabilityPage() {
               className="flex flex-col gap-4"
             >
               <Button type="button" variant="outline" size="sm" className="w-fit" onClick={copyMondayToAll}>
-                Copy Monday to all days
+                {t("staff.copyMonday")}
               </Button>
               <div className="flex flex-col gap-2">
                 {weeklyFields.map((field, index) => (
@@ -80,7 +84,7 @@ export function StaffAvailabilityPage() {
                 ))}
               </div>
               <Button type="submit" disabled={updateAvailability.isPending} className="w-fit">
-                {updateAvailability.isPending ? "Saving..." : "Save availability"}
+                {updateAvailability.isPending ? t("common.saving") : t("staff.saveAvailability")}
               </Button>
             </form>
           )}
@@ -89,7 +93,7 @@ export function StaffAvailabilityPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Time off</CardTitle>
+          <CardTitle>{t("staff.timeOff")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <form
@@ -100,18 +104,22 @@ export function StaffAvailabilityPage() {
           >
             <FieldGroup className="flex-row items-end gap-2">
               <Field data-invalid={!!timeOffForm.formState.errors.date}>
-                <FieldLabel required htmlFor="time-off-date">Date</FieldLabel>
+                <FieldLabel required htmlFor="time-off-date">
+                  {t("staff.date")}
+                </FieldLabel>
                 <Input id="time-off-date" type="date" {...timeOffForm.register("date")} />
                 <FieldError errors={[timeOffForm.formState.errors.date]} />
               </Field>
               <Field data-invalid={!!timeOffForm.formState.errors.reason}>
-                <FieldLabel required htmlFor="time-off-reason">Reason</FieldLabel>
+                <FieldLabel required htmlFor="time-off-reason">
+                  {t("staff.reason")}
+                </FieldLabel>
                 <Input id="time-off-reason" {...timeOffForm.register("reason")} />
                 <FieldError errors={[timeOffForm.formState.errors.reason]} />
               </Field>
             </FieldGroup>
             <Button type="submit" disabled={addTimeOff.isPending}>
-              Add
+              {t("staff.addTimeOff")}
             </Button>
           </form>
 
@@ -130,12 +138,12 @@ export function StaffAvailabilityPage() {
                     size="sm"
                     onClick={() => removeTimeOff.mutate(entry.id)}
                   >
-                    Remove
+                    {t("staff.removeTimeOffAction")}
                   </Button>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">No time off scheduled.</p>
+              <p className="text-sm text-muted-foreground">{t("staff.noTimeOff")}</p>
             )}
           </div>
         </CardContent>

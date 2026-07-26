@@ -1,4 +1,5 @@
 import { parseISO } from "date-fns"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import {
@@ -15,9 +16,10 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { formatTimeLabel } from "@/features/booking/lib/slotUtils"
+
 import type { CustomerBookingView } from "@/features/my-bookings/api/customerBookingsApi"
 import { useCancelCustomerBooking } from "@/features/my-bookings/hooks/useCancelCustomerBooking"
+import { useFormatters } from "@/lib/datetime"
 
 const statusVariant = {
   confirmed: "secondary",
@@ -34,11 +36,14 @@ export function BookingDetailDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const { t } = useTranslation()
+  const { formatTime, formatMoney, formatDate } = useFormatters()
+
   const cancelBooking = useCancelCustomerBooking()
 
   if (!booking) return null
 
-  const dateLabel = parseISO(booking.startsAt.slice(0, 10)).toLocaleDateString(undefined, {
+  const dateLabel = formatDate(parseISO(booking.startsAt.slice(0, 10)), {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -54,45 +59,45 @@ export function BookingDetailDialog({
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
             <span className="text-sm font-medium">{booking.businessName}</span>
-            <Badge variant={statusVariant[booking.status]}>{booking.status}</Badge>
+            <Badge variant={statusVariant[booking.status]}>{t(`booking.status.${booking.status}`)}</Badge>
           </div>
 
           <div className="flex flex-col gap-1 text-sm text-muted-foreground">
             <span>{dateLabel}</span>
             <span>
-              {formatTimeLabel(booking.startsAt.slice(11, 16))} -{" "}
-              {formatTimeLabel(booking.endsAt.slice(11, 16))}
+              {formatTime(booking.startsAt.slice(11, 16))} -{" "}
+              {formatTime(booking.endsAt.slice(11, 16))}
             </span>
-            <span>with {booking.staffName}</span>
-            <span>${booking.price.toFixed(2)}</span>
-            {booking.notes && <span>Notes: {booking.notes}</span>}
+            <span>{t("booking.with", { name: booking.staffName })}</span>
+            <span>{formatMoney(booking.price)}</span>
+            {booking.notes && <span>{t("account.notes", { notes: booking.notes })}</span>}
           </div>
 
           <div className="flex flex-col gap-2">
             <Button variant="outline" asChild>
-              <Link to={`/${booking.businessSlug}`}>View business</Link>
+              <Link to={`/${booking.businessSlug}`}>{t("account.viewBusiness")}</Link>
             </Button>
             {booking.status !== "cancelled" && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive" disabled={cancelBooking.isPending}>
-                    Cancel booking
+                    {t("booking.cancelBooking")}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Cancel this booking?</AlertDialogTitle>
-                    <AlertDialogDescription>This can't be undone.</AlertDialogDescription>
+                    <AlertDialogTitle>{t("booking.cancelConfirmTitle")}</AlertDialogTitle>
+                    <AlertDialogDescription>{t("booking.cancelConfirmBody")}</AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Keep it</AlertDialogCancel>
+                    <AlertDialogCancel>{t("booking.keepIt")}</AlertDialogCancel>
                     <AlertDialogAction
                       variant="destructive"
                       onClick={() =>
                         cancelBooking.mutate(booking.id, { onSuccess: () => onOpenChange(false) })
                       }
                     >
-                      Cancel booking
+                      {t("booking.cancelBooking")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

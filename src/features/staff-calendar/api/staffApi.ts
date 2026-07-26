@@ -34,7 +34,7 @@ export const staffApi = {
       const index = staff.findIndex(
         (member) => member.businessId === businessId && member.id === staffId,
       )
-      if (index === -1) throw new Error("Staff member not found.")
+      if (index === -1) throw new Error("errors.staffNotFound")
       const updated: Staff = { ...staff[index], ...input }
       staff[index] = updated
       return updated

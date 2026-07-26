@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
@@ -6,6 +8,7 @@ import { useCreateService } from "@/features/services/hooks/useCreateService"
 import { useStaff } from "@/features/staff-calendar/hooks/useStaff"
 
 export function ServiceNewPage() {
+  const { t } = useTranslation()
   const business = useBusinessContext()
   const { data: staff, isLoading: staffLoading } = useStaff(business.id)
   const createService = useCreateService(business.id, business.slug)
@@ -13,7 +16,7 @@ export function ServiceNewPage() {
   return (
     <Card className="max-w-xl">
       <CardHeader>
-        <CardTitle>New service</CardTitle>
+        <CardTitle>{t("services.newService")}</CardTitle>
       </CardHeader>
       <CardContent>
         {staffLoading ? (
@@ -23,7 +26,7 @@ export function ServiceNewPage() {
             staff={staff ?? []}
             onSubmit={(values) => createService.mutate(values)}
             isSubmitting={createService.isPending}
-            submitLabel="Create service"
+            submitLabel={t("services.createService")}
           />
         )}
       </CardContent>

@@ -1,11 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMemo } from "react"
 import { Controller, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
-import { staffFormSchema, type StaffFormInput } from "@/features/staff-calendar/schemas/staffFormSchema"
+import {
+  createStaffFormSchema,
+  type StaffFormInput,
+} from "@/features/staff-calendar/schemas/staffFormSchema"
 import { cn } from "@/lib/utils"
 import type { Service } from "@/types"
 
@@ -24,13 +29,15 @@ export function StaffForm({
   isSubmitting: boolean
   submitLabel: string
 }) {
+  const { t } = useTranslation()
+  const schema = useMemo(() => createStaffFormSchema(t), [t])
   const {
     register,
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<StaffFormInput>({
-    resolver: zodResolver(staffFormSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       email: "",
@@ -44,17 +51,21 @@ export function StaffForm({
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       <FieldGroup>
         <Field data-invalid={!!errors.name}>
-          <FieldLabel required htmlFor="staff-name">Name</FieldLabel>
+          <FieldLabel required htmlFor="staff-name">
+            {t("staff.name")}
+          </FieldLabel>
           <Input id="staff-name" {...register("name")} />
           <FieldError errors={[errors.name]} />
         </Field>
         <Field data-invalid={!!errors.email}>
-          <FieldLabel required htmlFor="staff-email">Email</FieldLabel>
+          <FieldLabel required htmlFor="staff-email">
+            {t("staff.email")}
+          </FieldLabel>
           <Input id="staff-email" type="email" {...register("email")} />
           <FieldError errors={[errors.email]} />
         </Field>
         <Field data-invalid={!!errors.colorTag}>
-          <FieldLabel required>Color tag</FieldLabel>
+          <FieldLabel required>{t("staff.colorTag")}</FieldLabel>
           <Controller
             control={control}
             name="colorTag"
@@ -79,14 +90,14 @@ export function StaffForm({
           <FieldError errors={[errors.colorTag]} />
         </Field>
         <Field>
-          <FieldLabel>Assigned services (optional)</FieldLabel>
+          <FieldLabel>{t("staff.assignedServices")}</FieldLabel>
           <Controller
             control={control}
             name="serviceIds"
             render={({ field }) => (
               <div className="flex flex-col gap-2">
                 {services.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No services yet.</p>
+                  <p className="text-sm text-muted-foreground">{t("staff.noServices")}</p>
                 ) : (
                   services.map((service) => {
                     const checked = field.value.includes(service.id)
@@ -115,7 +126,7 @@ export function StaffForm({
           />
         </Field>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : submitLabel}
+          {isSubmitting ? t("common.saving") : submitLabel}
         </Button>
       </FieldGroup>
     </form>

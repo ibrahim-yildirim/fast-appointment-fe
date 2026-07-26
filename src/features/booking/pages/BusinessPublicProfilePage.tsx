@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
@@ -5,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
 
 export function BusinessPublicProfilePage() {
+  const { t } = useTranslation()
   const business = useBusinessContext()
 
   return (
@@ -16,7 +18,7 @@ export function BusinessPublicProfilePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Details</CardTitle>
+          <CardTitle>{t("booking.details")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-1 text-sm text-muted-foreground">
           <span>{business.address}</span>
@@ -26,7 +28,7 @@ export function BusinessPublicProfilePage() {
       </Card>
 
       <Button asChild className="w-fit">
-        <Link to={`/${business.slug}/book`}>Book now</Link>
+        <Link to={`/${business.slug}/book`}>{t("booking.bookNow")}</Link>
       </Button>
     </div>
   )

@@ -3,6 +3,7 @@ import { toast } from "sonner"
 
 import { queryKeys } from "@/api/queryKeys"
 import { servicesApi } from "@/features/services/api/servicesApi"
+import i18n from "@/i18n"
 
 export function useDeleteService(businessId: string) {
   const queryClient = useQueryClient()
@@ -11,8 +12,8 @@ export function useDeleteService(businessId: string) {
     mutationFn: (serviceId: string) => servicesApi.remove(businessId, serviceId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.services.list(businessId) })
-      toast.success("Service deleted.")
+      toast.success(i18n.t("services.deletedToast"))
     },
-    onError: (error: Error) => toast.error(error.message),
+    onError: (error: Error) => toast.error(i18n.t(error.message)),
   })
 }

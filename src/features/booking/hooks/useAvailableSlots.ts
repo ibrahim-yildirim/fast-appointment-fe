@@ -11,6 +11,7 @@ import {
 import { availabilityApi } from "@/features/staff-calendar/api/availabilityApi"
 import { staffApi } from "@/features/staff-calendar/api/staffApi"
 import { SLOT_INTERVAL_MINUTES } from "@/lib/constants"
+import { businessNow, businessToday } from "@/lib/datetime"
 import type { Booking, DayAvailability, Service, TimeOffException } from "@/types"
 
 /** How far ahead to look for a day with openings before giving up. */
@@ -64,7 +65,7 @@ function buildSlotsForDate(service: Service, date: Date, data: SchedulingData): 
   )
 
   const slots = new Map<string, string>()
-  const nowMs = Date.now()
+  const nowMs = businessNow().getTime()
 
   for (const schedule of data.staffSchedules) {
     if (schedule.timeOff.some((entry) => entry.date === dateKey)) continue
@@ -134,8 +135,7 @@ export function useNextAvailableDate(businessId: string, service: Service | unde
   const nextDate = useMemo(() => {
     if (!service || !data) return undefined
 
-    const start = new Date()
-    start.setHours(0, 0, 0, 0)
+    const start = businessToday()
 
     for (let offset = 0; offset < NEXT_AVAILABLE_SEARCH_DAYS; offset++) {
       const candidate = new Date(start)

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 
@@ -7,20 +8,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
 import { useAvailableSlots, useNextAvailableDate } from "@/features/booking/hooks/useAvailableSlots"
-import {
-  formatHourLabel,
-  formatTimeLabel,
-  groupSlotsByHour,
-  toDateKey,
-} from "@/features/booking/lib/slotUtils"
+import { groupSlotsByHour, toDateKey } from "@/features/booking/lib/slotUtils"
 import { useService } from "@/features/services/hooks/useService"
+import { businessToday, useFormatters } from "@/lib/datetime"
+import { formatDurationLabel } from "@/features/services/lib/durations"
 
 export function SlotPickerPage() {
+  const { t } = useTranslation()
+  const { formatTime, formatHour, formatMoney, locale } = useFormatters()
+
   const business = useBusinessContext()
   const navigate = useNavigate()
   const { serviceId } = useParams<{ serviceId: string }>()
   const { data: service, isLoading: serviceLoading } = useService(business.id, serviceId!)
-  const [today] = useState<Date>(() => new Date())
+  const [today] = useState<Date>(() => businessToday())
   const [pickedDate, setPickedDate] = useState<Date | null>(null)
   const [selectedHour, setSelectedHour] = useState<number | null>(null)
   const { data: nextAvailableDate, isLoading: nextDateLoading } = useNextAvailableDate(
@@ -48,7 +49,7 @@ export function SlotPickerPage() {
   }
 
   if (!service) {
-    return <p className="text-muted-foreground">Service not found.</p>
+    return <p className="text-muted-foreground">{t("booking.serviceNotFound")}</p>
   }
 
   return (
@@ -56,7 +57,7 @@ export function SlotPickerPage() {
       <div>
         <h1 className="text-2xl font-semibold">{service.name}</h1>
         <p className="text-muted-foreground">
-          {service.durationMinutes} min &middot; ${service.price.toFixed(2)}
+          {formatDurationLabel(service.durationMinutes, t)} &middot; {formatMoney(service.price)}
         </p>
       </div>
 
@@ -65,6 +66,13 @@ export function SlotPickerPage() {
           <CardContent>
             <Calendar
               mode="single"
+              locale={locale}
+              // react-day-picker's nav/day aria-labels are English defaults; the
+              // date-fns locale doesn't cover them.
+              labels={{
+                labelPrevious: () => t("booking.previousMonth"),
+                labelNext: () => t("booking.nextMonth"),
+              }}
               selected={date}
               defaultMonth={date}
               onSelect={(value) => {
@@ -72,14 +80,14 @@ export function SlotPickerPage() {
                 setPickedDate(value)
                 setSelectedHour(null)
               }}
-              disabled={{ before: new Date(new Date().setHours(0, 0, 0, 0)) }}
+              disabled={{ before: businessToday() }}
             />
           </CardContent>
         </Card>
 
         <Card className="flex-1">
           <CardHeader>
-            <CardTitle>Available times</CardTitle>
+            <CardTitle>{t("booking.availableTimes")}</CardTitle>
           </CardHeader>
           <CardContent>
             {slotsLoading ? (
@@ -94,14 +102,14 @@ export function SlotPickerPage() {
                       aria-pressed={group.hour === selectedHour}
                       onClick={() => setSelectedHour(group.hour)}
                     >
-                      {formatHourLabel(group.hour)}
+                      {formatHour(group.hour)}
                     </Button>
                   ))}
                 </div>
 
                 {activeGroup ? (
                   <div className="flex flex-col gap-2">
-                    <p className="text-sm font-medium">{formatHourLabel(activeGroup.hour)}</p>
+                    <p className="text-sm font-medium">{formatHour(activeGroup.hour)}</p>
                     <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                       {activeGroup.slots.map((slot) => (
                         <Button
@@ -109,20 +117,20 @@ export function SlotPickerPage() {
                           variant="outline"
                           onClick={() => handleSelectSlot(slot.time, slot.staffId)}
                         >
-                          {formatTimeLabel(slot.time)}
+                          {formatTime(slot.time)}
                         </Button>
                       ))}
                     </div>
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">
-                    Pick an hour to see available times.
+                    {t("booking.pickHour")}
                   </p>
                 )}
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                No open times on this day. Try another date.
+                {t("booking.noOpenTimes")}
               </p>
             )}
           </CardContent>

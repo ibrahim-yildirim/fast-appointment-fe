@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
+import { useTranslation } from "react-i18next"
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
@@ -102,6 +103,9 @@ function FieldLabel({
   required,
   ...props
 }: React.ComponentProps<typeof Label> & { required?: boolean }) {
+  const { t } = useTranslation()
+  const requiredLabel = t("common.required")
+
   return (
     <Label
       data-slot="field-label"
@@ -118,7 +122,7 @@ function FieldLabel({
           <span aria-hidden="true" className="text-destructive">
             *
           </span>
-          <span className="sr-only">(required)</span>
+          <span className="sr-only">{requiredLabel}</span>
         </span>
       ) : (
         children
