@@ -116,12 +116,12 @@ export function BookingConfirmPage() {
             <form onSubmit={handleSubmit((values) => submitBooking(values))}>
               <FieldGroup>
                 <Field data-invalid={!!errors.guestName}>
-                  <FieldLabel htmlFor="guest-name">Full name</FieldLabel>
+                  <FieldLabel required htmlFor="guest-name">Full name</FieldLabel>
                   <Input id="guest-name" autoComplete="name" {...register("guestName")} />
                   <FieldError errors={[errors.guestName]} />
                 </Field>
                 <Field data-invalid={!!errors.guestPhone}>
-                  <FieldLabel htmlFor="guest-phone">Phone</FieldLabel>
+                  <FieldLabel required htmlFor="guest-phone">Phone</FieldLabel>
                   <Input
                     id="guest-phone"
                     type="tel"

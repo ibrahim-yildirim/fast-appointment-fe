@@ -26,12 +26,12 @@ export function BusinessDetailsStep({ form }: { form: UseFormReturn<BusinessOnbo
   return (
     <FieldGroup>
       <Field data-invalid={!!errors.name}>
-        <FieldLabel htmlFor="onboarding-name">Business name</FieldLabel>
+        <FieldLabel required htmlFor="onboarding-name">Business name</FieldLabel>
         <Input id="onboarding-name" {...register("name")} />
         <FieldError errors={[errors.name]} />
       </Field>
       <Field data-invalid={!!errors.slug}>
-        <FieldLabel htmlFor="onboarding-slug">Booking URL</FieldLabel>
+        <FieldLabel required htmlFor="onboarding-slug">Booking URL</FieldLabel>
         <div className="flex items-center gap-1 text-sm text-muted-foreground">
           <span>fast-appointment.com/</span>
           <Input
@@ -42,7 +42,7 @@ export function BusinessDetailsStep({ form }: { form: UseFormReturn<BusinessOnbo
         <FieldError errors={[errors.slug]} />
       </Field>
       <Field data-invalid={!!errors.description}>
-        <FieldLabel htmlFor="onboarding-description">Description</FieldLabel>
+        <FieldLabel required htmlFor="onboarding-description">Description</FieldLabel>
         <Textarea id="onboarding-description" rows={3} {...register("description")} />
         <FieldError errors={[errors.description]} />
       </Field>

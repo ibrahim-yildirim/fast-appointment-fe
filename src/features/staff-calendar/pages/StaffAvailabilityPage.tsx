@@ -100,12 +100,12 @@ export function StaffAvailabilityPage() {
           >
             <FieldGroup className="flex-row items-end gap-2">
               <Field data-invalid={!!timeOffForm.formState.errors.date}>
-                <FieldLabel htmlFor="time-off-date">Date</FieldLabel>
+                <FieldLabel required htmlFor="time-off-date">Date</FieldLabel>
                 <Input id="time-off-date" type="date" {...timeOffForm.register("date")} />
                 <FieldError errors={[timeOffForm.formState.errors.date]} />
               </Field>
               <Field data-invalid={!!timeOffForm.formState.errors.reason}>
-                <FieldLabel htmlFor="time-off-reason">Reason</FieldLabel>
+                <FieldLabel required htmlFor="time-off-reason">Reason</FieldLabel>
                 <Input id="time-off-reason" {...timeOffForm.register("reason")} />
                 <FieldError errors={[timeOffForm.formState.errors.reason]} />
               </Field>

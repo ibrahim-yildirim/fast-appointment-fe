@@ -1,4 +1,4 @@
-import { CalendarCheck, CalendarClock, LayoutDashboard, Store, Users } from "lucide-react"
+import { CalendarCheck, CalendarClock, LayoutDashboard, Search, Store, Users } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
@@ -68,6 +68,20 @@ export function MarketingLandingPage() {
         </div>
 
         <div className="mt-12 flex w-full flex-col items-center gap-4 rounded-xl border border-border bg-muted/30 p-6 text-center sm:p-8">
+          <Search aria-hidden="true" className="h-6 w-6 text-primary" />
+          <div>
+            <h2 className="font-medium">Booked as a guest?</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Find, view, or cancel your appointment with your booking reference — no account
+              needed.
+            </p>
+          </div>
+          <Button asChild>
+            <Link to="/booking-lookup">Find my booking</Link>
+          </Button>
+        </div>
+
+        <div className="mt-6 flex w-full flex-col items-center gap-4 rounded-xl border border-border bg-muted/30 p-6 text-center sm:p-8">
           <Store aria-hidden="true" className="h-6 w-6 text-primary" />
           <div>
             <h2 className="font-medium">Own a service business?</h2>

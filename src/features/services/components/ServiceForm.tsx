@@ -4,8 +4,16 @@ import { Controller, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
+import { formatDurationLabel, serviceDurationOptions } from "@/features/services/lib/durations"
 import {
   serviceFormSchema,
   type ServiceFormInput,
@@ -47,28 +55,43 @@ export function ServiceForm({
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       <FieldGroup>
         <Field data-invalid={!!errors.name}>
-          <FieldLabel htmlFor="service-name">Name</FieldLabel>
+          <FieldLabel required htmlFor="service-name">Name</FieldLabel>
           <Input id="service-name" {...register("name")} />
           <FieldError errors={[errors.name]} />
         </Field>
         <Field data-invalid={!!errors.description}>
-          <FieldLabel htmlFor="service-description">Description</FieldLabel>
+          <FieldLabel required htmlFor="service-description">Description</FieldLabel>
           <Textarea id="service-description" rows={3} {...register("description")} />
           <FieldError errors={[errors.description]} />
         </Field>
         <div className="flex gap-4">
           <Field data-invalid={!!errors.durationMinutes} className="flex-1">
-            <FieldLabel htmlFor="service-duration">Duration (minutes)</FieldLabel>
-            <Input
-              id="service-duration"
-              type="number"
-              min={1}
-              {...register("durationMinutes", { valueAsNumber: true })}
+            <FieldLabel required htmlFor="service-duration">Duration</FieldLabel>
+            <Controller
+              control={control}
+              name="durationMinutes"
+              render={({ field }) => (
+                <Select
+                  value={field.value ? String(field.value) : ""}
+                  onValueChange={(value) => field.onChange(Number(value))}
+                >
+                  <SelectTrigger id="service-duration" className="w-full">
+                    <SelectValue placeholder="Select a duration" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {serviceDurationOptions.map((minutes) => (
+                      <SelectItem key={minutes} value={String(minutes)}>
+                        {formatDurationLabel(minutes)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             />
             <FieldError errors={[errors.durationMinutes]} />
           </Field>
           <Field data-invalid={!!errors.price} className="flex-1">
-            <FieldLabel htmlFor="service-price">Price ($)</FieldLabel>
+            <FieldLabel required htmlFor="service-price">Price ($)</FieldLabel>
             <Input
               id="service-price"
               type="number"
@@ -94,7 +117,7 @@ export function ServiceForm({
           />
         </Field>
         <Field data-invalid={!!errors.eligibleStaffIds}>
-          <FieldLabel>Eligible staff</FieldLabel>
+          <FieldLabel required>Eligible staff</FieldLabel>
           <Controller
             control={control}
             name="eligibleStaffIds"

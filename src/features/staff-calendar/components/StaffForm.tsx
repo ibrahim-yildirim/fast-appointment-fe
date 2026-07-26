@@ -44,17 +44,17 @@ export function StaffForm({
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       <FieldGroup>
         <Field data-invalid={!!errors.name}>
-          <FieldLabel htmlFor="staff-name">Name</FieldLabel>
+          <FieldLabel required htmlFor="staff-name">Name</FieldLabel>
           <Input id="staff-name" {...register("name")} />
           <FieldError errors={[errors.name]} />
         </Field>
         <Field data-invalid={!!errors.email}>
-          <FieldLabel htmlFor="staff-email">Email</FieldLabel>
+          <FieldLabel required htmlFor="staff-email">Email</FieldLabel>
           <Input id="staff-email" type="email" {...register("email")} />
           <FieldError errors={[errors.email]} />
         </Field>
         <Field data-invalid={!!errors.colorTag}>
-          <FieldLabel>Color tag</FieldLabel>
+          <FieldLabel required>Color tag</FieldLabel>
           <Controller
             control={control}
             name="colorTag"
@@ -79,7 +79,7 @@ export function StaffForm({
           <FieldError errors={[errors.colorTag]} />
         </Field>
         <Field>
-          <FieldLabel>Assigned services</FieldLabel>
+          <FieldLabel>Assigned services (optional)</FieldLabel>
           <Controller
             control={control}
             name="serviceIds"

@@ -30,12 +30,12 @@ export function CustomerRegisterPage() {
         <form onSubmit={handleSubmit((values) => registerCustomer.mutate(values))}>
           <FieldGroup>
             <Field data-invalid={!!errors.name}>
-              <FieldLabel htmlFor="customer-register-name">Name</FieldLabel>
+              <FieldLabel required htmlFor="customer-register-name">Name</FieldLabel>
               <Input id="customer-register-name" autoComplete="name" {...register("name")} />
               <FieldError errors={[errors.name]} />
             </Field>
             <Field data-invalid={!!errors.email}>
-              <FieldLabel htmlFor="customer-register-email">Email</FieldLabel>
+              <FieldLabel required htmlFor="customer-register-email">Email</FieldLabel>
               <Input
                 id="customer-register-email"
                 type="email"
@@ -45,7 +45,7 @@ export function CustomerRegisterPage() {
               <FieldError errors={[errors.email]} />
             </Field>
             <Field data-invalid={!!errors.password}>
-              <FieldLabel htmlFor="customer-register-password">Password</FieldLabel>
+              <FieldLabel required htmlFor="customer-register-password">Password</FieldLabel>
               <Input
                 id="customer-register-password"
                 type="password"
@@ -55,7 +55,9 @@ export function CustomerRegisterPage() {
               <FieldError errors={[errors.password]} />
             </Field>
             <Field data-invalid={!!errors.confirmPassword}>
-              <FieldLabel htmlFor="customer-register-confirm-password">Confirm password</FieldLabel>
+              <FieldLabel required htmlFor="customer-register-confirm-password">
+                Confirm password
+              </FieldLabel>
               <Input
                 id="customer-register-confirm-password"
                 type="password"

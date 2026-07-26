@@ -105,12 +105,12 @@ export function BookingLookupPage() {
             <form onSubmit={handleSubmit(onSubmit)}>
               <FieldGroup>
                 <Field data-invalid={!!errors.reference}>
-                  <FieldLabel htmlFor="lookup-reference">Booking reference</FieldLabel>
+                  <FieldLabel required htmlFor="lookup-reference">Booking reference</FieldLabel>
                   <Input id="lookup-reference" placeholder="FA-XXXXXX" {...register("reference")} />
                   <FieldError errors={[errors.reference]} />
                 </Field>
                 <Field data-invalid={!!errors.phone}>
-                  <FieldLabel htmlFor="lookup-phone">Phone</FieldLabel>
+                  <FieldLabel required htmlFor="lookup-phone">Phone</FieldLabel>
                   <Input id="lookup-phone" type="tel" {...register("phone")} />
                   <FieldError errors={[errors.phone]} />
                 </Field>

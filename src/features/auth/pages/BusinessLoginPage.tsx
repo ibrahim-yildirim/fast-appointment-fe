@@ -30,7 +30,7 @@ export function BusinessLoginPage() {
         <form onSubmit={handleSubmit((values) => login.mutate(values))}>
           <FieldGroup>
             <Field data-invalid={!!errors.email}>
-              <FieldLabel htmlFor="business-login-email">Email</FieldLabel>
+              <FieldLabel required htmlFor="business-login-email">Email</FieldLabel>
               <Input
                 id="business-login-email"
                 type="email"
@@ -40,7 +40,7 @@ export function BusinessLoginPage() {
               <FieldError errors={[errors.email]} />
             </Field>
             <Field data-invalid={!!errors.password}>
-              <FieldLabel htmlFor="business-login-password">Password</FieldLabel>
+              <FieldLabel required htmlFor="business-login-password">Password</FieldLabel>
               <Input
                 id="business-login-password"
                 type="password"

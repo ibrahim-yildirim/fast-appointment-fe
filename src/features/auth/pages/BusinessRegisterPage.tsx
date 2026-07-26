@@ -30,12 +30,12 @@ export function BusinessRegisterPage() {
         <form onSubmit={handleSubmit((values) => registerOwner.mutate(values))}>
           <FieldGroup>
             <Field data-invalid={!!errors.name}>
-              <FieldLabel htmlFor="business-register-name">Your name</FieldLabel>
+              <FieldLabel required htmlFor="business-register-name">Your name</FieldLabel>
               <Input id="business-register-name" autoComplete="name" {...register("name")} />
               <FieldError errors={[errors.name]} />
             </Field>
             <Field data-invalid={!!errors.email}>
-              <FieldLabel htmlFor="business-register-email">Email</FieldLabel>
+              <FieldLabel required htmlFor="business-register-email">Email</FieldLabel>
               <Input
                 id="business-register-email"
                 type="email"
@@ -45,7 +45,7 @@ export function BusinessRegisterPage() {
               <FieldError errors={[errors.email]} />
             </Field>
             <Field data-invalid={!!errors.password}>
-              <FieldLabel htmlFor="business-register-password">Password</FieldLabel>
+              <FieldLabel required htmlFor="business-register-password">Password</FieldLabel>
               <Input
                 id="business-register-password"
                 type="password"
@@ -55,7 +55,9 @@ export function BusinessRegisterPage() {
               <FieldError errors={[errors.password]} />
             </Field>
             <Field data-invalid={!!errors.confirmPassword}>
-              <FieldLabel htmlFor="business-register-confirm-password">Confirm password</FieldLabel>
+              <FieldLabel required htmlFor="business-register-confirm-password">
+                Confirm password
+              </FieldLabel>
               <Input
                 id="business-register-confirm-password"
                 type="password"

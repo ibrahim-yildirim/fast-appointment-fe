@@ -33,22 +33,22 @@ export function BusinessContactStep({ form }: { form: UseFormReturn<BusinessOnbo
   return (
     <FieldGroup>
       <Field data-invalid={!!errors.address}>
-        <FieldLabel htmlFor="onboarding-address">Address</FieldLabel>
+        <FieldLabel required htmlFor="onboarding-address">Address</FieldLabel>
         <Input id="onboarding-address" {...register("address")} />
         <FieldError errors={[errors.address]} />
       </Field>
       <Field data-invalid={!!errors.phone}>
-        <FieldLabel htmlFor="onboarding-phone">Phone</FieldLabel>
+        <FieldLabel required htmlFor="onboarding-phone">Phone</FieldLabel>
         <Input id="onboarding-phone" type="tel" {...register("phone")} />
         <FieldError errors={[errors.phone]} />
       </Field>
       <Field data-invalid={!!errors.email}>
-        <FieldLabel htmlFor="onboarding-email">Contact email</FieldLabel>
+        <FieldLabel required htmlFor="onboarding-email">Contact email</FieldLabel>
         <Input id="onboarding-email" type="email" {...register("email")} />
         <FieldError errors={[errors.email]} />
       </Field>
       <Field data-invalid={!!errors.timezone}>
-        <FieldLabel htmlFor="onboarding-timezone">Timezone</FieldLabel>
+        <FieldLabel required htmlFor="onboarding-timezone">Timezone</FieldLabel>
         <Controller
           control={control}
           name="timezone"
