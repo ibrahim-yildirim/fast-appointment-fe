@@ -37,12 +37,3 @@ npm run dev
 ```
 
 The app runs on http://localhost:5173.
-
-## Scripts
-
-| Command             | Description          |
-| ------------------- | -------------------- |
-| `npm run dev`       | Start the dev server |
-| `npm run build`     | Production build     |
-| `npm run typecheck` | Type check           |
-| `npm run lint`      | Lint                 |
