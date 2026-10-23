@@ -112,6 +112,8 @@ export function formatMoney(amount: number, language: Language) {
     currency: "TRY",
     // en-US spells TRY out as "TRY 55.00" without this; we want ₺ in both languages.
     currencyDisplay: "narrowSymbol",
+    // "₺250" reads better than "₺250,00"; kuruş only show up when a price actually has them.
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
   }).format(amount)
 }
 

@@ -2,56 +2,57 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/fraunces";
 
 @custom-variant dark (&:is(.dark *));
 
 /*
-  Neutral grayscale palette: white -> light gray -> mid gray -> near-black.
-  Light mode uses the palette top-down (white bg, near-black text); dark mode inverts it.
+  "Mahalle" palette (see docs/design.md): warm paper neutrals, espresso ink, one henna accent.
+  The accent (primary) is reserved for the main action and selected states.
 */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf7f2;
+  --foreground: #2b2420;
 
-  --card: #ffffff;
-  --card-foreground: #171717;
-  --popover: #ffffff;
-  --popover-foreground: #171717;
+  --card: #fffdf9;
+  --card-foreground: #2b2420;
+  --popover: #fffdf9;
+  --popover-foreground: #2b2420;
 
-  --primary: #171717;
-  --primary-foreground: #fafafa;
+  --primary: #b4532a;
+  --primary-foreground: #fff8f2;
 
-  --secondary: #f0f0f0;
-  --secondary-foreground: #171717;
+  --secondary: #f0e9df;
+  --secondary-foreground: #2b2420;
 
-  --muted: #f0f0f0;
-  --muted-foreground: #6b6b6b;
+  --muted: #f0e9df;
+  --muted-foreground: #6f6359;
 
-  --accent: #e5e5e5;
-  --accent-foreground: #171717;
+  --accent: #ebe2d6;
+  --accent-foreground: #2b2420;
 
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: #b42318;
 
-  --border: #e5e5e5;
-  --input: #e5e5e5;
-  --ring: #a3a3a3;
+  --border: #e4d9cb;
+  --input: #dccfbf;
+  --ring: #c9825f;
 
-  --chart-1: #171717;
-  --chart-2: #404040;
-  --chart-3: #737373;
-  --chart-4: #a3a3a3;
-  --chart-5: #d4d4d4;
+  --chart-1: #b4532a;
+  --chart-2: #2b2420;
+  --chart-3: #8a6f5a;
+  --chart-4: #c9a98c;
+  --chart-5: #e4d9cb;
 
-  --radius: 0.625rem;
+  --radius: 0.5rem;
 
-  --sidebar: #fafafa;
-  --sidebar-foreground: #171717;
-  --sidebar-primary: #171717;
-  --sidebar-primary-foreground: #fafafa;
-  --sidebar-accent: #f0f0f0;
-  --sidebar-accent-foreground: #171717;
-  --sidebar-border: #e5e5e5;
-  --sidebar-ring: #a3a3a3;
+  --sidebar: #f5f0e8;
+  --sidebar-foreground: #2b2420;
+  --sidebar-primary: #b4532a;
+  --sidebar-primary-foreground: #fff8f2;
+  --sidebar-accent: #ebe2d6;
+  --sidebar-accent-foreground: #2b2420;
+  --sidebar-border: #e4d9cb;
+  --sidebar-ring: #c9825f;
 
   font: 18px/145% var(--font-sans);
   letter-spacing: 0.18px;
@@ -63,50 +64,50 @@
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #fafafa;
+  --background: #1a1714;
+  --foreground: #f3ede4;
 
-  --card: #171717;
-  --card-foreground: #fafafa;
-  --popover: #171717;
-  --popover-foreground: #fafafa;
+  --card: #221e1a;
+  --card-foreground: #f3ede4;
+  --popover: #26211d;
+  --popover-foreground: #f3ede4;
 
-  --primary: #fafafa;
-  --primary-foreground: #171717;
+  --primary: #dd7d50;
+  --primary-foreground: #1a1714;
 
-  --secondary: #262626;
-  --secondary-foreground: #fafafa;
+  --secondary: #2c2722;
+  --secondary-foreground: #f3ede4;
 
-  --muted: #262626;
-  --muted-foreground: #a3a3a3;
+  --muted: #2c2722;
+  --muted-foreground: #b0a396;
 
-  --accent: #333333;
-  --accent-foreground: #fafafa;
+  --accent: #332d27;
+  --accent-foreground: #f3ede4;
 
-  --destructive: oklch(0.704 0.191 22.216);
+  --destructive: #f07167;
 
-  --border: rgba(255, 255, 255, 0.12);
-  --input: rgba(255, 255, 255, 0.16);
-  --ring: #737373;
+  --border: rgba(243, 237, 228, 0.1);
+  --input: rgba(243, 237, 228, 0.16);
+  --ring: #dd7d50;
 
-  --chart-1: #fafafa;
-  --chart-2: #d4d4d4;
-  --chart-3: #a3a3a3;
-  --chart-4: #737373;
-  --chart-5: #404040;
+  --chart-1: #dd7d50;
+  --chart-2: #f3ede4;
+  --chart-3: #b0a396;
+  --chart-4: #7d6f63;
+  --chart-5: #4a4139;
 
-  --sidebar: #171717;
-  --sidebar-foreground: #fafafa;
-  --sidebar-primary: #fafafa;
-  --sidebar-primary-foreground: #171717;
-  --sidebar-accent: #262626;
-  --sidebar-accent-foreground: #fafafa;
-  --sidebar-border: rgba(255, 255, 255, 0.12);
-  --sidebar-ring: #737373;
+  --sidebar: #1f1b18;
+  --sidebar-foreground: #f3ede4;
+  --sidebar-primary: #dd7d50;
+  --sidebar-primary-foreground: #1a1714;
+  --sidebar-accent: #2c2722;
+  --sidebar-accent-foreground: #f3ede4;
+  --sidebar-border: rgba(243, 237, 228, 0.1);
+  --sidebar-ring: #dd7d50;
 }
 
 @theme inline {
-  --font-heading: var(--font-sans);
+  --font-heading: "Fraunces Variable", Georgia, serif;
   --font-sans: "Geist Variable", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

@@ -1,13 +1,13 @@
+import { ChevronRightIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { BookingSteps } from "@/features/booking/components/BookingSteps"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
 import { useServices } from "@/features/services/hooks/useServices"
-import { useFormatters } from "@/lib/datetime"
 import { formatDurationLabel } from "@/features/services/lib/durations"
+import { useFormatters } from "@/lib/datetime"
 
 export function ServiceBrowsePage() {
   const { t } = useTranslation()
@@ -17,37 +17,58 @@ export function ServiceBrowsePage() {
   const activeServices = services?.filter((service) => service.active)
 
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold">{t("booking.bookWith", { name: business.name })}</h1>
+    <div className="flex flex-col gap-8">
+      <BookingSteps current="service" />
+      <h1 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
+        {t("booking.chooseService")}
+      </h1>
 
       {isLoading ? (
-        <div className="flex flex-col gap-3">
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
+        <div className="flex flex-col gap-4">
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-14 w-full" />
         </div>
       ) : activeServices && activeServices.length > 0 ? (
-        <div className="flex flex-col gap-3">
+        // A salon price board: the row itself is the link, the price is what people scan for.
+        <ul className="divide-border border-border divide-y border-y">
           {activeServices.map((service) => (
-            <Card key={service.id}>
-              <CardHeader>
-                <CardTitle>{service.name}</CardTitle>
-                <CardDescription>{service.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-sm text-muted-foreground">
-                  {formatDurationLabel(service.durationMinutes, t)} &middot; {formatMoney(service.price)}
-                </span>
-                <Button asChild>
-                  <Link to={`/${business.slug}/book/${service.id}`}>{t("booking.book")}</Link>
-                </Button>
-              </CardContent>
-            </Card>
+            <li key={service.id}>
+              <Link
+                to={`/${business.slug}/book/${service.id}`}
+                className="group hover:bg-accent/60 focus-visible:ring-ring -mx-3 flex items-center gap-4 rounded-md px-3 py-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-lg font-medium">{service.name}</span>
+                    <span
+                      aria-hidden="true"
+                      className="border-muted-foreground/40 mb-1.5 min-w-6 flex-1 border-b border-dotted"
+                    />
+                    <span className="text-lg font-semibold tabular-nums">
+                      {formatMoney(service.price)}
+                    </span>
+                  </div>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    {service.description}
+                    {service.description && " · "}
+                    <span className="tabular-nums">
+                      {formatDurationLabel(service.durationMinutes, t)}
+                    </span>
+                  </p>
+                </div>
+                <ChevronRightIcon
+                  aria-hidden="true"
+                  className="text-muted-foreground group-hover:text-primary size-5 shrink-0 transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : (
-        <div className="rounded-lg border border-dashed border-border p-6 text-center text-muted-foreground">
+        <p className="bg-muted/60 text-muted-foreground rounded-lg p-5">
           {t("booking.noServices")}
-        </div>
+        </p>
       )}
     </div>
   )

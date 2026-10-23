@@ -48,6 +48,15 @@ export function useAvailableSlots(business: BusinessRef, service: Service | unde
   return { data: slots, isLoading }
 }
 
+/** Days in the search window that have at least one open slot, as date keys. */
+export function useAvailableDates(business: BusinessRef, service: Service | undefined) {
+  const { data, isLoading } = useSlotWindow(business, service)
+
+  const dates = useMemo(() => (data ? new Set(data.map((slot) => slot.date)) : undefined), [data])
+
+  return { data: dates, isLoading }
+}
+
 /**
  * First day from today with at least one open slot, so the picker doesn't land
  * on an empty day. `null` once the search window is exhausted.

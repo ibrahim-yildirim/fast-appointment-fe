@@ -4,18 +4,29 @@ import { useNavigate, useParams } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { BookingSteps } from "@/features/booking/components/BookingSteps"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
-import { useAvailableSlots, useNextAvailableDate } from "@/features/booking/hooks/useAvailableSlots"
-import { groupSlotsByHour, toDateKey } from "@/features/booking/lib/slotUtils"
+import {
+  useAvailableDates,
+  useAvailableSlots,
+  useNextAvailableDate,
+} from "@/features/booking/hooks/useAvailableSlots"
+import { groupSlotsByDayPart, toDateKey } from "@/features/booking/lib/slotUtils"
 import { useService } from "@/features/services/hooks/useService"
 import { businessToday, useFormatters } from "@/lib/datetime"
 import { formatDurationLabel } from "@/features/services/lib/durations"
 
 export function SlotPickerPage() {
   const { t } = useTranslation()
-  const { formatTime, formatHour, formatMoney, locale } = useFormatters()
+  const { formatTime, formatMoney, formatDate, locale } = useFormatters()
+  // Same wording as the confirm page: the app formats wall-clock "...Z" strings in UTC.
+  const formatDay = (day: Date) =>
+    formatDate(`${toDateKey(day)}T00:00:00.000Z`, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    })
 
   const business = useBusinessContext()
   const navigate = useNavigate()
@@ -23,20 +34,17 @@ export function SlotPickerPage() {
   const { data: service, isLoading: serviceLoading } = useService(business, serviceId!)
   const [today] = useState<Date>(() => businessToday())
   const [pickedDate, setPickedDate] = useState<Date | null>(null)
-  const [selectedHour, setSelectedHour] = useState<number | null>(null)
   const { data: nextAvailableDate, isLoading: nextDateLoading } = useNextAvailableDate(
     business,
     service,
   )
-  // Until the guest picks a day themselves, open on the first day that has openings —
+  const { data: availableDates } = useAvailableDates(business, service)
+  // Until the customer picks a day themselves, open on the first day that has openings —
   // landing on a fully booked today reads as if the business has no availability at all.
   const date = pickedDate ?? nextAvailableDate ?? today
   const { data: slots, isLoading: slotsLoading } = useAvailableSlots(business, service, date)
 
-  const hourGroups = useMemo(() => groupSlotsByHour(slots ?? []), [slots])
-  // Looked up rather than stored, so an hour that disappears (new day, slot taken)
-  // falls back to the "pick an hour" prompt on its own.
-  const activeGroup = hourGroups.find((group) => group.hour === selectedHour)
+  const dayParts = useMemo(() => groupSlotsByDayPart(slots ?? []), [slots])
 
   function handleSelectSlot(time: string, staffId: string) {
     const params = new URLSearchParams({ date: toDateKey(date), time, staffId })
@@ -53,88 +61,86 @@ export function SlotPickerPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
+      <BookingSteps current="time" />
       <div>
-        <h1 className="text-2xl font-semibold">{service.name}</h1>
-        <p className="text-muted-foreground">
-          {formatDurationLabel(service.durationMinutes, t)} &middot; {formatMoney(service.price)}
+        <h1 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
+          {service.name}
+        </h1>
+        <p className="text-muted-foreground mt-2 tabular-nums">
+          {formatDurationLabel(service.durationMinutes, t)} &middot;{" "}
+          <span className="text-foreground font-semibold">{formatMoney(service.price)}</span>
         </p>
       </div>
 
-      <div className="flex flex-col gap-6 sm:flex-row">
-        <Card className="w-fit">
-          <CardContent>
-            <Calendar
-              mode="single"
-              locale={locale}
-              // react-day-picker's nav/day aria-labels are English defaults; the
-              // date-fns locale doesn't cover them.
-              labels={{
-                labelPrevious: () => t("booking.previousMonth"),
-                labelNext: () => t("booking.nextMonth"),
-              }}
-              selected={date}
-              defaultMonth={date}
-              onSelect={(value) => {
-                if (!value) return
-                setPickedDate(value)
-                setSelectedHour(null)
-              }}
-              disabled={{ before: businessToday() }}
-            />
-          </CardContent>
-        </Card>
+      <div className="grid gap-8 md:grid-cols-[auto_minmax(0,1fr)] md:gap-10">
+        <Calendar
+          mode="single"
+          locale={locale}
+          // react-day-picker's nav/day aria-labels are English defaults; the
+          // date-fns locale doesn't cover them.
+          labels={{
+            labelPrevious: () => t("booking.previousMonth"),
+            labelNext: () => t("booking.nextMonth"),
+          }}
+          selected={date}
+          defaultMonth={date}
+          onSelect={(value) => {
+            if (value) setPickedDate(value)
+          }}
+          // Days without a single free time (closed days, fully booked days) can't be picked.
+          disabled={(day) =>
+            day < today || (availableDates !== undefined && !availableDates.has(toDateKey(day)))
+          }
+          className="border-border bg-card self-start rounded-lg border p-3 [--cell-size:--spacing(10)] max-md:mx-auto"
+        />
 
-        <Card className="flex-1">
-          <CardHeader>
-            <CardTitle>{t("booking.availableTimes")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {slotsLoading ? (
-              <Skeleton className="h-32 w-full" />
-            ) : hourGroups.length > 0 ? (
-              <div className="flex flex-col gap-4">
-                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                  {hourGroups.map((group) => (
+        <section aria-live="polite" className="flex flex-col gap-6">
+          <h2 className="font-heading text-xl font-semibold">{formatDay(date)}</h2>
+
+          {slotsLoading ? (
+            <Skeleton className="h-32 w-full" />
+          ) : dayParts.length > 0 ? (
+            dayParts.map((group) => (
+              <div key={group.part} className="flex flex-col gap-3">
+                <h3 className="text-muted-foreground text-sm font-medium">
+                  {t(`booking.dayParts.${group.part}`)}
+                </h3>
+                <div className="grid grid-cols-4 gap-2 sm:grid-cols-5 lg:grid-cols-6">
+                  {group.slots.map((slot) => (
                     <Button
-                      key={group.hour}
-                      variant={group.hour === selectedHour ? "default" : "outline"}
-                      aria-pressed={group.hour === selectedHour}
-                      onClick={() => setSelectedHour(group.hour)}
+                      key={slot.time}
+                      variant="outline"
+                      className="hover:border-primary hover:bg-primary/5 hover:text-primary h-10 tabular-nums"
+                      onClick={() => handleSelectSlot(slot.time, slot.staffId)}
                     >
-                      {formatHour(group.hour)}
+                      {formatTime(slot.time)}
                     </Button>
                   ))}
                 </div>
-
-                {activeGroup ? (
-                  <div className="flex flex-col gap-2">
-                    <p className="text-sm font-medium">{formatHour(activeGroup.hour)}</p>
-                    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                      {activeGroup.slots.map((slot) => (
-                        <Button
-                          key={slot.time}
-                          variant="outline"
-                          onClick={() => handleSelectSlot(slot.time, slot.staffId)}
-                        >
-                          {formatTime(slot.time)}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    {t("booking.pickHour")}
-                  </p>
-                )}
               </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                {t("booking.noOpenTimes")}
+            ))
+          ) : (
+            <div className="bg-muted/60 flex flex-col items-start gap-1 rounded-lg p-5 text-sm">
+              <p className="text-muted-foreground">
+                {nextAvailableDate === null
+                  ? t("booking.noTimesInWindow")
+                  : t("booking.noOpenTimes")}
               </p>
-            )}
-          </CardContent>
-        </Card>
+              {nextAvailableDate && toDateKey(nextAvailableDate) !== toDateKey(date) && (
+                <Button
+                  variant="link"
+                  className="h-auto px-0"
+                  onClick={() => setPickedDate(nextAvailableDate)}
+                >
+                  {t("booking.nextOpenDay", {
+                    date: formatDay(nextAvailableDate),
+                  })}
+                </Button>
+              )}
+            </div>
+          )}
+        </section>
       </div>
     </div>
   )

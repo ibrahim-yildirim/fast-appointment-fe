@@ -16,22 +16,26 @@ export function minutesToTimeString(totalMinutes: number) {
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`
 }
 
-export function groupSlotsByHour<T extends { time: string }>(slots: T[]) {
-  const groups = new Map<number, T[]>()
+const dayParts = [
+  { key: "morning", until: 12 * 60 },
+  { key: "afternoon", until: 17 * 60 },
+  { key: "evening", until: 24 * 60 },
+] as const
 
-  for (const slot of slots) {
-    const hour = Math.floor(timeStringToMinutes(slot.time) / 60)
-    const existing = groups.get(hour)
-    if (existing) {
-      existing.push(slot)
-    } else {
-      groups.set(hour, [slot])
-    }
-  }
+export type DayPart = (typeof dayParts)[number]["key"]
 
-  return [...groups.entries()]
-    .sort(([a], [b]) => a - b)
-    .map(([hour, hourSlots]) => ({ hour, slots: hourSlots }))
+/** Morning (before 12:00), afternoon (until 17:00) and evening; empty parts are left out. */
+export function groupSlotsByDayPart<T extends { time: string }>(slots: T[]) {
+  return dayParts
+    .map((part, index) => {
+      const from = index === 0 ? 0 : dayParts[index - 1].until
+      const partSlots = slots.filter((slot) => {
+        const minutes = timeStringToMinutes(slot.time)
+        return minutes >= from && minutes < part.until
+      })
+      return { part: part.key as DayPart, slots: partSlots }
+    })
+    .filter((group) => group.slots.length > 0)
 }
 
 /** Inverse of {@link toDateKey}: a local-midnight Date, the same flavour as `businessToday()`. */
