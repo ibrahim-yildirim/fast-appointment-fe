@@ -32,6 +32,9 @@ export const en: typeof tr = {
     bookingNotFound: "Booking not found.",
     serviceNotFound: "Service not found.",
     staffNotFound: "Staff member not found.",
+    unauthorized: "Please sign in to continue.",
+    forbidden: "You don't have permission to do that.",
+    generic: "Something went wrong. Please try again.",
   },
   weekday: {
     mon: "Monday",

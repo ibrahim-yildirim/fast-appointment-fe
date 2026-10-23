@@ -1,6 +1,7 @@
 import { apiClient } from "@/api/client"
 import { USE_FIXTURES } from "@/api/config"
 import { endpoints } from "@/api/endpoints"
+import { toId, toRole, type BackendRole } from "@/api/mappers"
 import { ApiError } from "@/api/types"
 import { authAccounts, businessOwners, customers, type AuthAccount } from "@/fixtures"
 import type { Role } from "@/types"
@@ -18,6 +19,22 @@ export type AuthSession = {
   role: Role
   actorId: string
   businessId?: string
+}
+
+type AuthResponse = {
+  token: string
+  role: BackendRole
+  actorId: number
+  businessId: number | null
+}
+
+function toAuthSession(response: AuthResponse): AuthSession {
+  return {
+    token: response.token,
+    role: toRole(response.role),
+    actorId: toId(response.actorId),
+    businessId: response.businessId === null ? undefined : toId(response.businessId),
+  }
 }
 
 function invalidCredentialsError(path: string): ApiError {
@@ -65,7 +82,7 @@ export const authApi = {
       if (!account) throw invalidCredentialsError(endpoints.auth.customerLogin())
       return toSession(account)
     }
-    return apiClient.post<AuthSession>(endpoints.auth.customerLogin(), input)
+    return toAuthSession(await apiClient.post<AuthResponse>(endpoints.auth.customerLogin(), input))
   },
 
   customerRegister: async (input: CustomerRegisterInput): Promise<AuthSession> => {
@@ -82,7 +99,9 @@ export const authApi = {
       customers.push({ id: actorId, name: input.name, email: input.email })
       return toSession(account)
     }
-    return apiClient.post<AuthSession>(endpoints.auth.customerRegister(), input)
+    return toAuthSession(
+      await apiClient.post<AuthResponse>(endpoints.auth.customerRegister(), input),
+    )
   },
 
   businessLogin: async (input: BusinessLoginInput): Promise<AuthSession> => {
@@ -96,7 +115,7 @@ export const authApi = {
       if (!account) throw invalidCredentialsError(endpoints.auth.businessLogin())
       return toSession(account)
     }
-    return apiClient.post<AuthSession>(endpoints.auth.businessLogin(), input)
+    return toAuthSession(await apiClient.post<AuthResponse>(endpoints.auth.businessLogin(), input))
   },
 
   businessRegister: async (input: BusinessRegisterInput): Promise<AuthSession> => {
@@ -114,6 +133,8 @@ export const authApi = {
       businessOwners.push({ id: actorId, businessId: "", name: input.name, email: input.email })
       return toSession(account)
     }
-    return apiClient.post<AuthSession>(endpoints.auth.businessRegister(), input)
+    return toAuthSession(
+      await apiClient.post<AuthResponse>(endpoints.auth.businessRegister(), input),
+    )
   },
 }

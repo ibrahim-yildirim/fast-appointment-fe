@@ -3,18 +3,19 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
 import { authApi } from "@/features/auth/api/authApi"
+import { businessApi } from "@/features/business/api/businessApi"
 import type {
   BusinessLoginInput,
   BusinessRegisterInput,
 } from "@/features/auth/schemas/businessAuthSchemas"
-import { businesses } from "@/fixtures"
 import { useAuthStore } from "@/stores/authStore"
 import i18n from "@/i18n"
 
 type LocationState = { from?: { pathname: string; search: string } }
 
-function fallbackRedirect(businessId?: string) {
+async function fallbackRedirect(businessId?: string) {
   if (!businessId) return "/onboarding/business"
+  const businesses = await businessApi.list()
   const business = businesses.find((candidate) => candidate.id === businessId)
   return business ? `/${business.slug}/dashboard` : "/onboarding/business"
 }
@@ -29,9 +30,11 @@ export function useBusinessAuth() {
 
   const login = useMutation({
     mutationFn: (input: BusinessLoginInput) => authApi.businessLogin(input),
-    onSuccess: (session) => {
+    onSuccess: async (session) => {
       setSession(session)
-      const redirectTo = from ? `${from.pathname}${from.search}` : fallbackRedirect(session.businessId)
+      const redirectTo = from
+        ? `${from.pathname}${from.search}`
+        : await fallbackRedirect(session.businessId)
       navigate(redirectTo, { replace: true })
     },
     onError: (error: Error) => toast.error(i18n.t(error.message)),
@@ -39,9 +42,9 @@ export function useBusinessAuth() {
 
   const register = useMutation({
     mutationFn: (input: BusinessRegisterInput) => authApi.businessRegister(input),
-    onSuccess: (session) => {
+    onSuccess: async (session) => {
       setSession(session)
-      navigate(fallbackRedirect(session.businessId), { replace: true })
+      navigate(await fallbackRedirect(session.businessId), { replace: true })
     },
     onError: (error: Error) => toast.error(i18n.t(error.message)),
   })

@@ -33,6 +33,9 @@ export const tr = {
     bookingNotFound: "Randevu bulunamadı.",
     serviceNotFound: "Hizmet bulunamadı.",
     staffNotFound: "Personel bulunamadı.",
+    unauthorized: "Devam etmek için lütfen giriş yapın.",
+    forbidden: "Bu işlem için yetkiniz yok.",
+    generic: "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
   },
   weekday: {
     mon: "Pazartesi",

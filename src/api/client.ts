@@ -1,9 +1,32 @@
 import { API_BASE_URL } from "@/api/config"
 import { ApiError, type ApiErrorBody } from "@/api/types"
+import i18n from "@/i18n"
 import { useAuthStore } from "@/stores/authStore"
 
 type RequestOptions = {
   signal?: AbortSignal
+}
+
+function fallbackMessageKey(status: number) {
+  if (status === 401) return "errors.unauthorized"
+  if (status === 403) return "errors.forbidden"
+  return "errors.generic"
+}
+
+/** Security errors (401/403) come back with an empty body, so not every error is JSON. */
+async function readErrorBody(response: Response, path: string): Promise<ApiErrorBody> {
+  const text = await response.text()
+  try {
+    return JSON.parse(text) as ApiErrorBody
+  } catch {
+    return {
+      timestamp: new Date().toISOString(),
+      status: response.status,
+      error: response.statusText,
+      message: fallbackMessageKey(response.status),
+      path,
+    }
+  }
 }
 
 async function request<T>(
@@ -18,6 +41,7 @@ async function request<T>(
     method,
     headers: {
       "Content-Type": "application/json",
+      "Accept-Language": i18n.language,
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -25,8 +49,10 @@ async function request<T>(
   })
 
   if (!response.ok) {
-    const errorBody = (await response.json()) as ApiErrorBody
-    throw new ApiError(errorBody)
+    if (response.status === 401 && token) {
+      useAuthStore.getState().clearSession()
+    }
+    throw new ApiError(await readErrorBody(response, path))
   }
 
   if (response.status === 204) {
