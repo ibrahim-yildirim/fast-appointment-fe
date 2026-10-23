@@ -30,7 +30,7 @@ export function StaffAvailabilityPage() {
   const timeOffSchema = useMemo(() => createTimeOffFormSchema(t), [t])
   const business = useBusinessContext()
   const { staffId } = useParams<{ staffId: string }>()
-  const { data: member } = useStaffMember(business.id, staffId!)
+  const { data: member } = useStaffMember(business, staffId!)
   const { data: weekly, isLoading } = useStaffAvailability(business.id, staffId!)
   const updateAvailability = useUpdateAvailability(business.id, staffId!)
   const { data: timeOff } = useTimeOff(business.id, staffId!)

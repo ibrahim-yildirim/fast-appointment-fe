@@ -17,8 +17,8 @@ export function BookingConfirmationPage() {
   const business = useBusinessContext()
   const { bookingId } = useParams<{ bookingId: string }>()
   const { data: booking, isLoading } = useBooking(business.id, bookingId!)
-  const { data: service } = useService(business.id, booking?.serviceId ?? "")
-  const { data: staff } = useStaffMember(business.id, booking?.staffId ?? "")
+  const { data: service } = useService(business, booking?.serviceId ?? "")
+  const { data: staff } = useStaffMember(business, booking?.staffId ?? "")
 
   if (isLoading) {
     return <Skeleton className="h-48 w-full" />

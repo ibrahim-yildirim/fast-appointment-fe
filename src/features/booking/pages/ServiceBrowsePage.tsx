@@ -13,7 +13,7 @@ export function ServiceBrowsePage() {
   const { t } = useTranslation()
   const { formatMoney } = useFormatters()
   const business = useBusinessContext()
-  const { data: services, isLoading } = useServices(business.id)
+  const { data: services, isLoading } = useServices(business)
   const activeServices = services?.filter((service) => service.active)
 
   return (

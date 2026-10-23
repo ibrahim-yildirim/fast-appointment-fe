@@ -27,6 +27,10 @@ export function toWeekday(day: BackendDay): Weekday {
   return dayToWeekday[day]
 }
 
+export function toBackendDay(weekday: Weekday): BackendDay {
+  return (Object.keys(dayToWeekday) as BackendDay[]).find((day) => dayToWeekday[day] === weekday)!
+}
+
 /** The backend sends "09:00:00"; the UI works with "09:00". */
 export function toHourMinute(time: string | null): string {
   return time ? time.slice(0, 5) : ""

@@ -1,7 +1,6 @@
 import type { TFunction } from "i18next"
 import { z } from "zod"
 
-import { businesses } from "@/fixtures"
 import { weekdayOrder } from "@/lib/constants"
 
 export { weekdayOrder }
@@ -12,10 +11,7 @@ export function createBusinessOnboardingSchema(t: TFunction) {
     slug: z
       .string()
       .min(1, t("onboarding.validation.slugRequired"))
-      .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, t("onboarding.validation.slugFormat"))
-      .refine((slug) => !businesses.some((business) => business.slug === slug), {
-        message: t("onboarding.validation.slugTaken"),
-      }),
+      .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, t("onboarding.validation.slugFormat")),
     description: z.string().min(1, t("onboarding.validation.descriptionRequired")),
     address: z.string().min(1, t("onboarding.validation.addressRequired")),
     phone: z.string().min(1, t("onboarding.validation.phoneRequired")),

@@ -12,7 +12,7 @@ import { availabilityApi } from "@/features/staff-calendar/api/availabilityApi"
 import { staffApi } from "@/features/staff-calendar/api/staffApi"
 import { SLOT_INTERVAL_MINUTES } from "@/lib/constants"
 import { businessNow, businessToday } from "@/lib/datetime"
-import type { Booking, DayAvailability, Service, TimeOffException } from "@/types"
+import type { Booking, BusinessRef, DayAvailability, Service, TimeOffException } from "@/types"
 
 /** How far ahead to look for a day with openings before giving up. */
 const NEXT_AVAILABLE_SEARCH_DAYS = 60
@@ -37,21 +37,24 @@ type SchedulingData = {
  * Everything slot generation needs, none of it date-specific — so one fetch
  * answers "what's open?" for any number of days.
  */
-async function fetchSchedulingData(businessId: string, service: Service): Promise<SchedulingData> {
-  const allStaff = await staffApi.list(businessId)
+async function fetchSchedulingData(
+  business: BusinessRef,
+  service: Service,
+): Promise<SchedulingData> {
+  const allStaff = await staffApi.list(business)
   const eligibleStaff = allStaff.filter((member) => service.eligibleStaffIds.includes(member.id))
 
   const [staffSchedules, bookings] = await Promise.all([
     Promise.all(
       eligibleStaff.map(async (member) => {
         const [weekly, timeOff] = await Promise.all([
-          availabilityApi.getWeekly(businessId, member.id),
-          availabilityApi.listTimeOff(businessId, member.id),
+          availabilityApi.getWeekly(business.id, member.id),
+          availabilityApi.listTimeOff(business.id, member.id),
         ])
         return { staffId: member.id, weekly, timeOff }
       }),
     ),
-    bookingsApi.list(businessId),
+    bookingsApi.list(business.id),
   ])
 
   return { staffSchedules, bookings }
@@ -106,16 +109,16 @@ function buildSlotsForDate(service: Service, date: Date, data: SchedulingData): 
     .sort((a, b) => a.time.localeCompare(b.time))
 }
 
-function useSchedulingData(businessId: string, service: Service | undefined) {
+function useSchedulingData(business: BusinessRef, service: Service | undefined) {
   return useQuery({
-    queryKey: ["scheduling-data", businessId, service?.id],
+    queryKey: ["scheduling-data", business.id, service?.id],
     enabled: Boolean(service),
-    queryFn: () => fetchSchedulingData(businessId, service!),
+    queryFn: () => fetchSchedulingData(business, service!),
   })
 }
 
-export function useAvailableSlots(businessId: string, service: Service | undefined, date: Date) {
-  const { data, isLoading } = useSchedulingData(businessId, service)
+export function useAvailableSlots(business: BusinessRef, service: Service | undefined, date: Date) {
+  const { data, isLoading } = useSchedulingData(business, service)
 
   const slots = useMemo(
     () => (service && data ? buildSlotsForDate(service, date, data) : undefined),
@@ -129,8 +132,8 @@ export function useAvailableSlots(businessId: string, service: Service | undefin
  * First day from today with at least one open slot, so the picker doesn't land
  * on an empty day. `null` once the search window is exhausted.
  */
-export function useNextAvailableDate(businessId: string, service: Service | undefined) {
-  const { data, isLoading } = useSchedulingData(businessId, service)
+export function useNextAvailableDate(business: BusinessRef, service: Service | undefined) {
+  const { data, isLoading } = useSchedulingData(business, service)
 
   const nextDate = useMemo(() => {
     if (!service || !data) return undefined

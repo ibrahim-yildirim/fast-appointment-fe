@@ -1,7 +1,9 @@
 import { apiClient } from "@/api/client"
 import { USE_FIXTURES } from "@/api/config"
 import { endpoints } from "@/api/endpoints"
+import { toBackendDay } from "@/api/mappers"
 import type { BusinessOnboardingInput } from "@/features/business-onboarding/schemas/businessOnboardingSchema"
+import { toBusiness, type BusinessResponse } from "@/features/business/api/businessApi"
 import { businesses, businessOwners } from "@/fixtures"
 import type { Business } from "@/types"
 
@@ -30,6 +32,10 @@ export const onboardingApi = {
 
       return business
     }
-    return apiClient.post<Business>(endpoints.businesses.create(), { ...input, ownerId })
+    const response = await apiClient.post<BusinessResponse>(endpoints.businesses.create(), {
+      ...input,
+      hours: input.hours.map((hours) => ({ ...hours, day: toBackendDay(hours.day) })),
+    })
+    return toBusiness(response)
   },
 }

@@ -1,23 +1,41 @@
 import { apiClient } from "@/api/client"
 import { USE_FIXTURES } from "@/api/config"
 import { endpoints } from "@/api/endpoints"
+import { toId } from "@/api/mappers"
 import type { StaffFormInput } from "@/features/staff-calendar/schemas/staffFormSchema"
 import { staff } from "@/fixtures"
-import type { Staff } from "@/types"
+import type { BusinessRef, Staff } from "@/types"
+
+type PublicStaffResponse = {
+  id: number
+  name: string
+  colorTag: string
+}
+
+// The public list leaves out email on purpose; service links arrive in phase 4.
+function toStaff(response: PublicStaffResponse, businessId: string): Staff {
+  return {
+    ...response,
+    id: toId(response.id),
+    businessId,
+    email: "",
+    serviceIds: [],
+  }
+}
 
 export const staffApi = {
-  list: async (businessId: string): Promise<Staff[]> => {
+  list: async (business: BusinessRef): Promise<Staff[]> => {
     if (USE_FIXTURES) {
-      return staff.filter((member) => member.businessId === businessId)
+      return staff.filter((member) => member.businessId === business.id)
     }
-    return apiClient.get<Staff[]>(endpoints.staff.list(businessId))
+    const response = await apiClient.get<PublicStaffResponse[]>(endpoints.staff.list(business.slug))
+    return response.map((member) => toStaff(member, business.id))
   },
 
-  byId: async (businessId: string, staffId: string): Promise<Staff | undefined> => {
-    if (USE_FIXTURES) {
-      return staff.find((member) => member.businessId === businessId && member.id === staffId)
-    }
-    return apiClient.get<Staff>(endpoints.staff.byId(businessId, staffId))
+  // The backend has no public single-staff endpoint, so this reads from the list.
+  byId: async (business: BusinessRef, staffId: string): Promise<Staff | null> => {
+    const all = await staffApi.list(business)
+    return all.find((member) => member.id === staffId) ?? null
   },
 
   create: async (businessId: string, input: StaffFormInput): Promise<Staff> => {

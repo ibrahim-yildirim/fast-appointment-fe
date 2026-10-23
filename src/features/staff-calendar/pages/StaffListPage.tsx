@@ -29,8 +29,8 @@ import type { Staff } from "@/types"
 export function StaffListPage() {
   const { t } = useTranslation()
   const business = useBusinessContext()
-  const { data: staff, isLoading } = useStaff(business.id)
-  const { data: services } = useServices(business.id)
+  const { data: staff, isLoading } = useStaff(business)
+  const { data: services } = useServices(business)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingStaff, setEditingStaff] = useState<Staff | null>(null)
 

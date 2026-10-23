@@ -20,18 +20,18 @@ export function SlotPickerPage() {
   const business = useBusinessContext()
   const navigate = useNavigate()
   const { serviceId } = useParams<{ serviceId: string }>()
-  const { data: service, isLoading: serviceLoading } = useService(business.id, serviceId!)
+  const { data: service, isLoading: serviceLoading } = useService(business, serviceId!)
   const [today] = useState<Date>(() => businessToday())
   const [pickedDate, setPickedDate] = useState<Date | null>(null)
   const [selectedHour, setSelectedHour] = useState<number | null>(null)
   const { data: nextAvailableDate, isLoading: nextDateLoading } = useNextAvailableDate(
-    business.id,
+    business,
     service,
   )
   // Until the guest picks a day themselves, open on the first day that has openings —
   // landing on a fully booked today reads as if the business has no availability at all.
   const date = pickedDate ?? nextAvailableDate ?? today
-  const { data: slots, isLoading: slotsLoading } = useAvailableSlots(business.id, service, date)
+  const { data: slots, isLoading: slotsLoading } = useAvailableSlots(business, service, date)
 
   const hourGroups = useMemo(() => groupSlotsByHour(slots ?? []), [slots])
   // Looked up rather than stored, so an hour that disappears (new day, slot taken)

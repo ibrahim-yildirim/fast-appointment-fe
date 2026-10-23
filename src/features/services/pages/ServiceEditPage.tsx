@@ -13,8 +13,8 @@ export function ServiceEditPage() {
   const { t } = useTranslation()
   const business = useBusinessContext()
   const { serviceId } = useParams<{ serviceId: string }>()
-  const { data: service, isLoading: serviceLoading } = useService(business.id, serviceId!)
-  const { data: staff, isLoading: staffLoading } = useStaff(business.id)
+  const { data: service, isLoading: serviceLoading } = useService(business, serviceId!)
+  const { data: staff, isLoading: staffLoading } = useStaff(business)
   const updateService = useUpdateService(business.id, serviceId!, business.slug)
 
   const isLoading = serviceLoading || staffLoading

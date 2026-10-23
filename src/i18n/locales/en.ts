@@ -324,7 +324,6 @@ export const en: typeof tr = {
       nameRequired: "Business name is required.",
       slugRequired: "Slug is required.",
       slugFormat: "Use lowercase letters, numbers, and hyphens only.",
-      slugTaken: "This slug is already taken.",
       descriptionRequired: "Description is required.",
       addressRequired: "Address is required.",
       phoneRequired: "Phone number is required.",

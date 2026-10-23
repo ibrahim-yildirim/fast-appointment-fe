@@ -10,7 +10,7 @@ import { useStaff } from "@/features/staff-calendar/hooks/useStaff"
 export function ServiceNewPage() {
   const { t } = useTranslation()
   const business = useBusinessContext()
-  const { data: staff, isLoading: staffLoading } = useStaff(business.id)
+  const { data: staff, isLoading: staffLoading } = useStaff(business)
   const createService = useCreateService(business.id, business.slug)
 
   return (

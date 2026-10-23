@@ -1,25 +1,47 @@
 import { apiClient } from "@/api/client"
 import { USE_FIXTURES } from "@/api/config"
 import { endpoints } from "@/api/endpoints"
+import { toId } from "@/api/mappers"
 import type { ServiceFormInput } from "@/features/services/schemas/serviceFormSchema"
 import { services } from "@/fixtures"
-import type { Service } from "@/types"
+import type { BusinessRef, Service } from "@/types"
+
+type ServiceOfferingResponse = {
+  id: number
+  businessId: number
+  name: string
+  description: string | null
+  durationMinutes: number
+  price: number
+  active: boolean
+}
+
+// Staff eligibility isn't modelled in the backend yet (phase 4), so it starts empty.
+function toService(response: ServiceOfferingResponse): Service {
+  return {
+    ...response,
+    id: toId(response.id),
+    businessId: toId(response.businessId),
+    description: response.description ?? "",
+    eligibleStaffIds: [],
+  }
+}
 
 export const servicesApi = {
-  list: async (businessId: string): Promise<Service[]> => {
+  list: async (business: BusinessRef): Promise<Service[]> => {
     if (USE_FIXTURES) {
-      return services.filter((service) => service.businessId === businessId)
+      return services.filter((service) => service.businessId === business.id)
     }
-    return apiClient.get<Service[]>(endpoints.services.list(businessId))
+    const response = await apiClient.get<ServiceOfferingResponse[]>(
+      endpoints.services.list(business.slug),
+    )
+    return response.map(toService)
   },
 
-  byId: async (businessId: string, serviceId: string): Promise<Service | undefined> => {
-    if (USE_FIXTURES) {
-      return services.find(
-        (service) => service.businessId === businessId && service.id === serviceId,
-      )
-    }
-    return apiClient.get<Service>(endpoints.services.byId(businessId, serviceId))
+  // The backend has no public single-service endpoint, so this reads from the list.
+  byId: async (business: BusinessRef, serviceId: string): Promise<Service | null> => {
+    const all = await servicesApi.list(business)
+    return all.find((service) => service.id === serviceId) ?? null
   },
 
   create: async (businessId: string, input: ServiceFormInput): Promise<Service> => {

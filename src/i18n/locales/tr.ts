@@ -326,7 +326,6 @@ export const tr = {
       nameRequired: "İşletme adı zorunludur.",
       slugRequired: "Randevu adresi zorunludur.",
       slugFormat: "Sadece küçük harf, rakam ve tire kullanın.",
-      slugTaken: "Bu adres zaten kullanılıyor.",
       descriptionRequired: "Açıklama zorunludur.",
       addressRequired: "Adres zorunludur.",
       phoneRequired: "Telefon numarası zorunludur.",

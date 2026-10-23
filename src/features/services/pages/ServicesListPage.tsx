@@ -27,7 +27,7 @@ export function ServicesListPage() {
   const { t } = useTranslation()
   const { formatMoney } = useFormatters()
   const business = useBusinessContext()
-  const { data: services, isLoading } = useServices(business.id)
+  const { data: services, isLoading } = useServices(business)
   const deleteService = useDeleteService(business.id)
   const [search, setSearch] = useState("")
 

@@ -11,6 +11,7 @@ import { BusinessDetailsStep } from "@/features/business-onboarding/components/B
 import { BusinessHoursStep } from "@/features/business-onboarding/components/BusinessHoursStep"
 import { BusinessReviewStep } from "@/features/business-onboarding/components/BusinessReviewStep"
 import { useCreateBusiness } from "@/features/business-onboarding/hooks/useCreateBusiness"
+import { useBusinesses } from "@/features/business/hooks/useBusinesses"
 import {
   businessContactFields,
   businessDetailsFields,
@@ -19,7 +20,6 @@ import {
   weekdayOrder,
   type BusinessOnboardingInput,
 } from "@/features/business-onboarding/schemas/businessOnboardingSchema"
-import { businesses } from "@/fixtures"
 import { useAuthStore } from "@/stores/authStore"
 
 const stepKeys = ["details", "contact", "hours", "review"] as const
@@ -31,6 +31,7 @@ export function OnboardingPage() {
   const businessId = useAuthStore((state) => state.businessId)
   const [step, setStep] = useState(0)
   const createBusiness = useCreateBusiness()
+  const { data: businesses } = useBusinesses()
 
   const form = useForm<BusinessOnboardingInput>({
     resolver: zodResolver(schema),
@@ -52,6 +53,7 @@ export function OnboardingPage() {
   })
 
   if (businessId) {
+    if (!businesses) return null
     const existingBusiness = businesses.find((candidate) => candidate.id === businessId)
     return <Navigate to={existingBusiness ? `/${existingBusiness.slug}/dashboard` : "/"} replace />
   }
@@ -101,12 +103,13 @@ export function OnboardingPage() {
               >
                 {t("onboarding.back")}
               </Button>
+              {/* Distinct keys: reusing the clicked button as the submit button submits early */}
               {isLastStep ? (
-                <Button type="submit" disabled={createBusiness.isPending}>
+                <Button key="submit" type="submit" disabled={createBusiness.isPending}>
                   {createBusiness.isPending ? t("onboarding.creating") : t("onboarding.finish")}
                 </Button>
               ) : (
-                <Button type="button" onClick={handleNext}>
+                <Button key="next" type="button" onClick={handleNext}>
                   {t("onboarding.continue")}
                 </Button>
               )}

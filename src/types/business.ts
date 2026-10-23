@@ -19,3 +19,6 @@ export type Business = {
   defaultHours: BusinessHours[]
   createdAt: string
 }
+
+/** Public lists are addressed by slug, while cache keys and owner calls use the id. */
+export type BusinessRef = Pick<Business, "id" | "slug">

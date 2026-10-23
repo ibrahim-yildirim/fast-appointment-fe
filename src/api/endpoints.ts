@@ -5,12 +5,12 @@ export const endpoints = {
     create: () => `/api/businesses`,
   },
   services: {
-    list: (businessId: string) => `/api/businesses/${businessId}/services`,
+    list: (businessSlug: string) => `/api/businesses/${businessSlug}/services`,
     byId: (businessId: string, serviceId: string) =>
       `/api/businesses/${businessId}/services/${serviceId}`,
   },
   staff: {
-    list: (businessId: string) => `/api/businesses/${businessId}/staff`,
+    list: (businessSlug: string) => `/api/businesses/${businessSlug}/staff`,
     byId: (businessId: string, staffId: string) =>
       `/api/businesses/${businessId}/staff/${staffId}`,
     availability: (businessId: string, staffId: string) =>

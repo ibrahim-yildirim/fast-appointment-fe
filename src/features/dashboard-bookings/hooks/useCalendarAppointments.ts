@@ -4,7 +4,7 @@ import { useBookings } from "@/features/booking/hooks/useBookings"
 import { useCustomers } from "@/features/customers/hooks/useCustomers"
 import { useServices } from "@/features/services/hooks/useServices"
 import { useStaff } from "@/features/staff-calendar/hooks/useStaff"
-import type { BookingStatus } from "@/types"
+import type { BookingStatus, BusinessRef } from "@/types"
 
 export type CalendarAppointment = {
   id: string
@@ -37,10 +37,10 @@ export const defaultCalendarFilters: CalendarFilters = {
   status: "all",
 }
 
-export function useCalendarAppointments(businessId: string, filters: CalendarFilters) {
-  const bookingsQuery = useBookings(businessId)
-  const servicesQuery = useServices(businessId)
-  const staffQuery = useStaff(businessId)
+export function useCalendarAppointments(business: BusinessRef, filters: CalendarFilters) {
+  const bookingsQuery = useBookings(business.id)
+  const servicesQuery = useServices(business)
+  const staffQuery = useStaff(business)
   const customersQuery = useCustomers()
 
   const appointments = useMemo(() => {

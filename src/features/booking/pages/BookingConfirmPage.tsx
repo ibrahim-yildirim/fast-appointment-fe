@@ -38,8 +38,8 @@ export function BookingConfirmPage() {
   const role = useAuthStore((state) => state.role)
   const isCustomer = Boolean(actorId) && role === "customer"
 
-  const { data: service, isLoading: serviceLoading } = useService(business.id, serviceId!)
-  const { data: staff, isLoading: staffLoading } = useStaffMember(business.id, staffId ?? "")
+  const { data: service, isLoading: serviceLoading } = useService(business, serviceId!)
+  const { data: staff, isLoading: staffLoading } = useStaffMember(business, staffId ?? "")
   const createBooking = useCreateBooking(business.id, business.slug)
 
   const schema = useMemo(() => createGuestBookingSchema(t), [t])

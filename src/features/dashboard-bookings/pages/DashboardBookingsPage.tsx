@@ -26,9 +26,9 @@ export function DashboardBookingsPage() {
   const [filters, setFilters] = useState<CalendarFilters>(defaultCalendarFilters)
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null)
 
-  const { data: services } = useServices(business.id)
-  const { data: staff } = useStaff(business.id)
-  const { appointments, isLoading } = useCalendarAppointments(business.id, filters)
+  const { data: services } = useServices(business)
+  const { data: staff } = useStaff(business)
+  const { appointments, isLoading } = useCalendarAppointments(business, filters)
   const updateBooking = useUpdateBooking(business.id)
 
   function handleReschedule(id: string, dateKey: string, hour?: number) {
