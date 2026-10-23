@@ -23,6 +23,10 @@ export const queryKeys = {
     byId: (businessId: string, bookingId: string) =>
       ["bookings", businessId, bookingId] as const,
   },
+  slots: {
+    range: (businessId: string, serviceId: string, from: string) =>
+      ["slots", businessId, serviceId, from] as const,
+  },
   customers: {
     list: () => ["customers"] as const,
   },

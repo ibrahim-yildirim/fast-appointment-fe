@@ -11,5 +11,7 @@ export function useCustomerBooking(bookingId: string) {
     queryKey: queryKeys.customerBookings.byId(bookingId),
     queryFn: () => customerBookingsApi.byId(customerId!, bookingId),
     enabled: Boolean(customerId),
+    // React Query rejects undefined query data, so "not found" travels as null.
+    select: (booking) => booking ?? undefined,
   })
 }

@@ -160,6 +160,7 @@ export const en: typeof tr = {
     phone: "Phone",
     emailOptional: "Email (optional)",
     haveAccountPrefix: "Have an account?",
+    loginRequiredHint: "Log in or create an account to confirm this booking.",
     haveAccountSuffix: "to keep all your bookings in one place.",
     confirmedTitle: "Booking confirmed",
     reference: "Booking reference",

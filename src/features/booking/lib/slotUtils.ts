@@ -34,6 +34,12 @@ export function groupSlotsByHour<T extends { time: string }>(slots: T[]) {
     .map(([hour, hourSlots]) => ({ hour, slots: hourSlots }))
 }
 
+/** Inverse of {@link toDateKey}: a local-midnight Date, the same flavour as `businessToday()`. */
+export function fromDateKey(key: string) {
+  const [year, month, day] = key.split("-").map(Number)
+  return new Date(year, month - 1, day)
+}
+
 export function toDateKey(date: Date) {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, "0")

@@ -162,6 +162,7 @@ export const tr = {
     phone: "Telefon",
     emailOptional: "E-posta (isteğe bağlı)",
     haveAccountPrefix: "Hesabınız var mı?",
+    loginRequiredHint: "Bu randevuyu onaylamak için giriş yapın veya hesap oluşturun.",
     haveAccountSuffix: "Tüm randevularınız tek yerde toplansın.",
     confirmedTitle: "Randevunuz onaylandı",
     reference: "Randevu kodu",

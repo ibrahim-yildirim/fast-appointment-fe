@@ -1,10 +1,43 @@
 import { apiClient } from "@/api/client"
 import { USE_FIXTURES } from "@/api/config"
 import { endpoints } from "@/api/endpoints"
+import { toId, toWallClock } from "@/api/mappers"
 import { bookings, businesses, services, staff } from "@/fixtures"
-import type { BookingSummary } from "@/types"
+import type { BookingStatus, BookingSummary } from "@/types"
 
 export type CustomerBookingView = BookingSummary
+
+type CustomerBookingResponse = {
+  id: number
+  businessId: number
+  businessName: string
+  businessSlug: string
+  serviceName: string
+  staffName: string
+  startsAt: string
+  endsAt: string
+  status: "PENDING" | "CONFIRMED" | "CANCELLED"
+  price: number
+  notes: string | null
+}
+
+// There is no booking reference in the backend yet; it arrives with guest booking.
+function toCustomerBooking(response: CustomerBookingResponse): CustomerBookingView {
+  return {
+    id: toId(response.id),
+    reference: "",
+    businessId: toId(response.businessId),
+    businessName: response.businessName,
+    businessSlug: response.businessSlug,
+    serviceName: response.serviceName,
+    staffName: response.staffName,
+    startsAt: toWallClock(response.startsAt),
+    endsAt: toWallClock(response.endsAt),
+    status: response.status.toLowerCase() as BookingStatus,
+    price: response.price,
+    notes: response.notes ?? "",
+  }
+}
 
 export const customerBookingsApi = {
   list: async (customerId: string): Promise<CustomerBookingView[]> => {
@@ -31,15 +64,16 @@ export const customerBookingsApi = {
           }
         })
     }
-    return apiClient.get<CustomerBookingView[]>(endpoints.customerBookings.list())
+    const response = await apiClient.get<CustomerBookingResponse[]>(
+      endpoints.customerBookings.list(),
+    )
+    return response.map(toCustomerBooking)
   },
 
-  byId: async (customerId: string, bookingId: string): Promise<CustomerBookingView | undefined> => {
-    if (USE_FIXTURES) {
-      const list = await customerBookingsApi.list(customerId)
-      return list.find((booking) => booking.id === bookingId)
-    }
-    return apiClient.get<CustomerBookingView>(endpoints.customerBookings.byId(bookingId))
+  byId: async (customerId: string, bookingId: string): Promise<CustomerBookingView | null> => {
+    // The backend has no single-booking read for customers, so this reads from the list.
+    const list = await customerBookingsApi.list(customerId)
+    return list.find((booking) => booking.id === bookingId) ?? null
   },
 
   cancel: async (bookingId: string): Promise<void> => {
@@ -48,8 +82,7 @@ export const customerBookingsApi = {
       if (index !== -1) bookings[index] = { ...bookings[index], status: "cancelled" }
       return
     }
-    return apiClient.patch<void>(endpoints.customerBookings.byId(bookingId), {
-      status: "cancelled",
-    })
+    // The backend keeps the row and marks it CANCELLED.
+    return apiClient.delete<void>(endpoints.customerBookings.byId(bookingId))
   },
 }

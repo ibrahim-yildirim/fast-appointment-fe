@@ -126,7 +126,7 @@ export const bookingsApi = {
     return apiClient.get<Booking>(endpoints.bookings.byId(businessId, bookingId))
   },
 
-  create: async (businessId: string, input: CreateBookingInput): Promise<Booking> => {
+  create: async (businessId: string, input: CreateBookingInput): Promise<Pick<Booking, "id">> => {
     if (USE_FIXTURES) {
       assertGuestBookingAllowed(businessId, input)
       const booking: Booking = {
@@ -139,7 +139,15 @@ export const bookingsApi = {
       bookings.push(booking)
       return booking
     }
-    return apiClient.post<Booking>(endpoints.bookings.list(businessId), input)
+    // Customers only; the backend takes the customer from the token and computes endsAt itself.
+    const response = await apiClient.post<{ id: number }>(endpoints.customerBookings.list(), {
+      businessId: toBackendId(businessId),
+      serviceId: toBackendId(input.serviceId),
+      staffId: toBackendId(input.staffId),
+      startsAt: toBusinessLocal(input.startsAt),
+      notes: input.notes,
+    })
+    return { id: toId(response.id) }
   },
 
   lookupByReference: async (reference: string, phone: string): Promise<Booking | undefined> => {

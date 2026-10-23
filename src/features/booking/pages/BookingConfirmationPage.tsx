@@ -5,10 +5,8 @@ import { Link, useParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useBooking } from "@/features/booking/hooks/useBooking"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
-import { useService } from "@/features/services/hooks/useService"
-import { useStaffMember } from "@/features/staff-calendar/hooks/useStaffMember"
+import { useCustomerBooking } from "@/features/my-bookings/hooks/useCustomerBooking"
 import { useFormatters } from "@/lib/datetime"
 
 export function BookingConfirmationPage() {
@@ -16,9 +14,7 @@ export function BookingConfirmationPage() {
   const { formatDate, formatTime } = useFormatters()
   const business = useBusinessContext()
   const { bookingId } = useParams<{ bookingId: string }>()
-  const { data: booking, isLoading } = useBooking(business.id, bookingId!)
-  const { data: service } = useService(business, booking?.serviceId ?? "")
-  const { data: staff } = useStaffMember(business, booking?.staffId ?? "")
+  const { data: booking, isLoading } = useCustomerBooking(bookingId!)
 
   if (isLoading) {
     return <Skeleton className="h-48 w-full" />
@@ -39,36 +35,29 @@ export function BookingConfirmationPage() {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="flex flex-col gap-1 text-center text-sm">
-          <span className="font-medium">{service?.name}</span>
-          {staff && (
-            <span className="text-muted-foreground">{t("booking.with", { name: staff.name })}</span>
-          )}
+          <span className="font-medium">{booking.serviceName}</span>
+          <span className="text-muted-foreground">
+            {t("booking.with", { name: booking.staffName })}
+          </span>
           <span className="text-muted-foreground">
             {formatDate(startsAt, { weekday: "long", month: "long", day: "numeric" })}{" "}
             {t("booking.at")}{" "}
             {formatTime(booking.startsAt.slice(11, 16))}
           </span>
         </div>
-        <div className="flex flex-col items-center gap-1 rounded-lg border border-border bg-muted/30 p-4 text-center">
-          <span className="text-xs text-muted-foreground uppercase">{t("booking.reference")}</span>
-          <span className="font-mono text-lg font-semibold tracking-wider">
-            {booking.reference}
-          </span>
-          {booking.customerId === null && (
-            <p className="mt-1 text-xs text-muted-foreground">{t("booking.referenceHint")}</p>
-          )}
-        </div>
+        {booking.reference && (
+          <div className="flex flex-col items-center gap-1 rounded-lg border border-border bg-muted/30 p-4 text-center">
+            <span className="text-xs text-muted-foreground uppercase">{t("booking.reference")}</span>
+            <span className="font-mono text-lg font-semibold tracking-wider">
+              {booking.reference}
+            </span>
+          </div>
+        )}
 
         <div className="flex flex-col gap-2">
-          {booking.customerId === null ? (
-            <Button asChild>
-              <Link to="/booking-lookup">{t("booking.findMyBooking")}</Link>
-            </Button>
-          ) : (
-            <Button asChild>
-              <Link to="/account/bookings">{t("booking.viewMyBookings")}</Link>
-            </Button>
-          )}
+          <Button asChild>
+            <Link to="/account/bookings">{t("booking.viewMyBookings")}</Link>
+          </Button>
           <Button variant="outline" asChild>
             <Link to={`/${business.slug}/book`}>{t("booking.bookAnother")}</Link>
           </Button>

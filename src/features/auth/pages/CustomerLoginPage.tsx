@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Search } from "lucide-react"
 import { useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -82,21 +81,6 @@ export function CustomerLoginPage() {
             }}
           >
             {t("auth.continueAsGuest")}
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search aria-hidden="true" className="h-4 w-4 shrink-0 text-primary" />
-            {t("booking.bookedAsGuest")}
-          </CardTitle>
-          <CardDescription>{t("booking.lookupHint")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button variant="outline" className="w-full" asChild>
-            <Link to="/booking-lookup">{t("booking.findMyBooking")}</Link>
           </Button>
         </CardContent>
       </Card>

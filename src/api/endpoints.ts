@@ -9,6 +9,8 @@ export const endpoints = {
     ownerList: () => `/api/business/services`,
     create: () => `/api/services`,
     byId: (serviceId: string) => `/api/services/${serviceId}`,
+    slots: (businessSlug: string, serviceId: string, from: string, to: string) =>
+      `/api/businesses/${businessSlug}/services/${serviceId}/slots?from=${from}&to=${to}`,
   },
   staff: {
     list: (businessSlug: string) => `/api/businesses/${businessSlug}/staff`,
@@ -34,8 +36,8 @@ export const endpoints = {
     list: () => `/api/customers`,
   },
   customerBookings: {
-    list: () => `/api/account/bookings`,
-    byId: (bookingId: string) => `/api/account/bookings/${bookingId}`,
+    list: () => `/api/bookings`,
+    byId: (bookingId: string) => `/api/bookings/${bookingId}`,
   },
   auth: {
     customerLogin: () => `/api/auth/login`,
