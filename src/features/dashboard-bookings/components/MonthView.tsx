@@ -1,4 +1,4 @@
-import { format, isSameMonth, isToday } from "date-fns"
+import { format, isSameDay, isSameMonth } from "date-fns"
 import { useTranslation } from "react-i18next"
 import { useMemo } from "react"
 
@@ -8,7 +8,7 @@ import { getMonthGridDays } from "@/lib/calendarUtils"
 import { toDateKey } from "@/features/booking/lib/slotUtils"
 import { weekdayOrder } from "@/lib/constants"
 import { cn } from "@/lib/utils"
-import { useFormatters } from "@/lib/datetime"
+import { businessToday, useFormatters } from "@/lib/datetime"
 
 const VISIBLE_LIMIT = 3
 
@@ -27,6 +27,7 @@ export function MonthView({
 }) {
   const { t } = useTranslation()
   const { locale } = useFormatters()
+  const today = businessToday()
 
   const days = useMemo(() => getMonthGridDays(referenceDate), [referenceDate])
 
@@ -68,7 +69,13 @@ export function MonthView({
               !isSameMonth(day, referenceDate) && "bg-muted/30 text-muted-foreground",
             )}
           >
-            <span className={cn("text-xs", isToday(day) && "font-semibold text-foreground")}>
+            <span
+              className={cn(
+                "flex size-6 items-center justify-center text-xs",
+                isSameDay(day, today) &&
+                  "rounded-full bg-primary font-semibold text-primary-foreground",
+              )}
+            >
               {format(day, "d", { locale })}
             </span>
             {visible.map((appointment) => (

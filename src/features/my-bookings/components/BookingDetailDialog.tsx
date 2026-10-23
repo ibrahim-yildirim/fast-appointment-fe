@@ -1,4 +1,3 @@
-import { parseISO } from "date-fns"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
@@ -43,7 +42,7 @@ export function BookingDetailDialog({
 
   if (!booking) return null
 
-  const dateLabel = formatDate(parseISO(booking.startsAt.slice(0, 10)), {
+  const dateLabel = formatDate(booking.startsAt, {
     weekday: "long",
     month: "long",
     day: "numeric",

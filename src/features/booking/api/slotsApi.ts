@@ -18,7 +18,7 @@ type SlotResponse = {
 }
 
 export const slotsApi = {
-  /** Free start times between two date keys (inclusive); the backend allows up to 60 days. */
+  /** Free start times between two date keys (inclusive); the backend allows up to 30 days. */
   list: async (
     business: BusinessRef,
     service: Service,

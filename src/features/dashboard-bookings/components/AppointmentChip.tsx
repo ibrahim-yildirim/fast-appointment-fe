@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 
 import { cn } from "@/lib/utils"
@@ -22,30 +23,32 @@ export function AppointmentChip({
   const { formatTime } = useFormatters()
 
   return (
-    <div className="group/chip relative">
-      <button
-        type="button"
-        draggable
-        onDragStart={(event) => {
-          event.dataTransfer.setData("text/plain", appointment.id)
-          event.dataTransfer.effectAllowed = "move"
-        }}
-        onClick={() => onSelect(appointment.id)}
-        className={cn(
-          "flex w-full items-center gap-1.5 truncate rounded-md border border-border px-1.5 py-1 text-left text-xs transition-colors hover:bg-secondary",
-          className,
-        )}
-      >
-        <span
-          className="size-2 shrink-0 rounded-full"
-          style={{ backgroundColor: appointment.staffColor }}
-        />
-        <span className="truncate">
-          {formatTime(appointment.startTime)} &middot; {appointment.customerName}
-        </span>
-      </button>
+    <HoverCard openDelay={150} closeDelay={50}>
+      <HoverCardTrigger asChild>
+        <button
+          type="button"
+          draggable
+          onDragStart={(event) => {
+            event.dataTransfer.setData("text/plain", appointment.id)
+            event.dataTransfer.effectAllowed = "move"
+          }}
+          onClick={() => onSelect(appointment.id)}
+          className={cn(
+            "flex w-full items-center gap-1.5 truncate rounded-md border border-border px-1.5 py-1 text-left text-xs transition-colors hover:bg-secondary",
+            className,
+          )}
+        >
+          <span
+            className="size-2 shrink-0 rounded-full"
+            style={{ backgroundColor: appointment.staffColor }}
+          />
+          <span className="truncate">
+            {formatTime(appointment.startTime)} &middot; {appointment.customerName}
+          </span>
+        </button>
+      </HoverCardTrigger>
 
-      <div className="invisible absolute left-0 top-full z-20 mt-1 w-56 rounded-lg border border-border bg-popover p-3 text-popover-foreground opacity-0 shadow-md ring-1 ring-foreground/10 transition-opacity group-hover/chip:visible group-hover/chip:opacity-100">
+      <HoverCardContent>
         <div className="flex items-center justify-between gap-2">
           <span className="font-medium">{appointment.customerName}</span>
           <Badge variant={statusVariant[appointment.status]}>{appointment.status}</Badge>
@@ -55,7 +58,7 @@ export function AppointmentChip({
           {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
         </p>
         <p className="text-xs text-muted-foreground">with {appointment.staffName}</p>
-      </div>
-    </div>
+      </HoverCardContent>
+    </HoverCard>
   )
 }

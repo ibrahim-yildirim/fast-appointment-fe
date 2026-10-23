@@ -8,7 +8,7 @@ import { businessToday } from "@/lib/datetime"
 import type { BusinessRef, Service } from "@/types"
 
 /** How far ahead to look for a day with openings before giving up (the backend's maximum). */
-const SLOT_SEARCH_DAYS = 60
+const SLOT_SEARCH_DAYS = 30
 
 export type SlotOption = {
   time: string

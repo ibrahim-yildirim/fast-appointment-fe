@@ -1,11 +1,12 @@
-import { format } from "date-fns"
+import { format, isSameDay } from "date-fns"
 import { Fragment, useMemo } from "react"
 
 import { AppointmentChip } from "@/features/dashboard-bookings/components/AppointmentChip"
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 import { hourRows } from "@/lib/calendarUtils"
 import { timeStringToMinutes, toDateKey } from "@/features/booking/lib/slotUtils"
-import { useFormatters } from "@/lib/datetime"
+import { businessToday, useFormatters } from "@/lib/datetime"
+import { cn } from "@/lib/utils"
 
 export function WeekDayGrid({
   days,
@@ -19,6 +20,7 @@ export function WeekDayGrid({
   onReschedule: (id: string, dateKey: string, hour: number) => void
 }) {
   const { locale } = useFormatters()
+  const today = businessToday()
 
   const appointmentsByDateHour = useMemo(() => {
     const map = new Map<string, CalendarAppointment[]>()
@@ -44,7 +46,15 @@ export function WeekDayGrid({
             key={toDateKey(day)}
             className="border-r border-b border-border p-2 text-center text-sm font-medium last:border-r-0"
           >
-            {format(day, "EEE d", { locale })}
+            {format(day, "EEE", { locale })}{" "}
+            <span
+              className={cn(
+                "inline-flex size-6 items-center justify-center",
+                isSameDay(day, today) && "rounded-full bg-primary text-primary-foreground",
+              )}
+            >
+              {format(day, "d", { locale })}
+            </span>
           </div>
         ))}
         {hourRows.map((hour) => (

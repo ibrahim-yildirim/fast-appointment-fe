@@ -1,9 +1,10 @@
-import { format, isSameMonth, isToday } from "date-fns"
+import { format, isSameDay, isSameMonth } from "date-fns"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
 import { Badge } from "@/components/ui/badge"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
 import { toDateKey } from "@/features/booking/lib/slotUtils"
 import type { CustomerBookingView } from "@/features/my-bookings/api/customerBookingsApi"
@@ -37,19 +38,21 @@ function BookingChip({
   const { formatTime } = useFormatters()
 
   return (
-    <div className="group/chip relative">
-      <button
-        type="button"
-        onClick={() => onSelect(booking.id)}
-        className="flex w-full items-center gap-1.5 truncate rounded-md border border-border px-1.5 py-1 text-left text-xs transition-colors hover:bg-secondary"
-      >
-        <span className={cn("size-2 shrink-0 rounded-full", statusDot[booking.status])} />
-        <span className="truncate">
-          {formatTime(booking.startsAt.slice(11, 16))} &middot; {booking.businessName}
-        </span>
-      </button>
+    <HoverCard openDelay={150} closeDelay={50}>
+      <HoverCardTrigger asChild>
+        <button
+          type="button"
+          onClick={() => onSelect(booking.id)}
+          className="flex w-full items-center gap-1.5 truncate rounded-md border border-border px-1.5 py-1 text-left text-xs transition-colors hover:bg-secondary"
+        >
+          <span className={cn("size-2 shrink-0 rounded-full", statusDot[booking.status])} />
+          <span className="truncate">
+            {formatTime(booking.startsAt.slice(11, 16))} &middot; {booking.businessName}
+          </span>
+        </button>
+      </HoverCardTrigger>
 
-      <div className="invisible absolute left-0 top-full z-20 mt-1 w-56 rounded-lg border border-border bg-popover p-3 text-popover-foreground opacity-0 shadow-md ring-1 ring-foreground/10 transition-opacity group-hover/chip:visible group-hover/chip:opacity-100">
+      <HoverCardContent>
         <div className="flex items-center justify-between gap-2">
           <span className="font-medium">{booking.serviceName}</span>
           <Badge variant={statusVariant[booking.status]}>{t(`booking.status.${booking.status}`)}</Badge>
@@ -62,14 +65,15 @@ function BookingChip({
         <p className="text-xs text-muted-foreground">
           {t("booking.with", { name: booking.staffName })}
         </p>
-      </div>
-    </div>
+      </HoverCardContent>
+    </HoverCard>
   )
 }
 
 export function MyBookingsCalendar({ bookings }: { bookings: CustomerBookingView[] }) {
   const { t } = useTranslation()
   const { locale } = useFormatters()
+  const today = businessToday()
   const [referenceDate, setReferenceDate] = useState(() => businessToday())
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null)
 
@@ -133,7 +137,13 @@ export function MyBookingsCalendar({ bookings }: { bookings: CustomerBookingView
                 !isSameMonth(day, referenceDate) && "bg-muted/30 text-muted-foreground",
               )}
             >
-              <span className={cn("text-xs", isToday(day) && "font-semibold text-foreground")}>
+              <span
+                className={cn(
+                  "flex size-6 items-center justify-center text-xs",
+                  isSameDay(day, today) &&
+                    "rounded-full bg-primary font-semibold text-primary-foreground",
+                )}
+              >
                 {format(day, "d", { locale })}
               </span>
               {dayBookings.map((booking) => (
