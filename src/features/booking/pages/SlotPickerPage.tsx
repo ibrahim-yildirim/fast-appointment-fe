@@ -15,6 +15,7 @@ import {
 import { groupSlotsByDayPart, toDateKey } from "@/features/booking/lib/slotUtils"
 import { useService } from "@/features/services/hooks/useService"
 import { businessToday, useFormatters } from "@/lib/datetime"
+import { cn } from "@/lib/utils"
 import { formatDurationLabel } from "@/features/services/lib/durations"
 
 export function SlotPickerPage() {
@@ -92,7 +93,7 @@ export function SlotPickerPage() {
           disabled={(day) =>
             day < today || (availableDates !== undefined && !availableDates.has(toDateKey(day)))
           }
-          className="border-border bg-card self-start rounded-lg border p-3 [--cell-size:--spacing(10)] max-md:mx-auto"
+          className="border-border bg-card self-start rounded-lg border p-3 [--cell-size:--spacing(10)] [--primary-foreground:var(--gold-foreground)] [--primary:var(--gold)] max-md:mx-auto"
         />
 
         <section aria-live="polite" className="flex flex-col gap-6">
@@ -107,16 +108,33 @@ export function SlotPickerPage() {
                   {t(`booking.dayParts.${group.part}`)}
                 </h3>
                 <div className="grid grid-cols-4 gap-2 sm:grid-cols-5 lg:grid-cols-6">
-                  {group.slots.map((slot) => (
-                    <Button
-                      key={slot.time}
-                      variant="outline"
-                      className="hover:border-primary hover:bg-primary/5 hover:text-primary h-10 tabular-nums"
-                      onClick={() => handleSelectSlot(slot.time, slot.staffId)}
-                    >
-                      {formatTime(slot.time)}
-                    </Button>
-                  ))}
+                  {group.slots.map((slot) => {
+                    // Taken times stay visible (greyed, with the reason) so the day reads as a whole.
+                    const statusLabel =
+                      slot.status === "available" ? null : t(`booking.slotStatus.${slot.status}`)
+
+                    return (
+                      <Button
+                        key={slot.time}
+                        variant="outline"
+                        disabled={slot.staffId === null}
+                        aria-label={
+                          statusLabel ? `${formatTime(slot.time)}, ${statusLabel}` : undefined
+                        }
+                        className="hover:border-gold hover:bg-gold/5 hover:text-gold h-12 flex-col gap-0 tabular-nums"
+                        onClick={() => slot.staffId && handleSelectSlot(slot.time, slot.staffId)}
+                      >
+                        <span className={cn(slot.status === "booked" && "line-through")}>
+                          {formatTime(slot.time)}
+                        </span>
+                        {statusLabel && (
+                          <span className="text-[0.7rem] leading-tight font-normal">
+                            {statusLabel}
+                          </span>
+                        )}
+                      </Button>
+                    )
+                  })}
                 </div>
               </div>
             ))

@@ -1,19 +1,20 @@
-# Design: "Mahalle"
+# Design: "Ink & champagne"
 
-Warm, crafted, local: like a good neighborhood salon. Not a generic SaaS.
+Premium and calm, like a good salon: ivory paper, deep ink, a touch of champagne gold. Not a generic SaaS.
 
 ## Color (tokens in `src/index.css`)
 
-| Token              | Light     | Dark      | Use                                   |
-| ------------------ | --------- | --------- | ------------------------------------- |
-| `background`       | `#faf7f2` | `#1a1714` | Warm paper, not pure white/black      |
-| `foreground`       | `#2b2420` | `#f3ede4` | Espresso ink                          |
-| `primary`          | `#b4532a` | `#dd7d50` | Henna accent: main action + selection |
-| `muted-foreground` | `#6f6359` | `#b0a396` | Secondary text                        |
-| `border`           | `#e4d9cb` | 10% ink   | Hairlines                             |
+| Token              | Light     | Dark      | Use                                             |
+| ------------------ | --------- | --------- | ----------------------------------------------- |
+| `background`       | `#f6f2ea` | `#121110` | Ivory / rich charcoal, not pure white/black     |
+| `foreground`       | `#161412` | `#f2ede4` | Deep ink                                        |
+| `primary`          | `#161412` | `#f2ede4` | Main buttons: ink (ivory in dark mode)          |
+| `gold`             | `#86662f` | `#d2b27a` | Selected day/time, today, current step, details |
+| `muted-foreground` | `#6b6358` | `#a79e92` | Secondary text                                  |
+| `border`           | `#e2dacb` | 9% ivory  | Hairlines                                       |
 
-The accent has one job: the main action and the selected state. Everything else is neutral.
-All text pairs pass WCAG AA (4.5:1) in both modes.
+Gold is a detail color, never a large surface or body text. Light-mode gold is a deeper champagne
+(`#86662f`) because `#9a7642` fails AA. All text pairs pass WCAG AA (4.5:1) in both modes.
 
 ## Type
 
@@ -33,12 +34,13 @@ All text pairs pass WCAG AA (4.5:1) in both modes.
 - **Service list = salon price board**: name, dotted leader, price; the whole row is the link.
 - **Booking steps**: `BookingSteps` (Hizmet → Saat → Onay).
 - **Booking summary**: `BookingSummary` label/value rows; time and price emphasized.
-- **Times**: one list per day, grouped Sabah / Öğleden sonra / Akşam. Days without openings are disabled.
+- **Times**: 30-minute steps, one list per day, grouped Sabah / Öğleden sonra / Akşam. Taken times stay
+  visible but disabled: "Dolu" (crossed out) or "Randevunuz var". Days without openings are disabled.
 - **Dates**: always through `formatDate` on wall-clock strings, so every page words them the same way.
 
 ## Don't
 
 - Gradients, glows, emoji, an icon next to every label.
-- Accent color on headings, borders or decoration.
+- Gold on headings, large areas or long text.
 - Pure gray (`#737373`-style) neutrals; keep them warm.
 - Centered paragraphs and forms.

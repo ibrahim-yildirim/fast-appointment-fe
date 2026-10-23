@@ -29,7 +29,7 @@ export function BookingSteps({ current }: { current: BookingStep }) {
               <span
                 className={cn(
                   "flex size-5 items-center justify-center rounded-full text-xs tabular-nums",
-                  isCurrent && "bg-primary text-primary-foreground",
+                  isCurrent && "bg-gold text-gold-foreground",
                   isDone && "bg-foreground/10 text-foreground",
                   !isCurrent && !isDone && "border-border border",
                 )}

@@ -56,6 +56,8 @@ export const tr = {
     sun: "Paz",
   },
   landing: {
+    myBookings: "Randevularım",
+    myDashboard: "İşletme panelim",
     headline: "Her hizmet işletmesi için randevu sistemi",
     subheadline: "Hizmetleri, personel uygunluğunu ve randevuları tek yerden yönetin.",
     findBusiness: "İşletme bul",
@@ -145,6 +147,10 @@ export const tr = {
       service: "Hizmet",
       time: "Saat",
       confirm: "Onay",
+    },
+    slotStatus: {
+      booked: "Dolu",
+      customerBusy: "Randevunuz var",
     },
     dayParts: {
       morning: "Sabah",

@@ -24,8 +24,9 @@ export const queryKeys = {
       ["bookings", businessId, bookingId] as const,
   },
   slots: {
-    range: (businessId: string, serviceId: string, from: string) =>
-      ["slots", businessId, serviceId, from] as const,
+    // The viewer is part of the key: a logged-in customer also sees their own busy times.
+    range: (businessId: string, serviceId: string, from: string, viewerId: string | null) =>
+      ["slots", businessId, serviceId, from, viewerId] as const,
   },
   customers: {
     list: () => ["customers"] as const,

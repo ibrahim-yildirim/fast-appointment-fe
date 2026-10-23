@@ -1,10 +1,12 @@
-import { CalendarCheck, CalendarClock, LayoutDashboard, Search, Store, Users } from "lucide-react"
+import { CalendarCheck, CalendarClock, LayoutDashboard, Store, Users } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { LanguageToggle } from "@/components/layout/LanguageToggle"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import { Button } from "@/components/ui/button"
+import { useBusinesses } from "@/features/business/hooks/useBusinesses"
+import { useAuthStore } from "@/stores/authStore"
 
 const highlights = [
   { icon: Users, key: "oneAccount" },
@@ -12,8 +14,28 @@ const highlights = [
   { icon: CalendarClock, key: "realtime" },
 ] as const
 
+/** Where a logged-in visitor's own area is; null when nobody is logged in. */
+function useAccountLink() {
+  const { t } = useTranslation()
+  const role = useAuthStore((state) => state.role)
+  const businessId = useAuthStore((state) => state.businessId)
+  const { data: businesses } = useBusinesses()
+
+  if (role === "customer") return { to: "/account/bookings", label: t("landing.myBookings") }
+  if (role === "business_owner") {
+    const slug = businesses?.find((business) => business.id === businessId)?.slug
+    // An owner without a business yet is sent to onboarding.
+    return {
+      to: slug ? `/${slug}/dashboard` : "/onboarding/business",
+      label: t("landing.myDashboard"),
+    }
+  }
+  return null
+}
+
 export function MarketingLandingPage() {
   const { t } = useTranslation()
+  const account = useAccountLink()
 
   return (
     <>
@@ -23,12 +45,20 @@ export function MarketingLandingPage() {
           <span className="truncate">{t("common.appName")}</span>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/login">{t("auth.logIn")}</Link>
-          </Button>
-          <Button variant="outline" size="sm" asChild>
-            <Link to="/business/login">{t("auth.businessLogIn")}</Link>
-          </Button>
+          {account ? (
+            <Button variant="outline" size="sm" asChild>
+              <Link to={account.to}>{account.label}</Link>
+            </Button>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/login">{t("auth.logIn")}</Link>
+              </Button>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/business/login">{t("auth.businessLogIn")}</Link>
+              </Button>
+            </>
+          )}
           <LanguageToggle />
           <ThemeToggle />
         </div>
@@ -44,7 +74,11 @@ export function MarketingLandingPage() {
             <Link to="/businesses">{t("landing.findBusiness")}</Link>
           </Button>
           <Button size="lg" variant="outline" asChild>
-            <Link to="/login">{t("auth.logIn")}</Link>
+            {account ? (
+              <Link to={account.to}>{account.label}</Link>
+            ) : (
+              <Link to="/login">{t("auth.logIn")}</Link>
+            )}
           </Button>
         </div>
 
@@ -61,17 +95,6 @@ export function MarketingLandingPage() {
         </div>
 
         <div className="mt-12 flex w-full flex-col items-center gap-4 rounded-xl border border-border bg-muted/30 p-6 text-center sm:p-8">
-          <Search aria-hidden="true" className="h-6 w-6 text-primary" />
-          <div>
-            <h2 className="font-medium">{t("booking.bookedAsGuest")}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{t("booking.lookupHint")}</p>
-          </div>
-          <Button asChild>
-            <Link to="/booking-lookup">{t("booking.findMyBooking")}</Link>
-          </Button>
-        </div>
-
-        <div className="mt-6 flex w-full flex-col items-center gap-4 rounded-xl border border-border bg-muted/30 p-6 text-center sm:p-8">
           <Store aria-hidden="true" className="h-6 w-6 text-primary" />
           <div>
             <h2 className="font-medium">{t("landing.ownBusiness")}</h2>

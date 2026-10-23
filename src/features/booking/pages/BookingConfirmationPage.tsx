@@ -29,7 +29,7 @@ export function BookingConfirmationPage() {
       <div className="flex flex-col items-start gap-4">
         <span
           aria-hidden="true"
-          className="bg-primary text-primary-foreground flex size-12 items-center justify-center rounded-full"
+          className="bg-gold text-gold-foreground flex size-12 items-center justify-center rounded-full"
         >
           <CheckIcon className="size-6" strokeWidth={2.5} />
         </span>

@@ -59,7 +59,7 @@ export function ServiceBrowsePage() {
                 </div>
                 <ChevronRightIcon
                   aria-hidden="true"
-                  className="text-muted-foreground group-hover:text-primary size-5 shrink-0 transition-transform group-hover:translate-x-0.5"
+                  className="text-muted-foreground group-hover:text-gold size-5 shrink-0 transition-transform group-hover:translate-x-0.5"
                 />
               </Link>
             </li>

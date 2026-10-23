@@ -50,7 +50,7 @@ export function WeekDayGrid({
             <span
               className={cn(
                 "inline-flex size-6 items-center justify-center",
-                isSameDay(day, today) && "rounded-full bg-primary text-primary-foreground",
+                isSameDay(day, today) && "rounded-full bg-gold text-gold-foreground",
               )}
             >
               {format(day, "d", { locale })}

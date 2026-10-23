@@ -1,4 +1,4 @@
-import type { AvailableSlot } from "@/features/booking/api/slotsApi"
+import type { Slot } from "@/features/booking/api/slotsApi"
 import { bookingsApi } from "@/features/booking/api/bookingsApi"
 import {
   fromDateKey,
@@ -28,7 +28,7 @@ export async function fixtureSlots(
   service: Service,
   from: string,
   to: string,
-): Promise<AvailableSlot[]> {
+): Promise<Slot[]> {
   const allStaff = await staffApi.list(business)
   const eligibleStaff = allStaff.filter((member) => service.eligibleStaffIds.includes(member.id))
 
@@ -45,7 +45,7 @@ export async function fixtureSlots(
     bookingsApi.list(business.id),
   ])
 
-  const slots: AvailableSlot[] = []
+  const slots: Slot[] = []
   for (let date = fromDateKey(from); toDateKey(date) <= to; date.setDate(date.getDate() + 1)) {
     slots.push(...buildSlotsForDate(service, new Date(date), staffSchedules, bookings))
   }
@@ -57,7 +57,7 @@ function buildSlotsForDate(
   date: Date,
   staffSchedules: StaffSchedule[],
   bookings: Booking[],
-): AvailableSlot[] {
+): Slot[] {
   const dateKey = toDateKey(date)
   const weekday = weekdayForDate(date)
   const dayBookings = bookings.filter(
@@ -102,6 +102,6 @@ function buildSlotsForDate(
   }
 
   return [...slots.entries()]
-    .map(([time, staffId]) => ({ date: dateKey, time, staffId }))
+    .map(([time, staffId]) => ({ date: dateKey, time, staffId, status: "available" as const }))
     .sort((a, b) => a.time.localeCompare(b.time))
 }

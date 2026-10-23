@@ -7,52 +7,55 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
-  "Mahalle" palette (see docs/design.md): warm paper neutrals, espresso ink, one henna accent.
-  The accent (primary) is reserved for the main action and selected states.
+  "Ink & champagne" palette (see docs/design.md): ivory paper, deep ink, champagne gold.
+  Main buttons are ink (primary). Gold is only for the selected time/day, today and small details.
 */
 :root {
-  --background: #faf7f2;
-  --foreground: #2b2420;
+  --background: #f6f2ea;
+  --foreground: #161412;
 
-  --card: #fffdf9;
-  --card-foreground: #2b2420;
-  --popover: #fffdf9;
-  --popover-foreground: #2b2420;
+  --card: #fbf8f2;
+  --card-foreground: #161412;
+  --popover: #fbf8f2;
+  --popover-foreground: #161412;
 
-  --primary: #b4532a;
-  --primary-foreground: #fff8f2;
+  --primary: #161412;
+  --primary-foreground: #f6f2ea;
 
-  --secondary: #f0e9df;
-  --secondary-foreground: #2b2420;
+  --secondary: #ede7db;
+  --secondary-foreground: #161412;
 
-  --muted: #f0e9df;
-  --muted-foreground: #6f6359;
+  --muted: #ede7db;
+  --muted-foreground: #6b6358;
 
-  --accent: #ebe2d6;
-  --accent-foreground: #2b2420;
+  --accent: #e8e1d4;
+  --accent-foreground: #161412;
+
+  --gold: #86662f;
+  --gold-foreground: #fffdf8;
 
   --destructive: #b42318;
 
-  --border: #e4d9cb;
-  --input: #dccfbf;
-  --ring: #c9825f;
+  --border: #e2dacb;
+  --input: #d8cebd;
+  --ring: #86662f;
 
-  --chart-1: #b4532a;
-  --chart-2: #2b2420;
-  --chart-3: #8a6f5a;
-  --chart-4: #c9a98c;
-  --chart-5: #e4d9cb;
+  --chart-1: #86662f;
+  --chart-2: #161412;
+  --chart-3: #6b6358;
+  --chart-4: #b9a585;
+  --chart-5: #e2dacb;
 
   --radius: 0.5rem;
 
-  --sidebar: #f5f0e8;
-  --sidebar-foreground: #2b2420;
-  --sidebar-primary: #b4532a;
-  --sidebar-primary-foreground: #fff8f2;
-  --sidebar-accent: #ebe2d6;
-  --sidebar-accent-foreground: #2b2420;
-  --sidebar-border: #e4d9cb;
-  --sidebar-ring: #c9825f;
+  --sidebar: #f1ece2;
+  --sidebar-foreground: #161412;
+  --sidebar-primary: #161412;
+  --sidebar-primary-foreground: #f6f2ea;
+  --sidebar-accent: #e8e1d4;
+  --sidebar-accent-foreground: #161412;
+  --sidebar-border: #e2dacb;
+  --sidebar-ring: #86662f;
 
   font: 18px/145% var(--font-sans);
   letter-spacing: 0.18px;
@@ -64,46 +67,49 @@
 }
 
 .dark {
-  --background: #1a1714;
-  --foreground: #f3ede4;
+  --background: #121110;
+  --foreground: #f2ede4;
 
-  --card: #221e1a;
-  --card-foreground: #f3ede4;
-  --popover: #26211d;
-  --popover-foreground: #f3ede4;
+  --card: #1a1816;
+  --card-foreground: #f2ede4;
+  --popover: #1e1b19;
+  --popover-foreground: #f2ede4;
 
-  --primary: #dd7d50;
-  --primary-foreground: #1a1714;
+  --primary: #f2ede4;
+  --primary-foreground: #121110;
 
-  --secondary: #2c2722;
-  --secondary-foreground: #f3ede4;
+  --secondary: #24211e;
+  --secondary-foreground: #f2ede4;
 
-  --muted: #2c2722;
-  --muted-foreground: #b0a396;
+  --muted: #24211e;
+  --muted-foreground: #a79e92;
 
-  --accent: #332d27;
-  --accent-foreground: #f3ede4;
+  --accent: #2a2622;
+  --accent-foreground: #f2ede4;
+
+  --gold: #d2b27a;
+  --gold-foreground: #121110;
 
   --destructive: #f07167;
 
-  --border: rgba(243, 237, 228, 0.1);
-  --input: rgba(243, 237, 228, 0.16);
-  --ring: #dd7d50;
+  --border: rgba(242, 237, 228, 0.09);
+  --input: rgba(242, 237, 228, 0.14);
+  --ring: #d2b27a;
 
-  --chart-1: #dd7d50;
-  --chart-2: #f3ede4;
-  --chart-3: #b0a396;
-  --chart-4: #7d6f63;
-  --chart-5: #4a4139;
+  --chart-1: #d2b27a;
+  --chart-2: #f2ede4;
+  --chart-3: #a79e92;
+  --chart-4: #6f665b;
+  --chart-5: #3a3530;
 
-  --sidebar: #1f1b18;
-  --sidebar-foreground: #f3ede4;
-  --sidebar-primary: #dd7d50;
-  --sidebar-primary-foreground: #1a1714;
-  --sidebar-accent: #2c2722;
-  --sidebar-accent-foreground: #f3ede4;
-  --sidebar-border: rgba(243, 237, 228, 0.1);
-  --sidebar-ring: #dd7d50;
+  --sidebar: #161412;
+  --sidebar-foreground: #f2ede4;
+  --sidebar-primary: #f2ede4;
+  --sidebar-primary-foreground: #121110;
+  --sidebar-accent: #24211e;
+  --sidebar-accent-foreground: #f2ede4;
+  --sidebar-border: rgba(242, 237, 228, 0.09);
+  --sidebar-ring: #d2b27a;
 }
 
 @theme inline {
@@ -126,6 +132,8 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);

@@ -39,7 +39,7 @@ export function BusinessPublicProfilePage() {
               <dd className="mt-0.5 tabular-nums">
                 <a
                   href={`tel:${business.phone.replace(/\s/g, "")}`}
-                  className="hover:text-primary underline-offset-4 hover:underline"
+                  className="hover:text-gold underline-offset-4 hover:underline"
                 >
                   {business.phone}
                 </a>
@@ -50,7 +50,7 @@ export function BusinessPublicProfilePage() {
               <dd className="mt-0.5">
                 <a
                   href={`mailto:${business.email}`}
-                  className="hover:text-primary underline-offset-4 hover:underline"
+                  className="hover:text-gold underline-offset-4 hover:underline"
                 >
                   {business.email}
                 </a>
@@ -77,7 +77,7 @@ export function BusinessPublicProfilePage() {
                   <dt className="flex items-center gap-2">
                     {t(`weekday.${day}`)}
                     {isToday && (
-                      <span aria-hidden="true" className="bg-primary size-1.5 rounded-full" />
+                      <span aria-hidden="true" className="bg-gold size-1.5 rounded-full" />
                     )}
                   </dt>
                   <dd className={cn("tabular-nums", !hours?.enabled && "text-muted-foreground")}>

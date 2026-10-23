@@ -2,9 +2,10 @@ import { useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import { queryKeys } from "@/api/queryKeys"
-import { slotsApi } from "@/features/booking/api/slotsApi"
+import { slotsApi, type SlotStatus } from "@/features/booking/api/slotsApi"
 import { fromDateKey, toDateKey } from "@/features/booking/lib/slotUtils"
 import { businessToday } from "@/lib/datetime"
+import { useAuthStore } from "@/stores/authStore"
 import type { BusinessRef, Service } from "@/types"
 
 /** How far ahead to look for a day with openings before giving up (the backend's maximum). */
@@ -12,7 +13,8 @@ const SLOT_SEARCH_DAYS = 30
 
 export type SlotOption = {
   time: string
-  staffId: string
+  staffId: string | null
+  status: SlotStatus
 }
 
 /**
@@ -20,6 +22,7 @@ export type SlotOption = {
  * day the picker shows as well as "which day opens first?".
  */
 function useSlotWindow(business: BusinessRef, service: Service | undefined) {
+  const viewerId = useAuthStore((state) => state.actorId)
   const [range] = useState(() => {
     const from = businessToday()
     const to = new Date(from)
@@ -28,7 +31,7 @@ function useSlotWindow(business: BusinessRef, service: Service | undefined) {
   })
 
   return useQuery({
-    queryKey: queryKeys.slots.range(business.id, service?.id ?? "", range.from),
+    queryKey: queryKeys.slots.range(business.id, service?.id ?? "", range.from, viewerId),
     enabled: Boolean(service),
     queryFn: () => slotsApi.list(business, service!, range.from, range.to),
   })
@@ -42,7 +45,7 @@ export function useAvailableSlots(business: BusinessRef, service: Service | unde
     const dateKey = toDateKey(date)
     return data
       .filter((slot) => slot.date === dateKey)
-      .map((slot) => ({ time: slot.time, staffId: slot.staffId }))
+      .map((slot) => ({ time: slot.time, staffId: slot.staffId, status: slot.status }))
   }, [data, date])
 
   return { data: slots, isLoading }
@@ -52,7 +55,13 @@ export function useAvailableSlots(business: BusinessRef, service: Service | unde
 export function useAvailableDates(business: BusinessRef, service: Service | undefined) {
   const { data, isLoading } = useSlotWindow(business, service)
 
-  const dates = useMemo(() => (data ? new Set(data.map((slot) => slot.date)) : undefined), [data])
+  const dates = useMemo(
+    () =>
+      data
+        ? new Set(data.filter((slot) => slot.status === "available").map((slot) => slot.date))
+        : undefined,
+    [data],
+  )
 
   return { data: dates, isLoading }
 }
@@ -66,7 +75,8 @@ export function useNextAvailableDate(business: BusinessRef, service: Service | u
 
   const nextDate = useMemo(() => {
     if (!data) return undefined
-    return data.length > 0 ? fromDateKey(data[0].date) : null
+    const first = data.find((slot) => slot.status === "available")
+    return first ? fromDateKey(first.date) : null
   }, [data])
 
   return { data: nextDate, isLoading }

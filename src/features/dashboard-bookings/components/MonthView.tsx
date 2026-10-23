@@ -73,7 +73,7 @@ export function MonthView({
               className={cn(
                 "flex size-6 items-center justify-center text-xs",
                 isSameDay(day, today) &&
-                  "rounded-full bg-primary font-semibold text-primary-foreground",
+                  "rounded-full bg-gold font-semibold text-gold-foreground",
               )}
             >
               {format(day, "d", { locale })}

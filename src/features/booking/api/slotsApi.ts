@@ -5,26 +5,37 @@ import { toHourMinute, toId } from "@/api/mappers"
 import { fixtureSlots } from "@/features/booking/lib/fixtureSlots"
 import type { BusinessRef, Service } from "@/types"
 
-export type AvailableSlot = {
+/** booked: no staff free. customerBusy: the logged-in customer has another booking then. */
+export type SlotStatus = "available" | "booked" | "customerBusy"
+
+export type Slot = {
   date: string
   time: string
-  staffId: string
+  staffId: string | null
+  status: SlotStatus
 }
 
 type SlotResponse = {
   date: string
   time: string
-  staffId: number
+  staffId: number | null
+  status: "AVAILABLE" | "BOOKED" | "CUSTOMER_BUSY"
 }
 
+const toSlotStatus = {
+  AVAILABLE: "available",
+  BOOKED: "booked",
+  CUSTOMER_BUSY: "customerBusy",
+} as const satisfies Record<SlotResponse["status"], SlotStatus>
+
 export const slotsApi = {
-  /** Free start times between two date keys (inclusive); the backend allows up to 30 days. */
+  /** Start times between two date keys (inclusive), free or not; the backend allows up to 30 days. */
   list: async (
     business: BusinessRef,
     service: Service,
     from: string,
     to: string,
-  ): Promise<AvailableSlot[]> => {
+  ): Promise<Slot[]> => {
     if (USE_FIXTURES) {
       return fixtureSlots(business, service, from, to)
     }
@@ -34,7 +45,8 @@ export const slotsApi = {
     return response.map((slot) => ({
       date: slot.date,
       time: toHourMinute(slot.time),
-      staffId: toId(slot.staffId),
+      staffId: slot.staffId === null ? null : toId(slot.staffId),
+      status: toSlotStatus[slot.status],
     }))
   },
 }

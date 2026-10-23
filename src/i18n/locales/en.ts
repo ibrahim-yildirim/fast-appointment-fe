@@ -55,6 +55,8 @@ export const en: typeof tr = {
     sun: "Sun",
   },
   landing: {
+    myBookings: "My bookings",
+    myDashboard: "My dashboard",
     headline: "Appointment booking for any service business",
     subheadline: "Manage services, staff availability, and bookings in one place.",
     findBusiness: "Find a business",
@@ -143,6 +145,10 @@ export const en: typeof tr = {
       service: "Service",
       time: "Time",
       confirm: "Confirm",
+    },
+    slotStatus: {
+      booked: "Booked",
+      customerBusy: "Your booking",
     },
     dayParts: {
       morning: "Morning",
