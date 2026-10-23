@@ -227,7 +227,8 @@ export const tr = {
     active: "Aktif",
     inactive: "Pasif",
     deleteTitle: "{{name}} silinsin mi?",
-    deleteBody: "Bu işlem geri alınamaz. Müşteriler bu hizmet için randevu alamaz.",
+    deleteBody:
+      "Müşteriler bu hizmet için artık randevu alamaz. Mevcut randevular korunur, Düzenle'den tekrar açabilirsiniz.",
     name: "Ad",
     description: "Açıklama",
     duration: "Süre",
@@ -239,7 +240,7 @@ export const tr = {
     notFound: "Hizmet bulunamadı.",
     createdToast: "Hizmet oluşturuldu.",
     updatedToast: "Hizmet güncellendi.",
-    deletedToast: "Hizmet silindi.",
+    deletedToast: "Hizmet pasife alındı.",
     validation: {
       nameRequired: "Ad zorunludur.",
       descriptionRequired: "Açıklama zorunludur.",

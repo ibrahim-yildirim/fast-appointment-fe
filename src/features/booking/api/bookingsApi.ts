@@ -1,11 +1,43 @@
 import { apiClient } from "@/api/client"
 import { USE_FIXTURES } from "@/api/config"
 import { endpoints } from "@/api/endpoints"
+import { toBackendId, toBusinessLocal, toId, toWallClock } from "@/api/mappers"
 import { businessNow } from "@/lib/datetime"
 import { ApiError } from "@/api/types"
 import { bookings } from "@/fixtures"
 import { generateBookingReference } from "@/lib/bookingReference"
-import type { Booking } from "@/types"
+import type { Booking, BookingStatus } from "@/types"
+
+type BookingResponse = {
+  id: number
+  businessId: number
+  serviceId: number
+  staffId: number
+  customerId: number | null
+  startsAt: string
+  endsAt: string
+  status: "PENDING" | "CONFIRMED" | "CANCELLED"
+  notes: string | null
+}
+
+// Guest fields and the reference code don't exist in the backend yet (guest booking is postponed).
+function toBooking(response: BookingResponse): Booking {
+  return {
+    id: toId(response.id),
+    reference: "",
+    businessId: toId(response.businessId),
+    serviceId: toId(response.serviceId),
+    staffId: toId(response.staffId),
+    customerId: response.customerId === null ? null : toId(response.customerId),
+    guestName: null,
+    guestPhone: null,
+    guestEmail: null,
+    startsAt: toWallClock(response.startsAt),
+    endsAt: toWallClock(response.endsAt),
+    status: response.status.toLowerCase() as BookingStatus,
+    notes: response.notes ?? "",
+  }
+}
 
 export type CreateBookingInput = {
   serviceId: string
@@ -81,7 +113,8 @@ export const bookingsApi = {
     if (USE_FIXTURES) {
       return bookings.filter((booking) => booking.businessId === businessId)
     }
-    return apiClient.get<Booking[]>(endpoints.bookings.list(businessId))
+    const response = await apiClient.get<BookingResponse[]>(endpoints.bookings.ownerList())
+    return response.map(toBooking)
   },
 
   byId: async (businessId: string, bookingId: string): Promise<Booking | undefined> => {
@@ -154,6 +187,26 @@ export const bookingsApi = {
       bookings[index] = updated
       return updated
     }
-    return apiClient.patch<Booking>(endpoints.bookings.byId(businessId, bookingId), patch)
+    // The backend cancels with DELETE and replaces the whole booking with PUT.
+    if (patch.status === "cancelled") {
+      await apiClient.delete<void>(endpoints.bookings.ownerById(bookingId))
+      return bookingsApi.byIdForOwner(businessId, bookingId)
+    }
+    const current = await bookingsApi.byIdForOwner(businessId, bookingId)
+    const merged = { ...current, ...patch }
+    const response = await apiClient.put<BookingResponse>(endpoints.bookings.ownerById(bookingId), {
+      serviceId: toBackendId(merged.serviceId),
+      staffId: toBackendId(merged.staffId),
+      startsAt: toBusinessLocal(merged.startsAt),
+      endsAt: toBusinessLocal(merged.endsAt),
+      notes: merged.notes,
+    })
+    return toBooking(response)
+  },
+
+  byIdForOwner: async (businessId: string, bookingId: string): Promise<Booking> => {
+    const booking = (await bookingsApi.list(businessId)).find((item) => item.id === bookingId)
+    if (!booking) throw new Error("errors.bookingNotFound")
+    return booking
   },
 }

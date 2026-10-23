@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
 import { useDeleteService } from "@/features/services/hooks/useDeleteService"
-import { useServices } from "@/features/services/hooks/useServices"
+import { useOwnerServices } from "@/features/services/hooks/useOwnerServices"
 import { useFormatters } from "@/lib/datetime"
 import { formatDurationLabel } from "@/features/services/lib/durations"
 
@@ -27,7 +27,7 @@ export function ServicesListPage() {
   const { t } = useTranslation()
   const { formatMoney } = useFormatters()
   const business = useBusinessContext()
-  const { data: services, isLoading } = useServices(business)
+  const { data: services, isLoading } = useOwnerServices(business.id)
   const deleteService = useDeleteService(business.id)
   const [search, setSearch] = useState("")
 
@@ -79,28 +79,30 @@ export function ServicesListPage() {
                     {t("common.edit")}
                   </Link>
                 </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="sm">
-                      {t("common.delete")}
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>{t("services.deleteTitle", { name: service.name })}</AlertDialogTitle>
-                      <AlertDialogDescription>{t("services.deleteBody")}</AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-                      <AlertDialogAction
-                        variant="destructive"
-                        onClick={() => deleteService.mutate(service.id)}
-                      >
+                {service.active && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="sm">
                         {t("common.delete")}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>{t("services.deleteTitle", { name: service.name })}</AlertDialogTitle>
+                        <AlertDialogDescription>{t("services.deleteBody")}</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                        <AlertDialogAction
+                          variant="destructive"
+                          onClick={() => deleteService.mutate(service.id)}
+                        >
+                          {t("common.delete")}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
               </div>
             </div>
           ))}

@@ -15,8 +15,8 @@ import {
 } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 import { getWeekDays, navigateDate, type CalendarView } from "@/lib/calendarUtils"
 import { businessToday } from "@/lib/datetime"
-import { useServices } from "@/features/services/hooks/useServices"
-import { useStaff } from "@/features/staff-calendar/hooks/useStaff"
+import { useOwnerServices } from "@/features/services/hooks/useOwnerServices"
+import { useOwnerStaff } from "@/features/staff-calendar/hooks/useOwnerStaff"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export function DashboardBookingsPage() {
@@ -26,8 +26,8 @@ export function DashboardBookingsPage() {
   const [filters, setFilters] = useState<CalendarFilters>(defaultCalendarFilters)
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null)
 
-  const { data: services } = useServices(business)
-  const { data: staff } = useStaff(business)
+  const { data: services } = useOwnerServices(business.id)
+  const { data: staff } = useOwnerStaff(business.id)
   const { appointments, isLoading } = useCalendarAppointments(business, filters)
   const updateBooking = useUpdateBooking(business.id)
 
@@ -53,10 +53,12 @@ export function DashboardBookingsPage() {
   const selectedAppointment =
     appointments.find((appointment) => appointment.id === selectedAppointmentId) ?? null
   const eligibleStaff = selectedAppointment
-    ? (staff ?? []).filter((member) =>
-        services
-          ?.find((service) => service.id === selectedAppointment.serviceId)
-          ?.eligibleStaffIds.includes(member.id),
+    ? (staff ?? []).filter(
+        (member) =>
+          member.active &&
+          services
+            ?.find((service) => service.id === selectedAppointment.serviceId)
+            ?.eligibleStaffIds.includes(member.id),
       )
     : []
 

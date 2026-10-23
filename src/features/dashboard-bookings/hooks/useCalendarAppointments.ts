@@ -2,8 +2,8 @@ import { useMemo } from "react"
 
 import { useBookings } from "@/features/booking/hooks/useBookings"
 import { useCustomers } from "@/features/customers/hooks/useCustomers"
-import { useServices } from "@/features/services/hooks/useServices"
-import { useStaff } from "@/features/staff-calendar/hooks/useStaff"
+import { useOwnerServices } from "@/features/services/hooks/useOwnerServices"
+import { useOwnerStaff } from "@/features/staff-calendar/hooks/useOwnerStaff"
 import type { BookingStatus, BusinessRef } from "@/types"
 
 export type CalendarAppointment = {
@@ -39,8 +39,8 @@ export const defaultCalendarFilters: CalendarFilters = {
 
 export function useCalendarAppointments(business: BusinessRef, filters: CalendarFilters) {
   const bookingsQuery = useBookings(business.id)
-  const servicesQuery = useServices(business)
-  const staffQuery = useStaff(business)
+  const servicesQuery = useOwnerServices(business.id)
+  const staffQuery = useOwnerStaff(business.id)
   const customersQuery = useCustomers()
 
   const appointments = useMemo(() => {

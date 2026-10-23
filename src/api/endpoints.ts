@@ -6,13 +6,15 @@ export const endpoints = {
   },
   services: {
     list: (businessSlug: string) => `/api/businesses/${businessSlug}/services`,
-    byId: (businessId: string, serviceId: string) =>
-      `/api/businesses/${businessId}/services/${serviceId}`,
+    ownerList: () => `/api/business/services`,
+    create: () => `/api/services`,
+    byId: (serviceId: string) => `/api/services/${serviceId}`,
   },
   staff: {
     list: (businessSlug: string) => `/api/businesses/${businessSlug}/staff`,
-    byId: (businessId: string, staffId: string) =>
-      `/api/businesses/${businessId}/staff/${staffId}`,
+    ownerList: () => `/api/business/staff`,
+    create: () => `/api/staff`,
+    byId: (staffId: string) => `/api/staff/${staffId}`,
     availability: (businessId: string, staffId: string) =>
       `/api/businesses/${businessId}/staff/${staffId}/availability`,
     timeOff: (businessId: string, staffId: string) =>
@@ -23,6 +25,8 @@ export const endpoints = {
   bookings: {
     lookup: () => `/api/bookings/lookup`,
     list: (businessId: string) => `/api/businesses/${businessId}/bookings`,
+    ownerList: () => `/api/business/bookings`,
+    ownerById: (bookingId: string) => `/api/business/bookings/${bookingId}`,
     byId: (businessId: string, bookingId: string) =>
       `/api/businesses/${businessId}/bookings/${bookingId}`,
   },

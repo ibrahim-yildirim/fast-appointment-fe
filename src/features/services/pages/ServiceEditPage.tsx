@@ -5,16 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
 import { ServiceForm } from "@/features/services/components/ServiceForm"
-import { useService } from "@/features/services/hooks/useService"
+import { useOwnerService } from "@/features/services/hooks/useOwnerService"
 import { useUpdateService } from "@/features/services/hooks/useUpdateService"
-import { useStaff } from "@/features/staff-calendar/hooks/useStaff"
+import { useOwnerStaff } from "@/features/staff-calendar/hooks/useOwnerStaff"
 
 export function ServiceEditPage() {
   const { t } = useTranslation()
   const business = useBusinessContext()
   const { serviceId } = useParams<{ serviceId: string }>()
-  const { data: service, isLoading: serviceLoading } = useService(business, serviceId!)
-  const { data: staff, isLoading: staffLoading } = useStaff(business)
+  const { data: service, isLoading: serviceLoading } = useOwnerService(business.id, serviceId!)
+  const { data: staff, isLoading: staffLoading } = useOwnerStaff(business.id)
   const updateService = useUpdateService(business.id, serviceId!, business.slug)
 
   const isLoading = serviceLoading || staffLoading
@@ -32,7 +32,7 @@ export function ServiceEditPage() {
         ) : (
           <ServiceForm
             defaultValues={service}
-            staff={staff ?? []}
+            staff={(staff ?? []).filter((member) => member.active)}
             onSubmit={(values) => updateService.mutate(values)}
             isSubmitting={updateService.isPending}
             submitLabel={t("services.saveChanges")}

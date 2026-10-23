@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
 
 import {
   AlertDialog,
@@ -18,19 +17,21 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
-import { useServices } from "@/features/services/hooks/useServices"
+import { useOwnerServices } from "@/features/services/hooks/useOwnerServices"
 import { StaffForm } from "@/features/staff-calendar/components/StaffForm"
 import { useCreateStaff } from "@/features/staff-calendar/hooks/useCreateStaff"
 import { useDeleteStaff } from "@/features/staff-calendar/hooks/useDeleteStaff"
-import { useStaff } from "@/features/staff-calendar/hooks/useStaff"
+import { useOwnerStaff } from "@/features/staff-calendar/hooks/useOwnerStaff"
 import { useUpdateStaff } from "@/features/staff-calendar/hooks/useUpdateStaff"
 import type { Staff } from "@/types"
 
 export function StaffListPage() {
   const { t } = useTranslation()
   const business = useBusinessContext()
-  const { data: staff, isLoading } = useStaff(business)
-  const { data: services } = useServices(business)
+  const { data: ownerStaff, isLoading } = useOwnerStaff(business.id)
+  const { data: services } = useOwnerServices(business.id)
+  // Removed staff stay in the data for old bookings, but there is no way to bring them back yet.
+  const staff = ownerStaff?.filter((member) => member.active)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingStaff, setEditingStaff] = useState<Staff | null>(null)
 
@@ -87,11 +88,6 @@ export function StaffListPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" asChild>
-                  <Link to={`/${business.slug}/dashboard/staff/${member.id}/availability`}>
-                    {t("staff.availability")}
-                  </Link>
-                </Button>
                 <Button variant="outline" size="sm" onClick={() => openEdit(member)}>
                   {t("common.edit")}
                 </Button>
@@ -134,7 +130,7 @@ export function StaffListPage() {
           </DialogHeader>
           <StaffForm
             defaultValues={editingStaff ?? undefined}
-            services={services ?? []}
+            services={(services ?? []).filter((service) => service.active)}
             isSubmitting={editingStaff ? updateStaff.isPending : createStaff.isPending}
             submitLabel={editingStaff ? t("staff.saveChanges") : t("staff.addStaff")}
             onSubmit={(values) => {

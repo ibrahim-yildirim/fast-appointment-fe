@@ -7,6 +7,7 @@ export const staff: Staff[] = [
     name: "Elif Kaya",
     email: "elif@isikguzellik.example",
     colorTag: "#525252",
+    active: true,
     serviceIds: ["svc-1", "svc-2", "svc-3"],
   },
   {
@@ -15,6 +16,7 @@ export const staff: Staff[] = [
     name: "Burak Şahin",
     email: "burak@isikguzellik.example",
     colorTag: "#a3a3a3",
+    active: true,
     serviceIds: ["svc-3", "svc-4", "svc-5"],
   },
   {
@@ -23,6 +25,7 @@ export const staff: Staff[] = [
     name: "Dr. Selin Aksoy",
     email: "selin.aksoy@zirvedis.example",
     colorTag: "#525252",
+    active: true,
     serviceIds: ["svc-6", "svc-7", "svc-8"],
   },
   {
@@ -31,6 +34,7 @@ export const staff: Staff[] = [
     name: "Dr. Mert Çelik",
     email: "mert.celik@zirvedis.example",
     colorTag: "#a3a3a3",
+    active: true,
     serviceIds: ["svc-7", "svc-9", "svc-10"],
   },
 ]

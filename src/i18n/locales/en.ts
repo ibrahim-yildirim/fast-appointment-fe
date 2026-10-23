@@ -225,7 +225,8 @@ export const en: typeof tr = {
     active: "Active",
     inactive: "Inactive",
     deleteTitle: "Delete {{name}}?",
-    deleteBody: "This can't be undone. Customers won't be able to book this service anymore.",
+    deleteBody:
+      "Customers won't be able to book this service anymore. Existing bookings are kept, and you can turn it back on from Edit.",
     name: "Name",
     description: "Description",
     duration: "Duration",
@@ -237,7 +238,7 @@ export const en: typeof tr = {
     notFound: "Service not found.",
     createdToast: "Service created.",
     updatedToast: "Service updated.",
-    deletedToast: "Service deleted.",
+    deletedToast: "Service deactivated.",
     validation: {
       nameRequired: "Name is required.",
       descriptionRequired: "Description is required.",

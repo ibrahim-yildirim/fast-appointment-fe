@@ -1,7 +1,7 @@
 import { apiClient } from "@/api/client"
 import { USE_FIXTURES } from "@/api/config"
 import { endpoints } from "@/api/endpoints"
-import { toId } from "@/api/mappers"
+import { toBackendId, toId } from "@/api/mappers"
 import type { ServiceFormInput } from "@/features/services/schemas/serviceFormSchema"
 import { services } from "@/fixtures"
 import type { BusinessRef, Service } from "@/types"
@@ -14,23 +14,27 @@ type ServiceOfferingResponse = {
   durationMinutes: number
   price: number
   active: boolean
+  eligibleStaffIds: number[]
 }
 
-// Staff eligibility isn't modelled in the backend yet (phase 4), so it starts empty.
 function toService(response: ServiceOfferingResponse): Service {
   return {
     ...response,
     id: toId(response.id),
     businessId: toId(response.businessId),
     description: response.description ?? "",
-    eligibleStaffIds: [],
+    eligibleStaffIds: response.eligibleStaffIds.map(toId),
   }
+}
+
+function toServiceRequest(input: ServiceFormInput) {
+  return { ...input, eligibleStaffIds: input.eligibleStaffIds.map(toBackendId) }
 }
 
 export const servicesApi = {
   list: async (business: BusinessRef): Promise<Service[]> => {
     if (USE_FIXTURES) {
-      return services.filter((service) => service.businessId === business.id)
+      return services.filter((service) => service.businessId === business.id && service.active)
     }
     const response = await apiClient.get<ServiceOfferingResponse[]>(
       endpoints.services.list(business.slug),
@@ -44,13 +48,26 @@ export const servicesApi = {
     return all.find((service) => service.id === serviceId) ?? null
   },
 
+  /** The owner's own services, inactive ones included. */
+  listForOwner: async (businessId: string): Promise<Service[]> => {
+    if (USE_FIXTURES) {
+      return services.filter((service) => service.businessId === businessId)
+    }
+    const response = await apiClient.get<ServiceOfferingResponse[]>(endpoints.services.ownerList())
+    return response.map(toService)
+  },
+
   create: async (businessId: string, input: ServiceFormInput): Promise<Service> => {
     if (USE_FIXTURES) {
       const service: Service = { id: `svc-${Date.now()}`, businessId, ...input }
       services.push(service)
       return service
     }
-    return apiClient.post<Service>(endpoints.services.list(businessId), input)
+    const response = await apiClient.post<ServiceOfferingResponse>(
+      endpoints.services.create(),
+      toServiceRequest(input),
+    )
+    return toService(response)
   },
 
   update: async (
@@ -67,17 +84,22 @@ export const servicesApi = {
       services[index] = updated
       return updated
     }
-    return apiClient.put<Service>(endpoints.services.byId(businessId, serviceId), input)
+    const response = await apiClient.put<ServiceOfferingResponse>(
+      endpoints.services.byId(serviceId),
+      toServiceRequest(input),
+    )
+    return toService(response)
   },
 
+  // Bookings keep pointing at a service, so "delete" only deactivates it.
   remove: async (businessId: string, serviceId: string): Promise<void> => {
     if (USE_FIXTURES) {
-      const index = services.findIndex(
-        (service) => service.businessId === businessId && service.id === serviceId,
+      const service = services.find(
+        (candidate) => candidate.businessId === businessId && candidate.id === serviceId,
       )
-      if (index !== -1) services.splice(index, 1)
+      if (service) service.active = false
       return
     }
-    return apiClient.delete<void>(endpoints.services.byId(businessId, serviceId))
+    return apiClient.delete<void>(endpoints.services.byId(serviceId))
   },
 }

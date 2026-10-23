@@ -5,6 +5,7 @@ export type Staff = {
   email: string
   colorTag: string
   serviceIds: string[]
+  active: boolean
 }
 
 export type Weekday = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun"
