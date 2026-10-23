@@ -23,7 +23,7 @@ export function DashboardLayout() {
   const { logout } = useBusinessAuth()
 
   return (
-    <div className="grid min-h-screen grid-cols-[240px_1fr]">
+    <div className="grid min-h-screen grid-cols-[240px_minmax(0,1fr)]">
       <aside className="flex flex-col border-r border-border px-4 py-6">
         <div className="mb-6 px-2 font-semibold">{business.name}</div>
         <nav className="flex flex-col gap-1">

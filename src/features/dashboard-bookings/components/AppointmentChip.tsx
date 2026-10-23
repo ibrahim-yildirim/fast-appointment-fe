@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next"
+
 import { Badge } from "@/components/ui/badge"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
@@ -20,6 +22,7 @@ export function AppointmentChip({
   onSelect: (id: string) => void
   className?: string
 }) {
+  const { t } = useTranslation()
   const { formatTime } = useFormatters()
 
   return (
@@ -51,13 +54,17 @@ export function AppointmentChip({
       <HoverCardContent>
         <div className="flex items-center justify-between gap-2">
           <span className="font-medium">{appointment.customerName}</span>
-          <Badge variant={statusVariant[appointment.status]}>{appointment.status}</Badge>
+          <Badge variant={statusVariant[appointment.status]}>
+            {t(`booking.status.${appointment.status}`)}
+          </Badge>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">{appointment.serviceName}</p>
         <p className="text-xs text-muted-foreground">
           {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
         </p>
-        <p className="text-xs text-muted-foreground">with {appointment.staffName}</p>
+        <p className="text-xs text-muted-foreground">
+          {t("booking.with", { name: appointment.staffName })}
+        </p>
       </HoverCardContent>
     </HoverCard>
   )

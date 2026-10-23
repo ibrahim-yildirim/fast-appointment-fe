@@ -28,7 +28,7 @@ export function CustomerAccountLayout() {
   const { logout } = useCustomerAuth()
 
   return (
-    <div className="grid min-h-screen grid-cols-[240px_1fr]">
+    <div className="grid min-h-screen grid-cols-[240px_minmax(0,1fr)]">
       <aside className="flex flex-col border-r border-border px-4 py-6">
         <div className="mb-6 flex items-center gap-2 px-2 font-semibold">
           <CalendarCheck className="h-5 w-5 text-primary" />

@@ -19,7 +19,7 @@ export function WeekDayGrid({
   onSelectAppointment: (id: string) => void
   onReschedule: (id: string, dateKey: string, hour: number) => void
 }) {
-  const { locale } = useFormatters()
+  const { locale, formatHour } = useFormatters()
   const today = businessToday()
 
   const appointmentsByDateHour = useMemo(() => {
@@ -60,8 +60,7 @@ export function WeekDayGrid({
         {hourRows.map((hour) => (
           <Fragment key={hour}>
             <div className="border-r border-b border-border px-2 py-1 text-right text-xs text-muted-foreground">
-              {hour % 12 === 0 ? 12 : hour % 12}
-              {hour >= 12 ? "pm" : "am"}
+              {formatHour(hour)}
             </div>
             {days.map((day) => {
               const dateKey = toDateKey(day)

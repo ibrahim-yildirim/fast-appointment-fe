@@ -62,7 +62,9 @@ export function ListView({
               </p>
             </div>
           </div>
-          <Badge variant={statusVariant[appointment.status]}>{appointment.status}</Badge>
+          <Badge variant={statusVariant[appointment.status]}>
+            {t(`booking.status.${appointment.status}`)}
+          </Badge>
         </button>
       ))}
     </div>
