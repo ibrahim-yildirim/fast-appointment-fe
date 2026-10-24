@@ -8,7 +8,9 @@ import i18n from "@/i18n"
 
 type UpdateBookingArgs = {
   bookingId: string
-  patch: Partial<Pick<Booking, "staffId" | "startsAt" | "endsAt" | "status" | "notes">>
+  patch: Partial<
+    Pick<Booking, "staffId" | "startsAt" | "endsAt" | "status" | "notes" | "cancellationReason">
+  >
 }
 
 export function useUpdateBooking(businessId: string) {

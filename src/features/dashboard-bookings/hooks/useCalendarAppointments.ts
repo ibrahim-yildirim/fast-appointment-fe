@@ -4,7 +4,7 @@ import { useBookings } from "@/features/booking/hooks/useBookings"
 import { useCustomers } from "@/features/customers/hooks/useCustomers"
 import { useOwnerServices } from "@/features/services/hooks/useOwnerServices"
 import { useOwnerStaff } from "@/features/staff-calendar/hooks/useOwnerStaff"
-import type { BookingStatus, BusinessRef } from "@/types"
+import type { BookingStatus, BusinessRef, CancelledBy } from "@/types"
 
 export type CalendarAppointment = {
   id: string
@@ -21,6 +21,8 @@ export type CalendarAppointment = {
   startTime: string
   endTime: string
   notes: string
+  cancelledBy: CancelledBy | null
+  cancellationReason: string | null
 }
 
 export type CalendarFilters = {
@@ -72,6 +74,8 @@ export function useCalendarAppointments(business: BusinessRef, filters: Calendar
         startTime: booking.startsAt.slice(11, 16),
         endTime: booking.endsAt.slice(11, 16),
         notes: booking.notes,
+        cancelledBy: booking.cancelledBy,
+        cancellationReason: booking.cancellationReason,
       }
       return [appointment]
     })

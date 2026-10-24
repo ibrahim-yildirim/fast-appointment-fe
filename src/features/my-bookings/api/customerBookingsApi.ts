@@ -3,7 +3,7 @@ import { USE_FIXTURES } from "@/api/config"
 import { endpoints } from "@/api/endpoints"
 import { toId, toWallClock } from "@/api/mappers"
 import { bookings, businesses, services, staff } from "@/fixtures"
-import type { BookingStatus, BookingSummary } from "@/types"
+import type { BookingStatus, BookingSummary, CancelledBy } from "@/types"
 
 export type CustomerBookingView = BookingSummary
 
@@ -19,6 +19,8 @@ type CustomerBookingResponse = {
   status: "PENDING" | "CONFIRMED" | "CANCELLED"
   price: number
   notes: string | null
+  cancelledBy: "CUSTOMER" | "BUSINESS" | null
+  cancellationReason: string | null
 }
 
 // There is no booking reference in the backend yet; it arrives with guest booking.
@@ -36,6 +38,8 @@ function toCustomerBooking(response: CustomerBookingResponse): CustomerBookingVi
     status: response.status.toLowerCase() as BookingStatus,
     price: response.price,
     notes: response.notes ?? "",
+    cancelledBy: response.cancelledBy === null ? null : (response.cancelledBy.toLowerCase() as CancelledBy),
+    cancellationReason: response.cancellationReason,
   }
 }
 
@@ -60,6 +64,8 @@ export const customerBookingsApi = {
             endsAt: booking.endsAt,
             status: booking.status,
             price: service?.price ?? 0,
+            cancelledBy: booking.cancelledBy,
+            cancellationReason: booking.cancellationReason,
             notes: booking.notes,
           }
         })
@@ -76,13 +82,20 @@ export const customerBookingsApi = {
     return list.find((booking) => booking.id === bookingId) ?? null
   },
 
-  cancel: async (bookingId: string): Promise<void> => {
+  cancel: async (bookingId: string, reason: string | null): Promise<void> => {
     if (USE_FIXTURES) {
       const index = bookings.findIndex((booking) => booking.id === bookingId)
-      if (index !== -1) bookings[index] = { ...bookings[index], status: "cancelled" }
+      if (index !== -1) {
+        bookings[index] = {
+          ...bookings[index],
+          status: "cancelled",
+          cancelledBy: "customer",
+          cancellationReason: reason,
+        }
+      }
       return
     }
     // The backend keeps the row and marks it CANCELLED.
-    return apiClient.delete<void>(endpoints.customerBookings.byId(bookingId))
+    return apiClient.delete<void>(endpoints.customerBookings.byId(bookingId), { reason })
   },
 }

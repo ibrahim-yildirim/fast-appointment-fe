@@ -15,6 +15,8 @@ export const bookings: Booking[] = [
     endsAt: "2026-07-28T13:50:00.000Z",
     status: "confirmed",
     notes: "",
+    cancelledBy: null,
+    cancellationReason: null,
   },
   {
     id: "booking-2",
@@ -30,6 +32,8 @@ export const bookings: Booking[] = [
     endsAt: "2026-07-29T15:30:00.000Z",
     status: "pending",
     notes: "İlk kez geliyor.",
+    cancelledBy: null,
+    cancellationReason: null,
   },
   {
     id: "booking-3",
@@ -45,6 +49,8 @@ export const bookings: Booking[] = [
     endsAt: "2026-07-22T16:00:00.000Z",
     status: "cancelled",
     notes: "Randevu değişikliği talep edildi.",
+    cancelledBy: null,
+    cancellationReason: null,
   },
   {
     id: "booking-4",
@@ -60,6 +66,8 @@ export const bookings: Booking[] = [
     endsAt: "2026-07-30T18:50:00.000Z",
     status: "confirmed",
     notes: "",
+    cancelledBy: null,
+    cancellationReason: null,
   },
   {
     id: "booking-5",
@@ -75,6 +83,8 @@ export const bookings: Booking[] = [
     endsAt: "2026-08-01T16:40:00.000Z",
     status: "pending",
     notes: "",
+    cancelledBy: null,
+    cancellationReason: null,
   },
   {
     id: "booking-6",
@@ -90,5 +100,7 @@ export const bookings: Booking[] = [
     endsAt: "2026-07-31T11:40:00.000Z",
     status: "confirmed",
     notes: "Üye olmadan alındı.",
+    cancelledBy: null,
+    cancellationReason: null,
   },
 ]

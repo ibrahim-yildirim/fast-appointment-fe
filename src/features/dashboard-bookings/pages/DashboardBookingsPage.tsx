@@ -124,10 +124,13 @@ export function DashboardBookingsPage() {
           if (!selectedAppointmentId) return
           updateBooking.mutate({ bookingId: selectedAppointmentId, patch: { staffId } })
         }}
-        onCancel={() => {
+        onCancel={(reason) => {
           if (!selectedAppointmentId) return
           updateBooking.mutate(
-            { bookingId: selectedAppointmentId, patch: { status: "cancelled" } },
+            {
+              bookingId: selectedAppointmentId,
+              patch: { status: "cancelled", cancellationReason: reason },
+            },
             { onSuccess: () => setSelectedAppointmentId(null) },
           )
         }}

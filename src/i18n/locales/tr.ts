@@ -127,6 +127,11 @@ export const tr = {
     bookNew: "Yeni randevu al",
     viewBusiness: "İşletmeyi gör",
     notes: "Not: {{notes}}",
+    cancelReasonPlaceholder: "Örn. İşim çıktı",
+    cancelledBy: {
+      customer: "Bu randevuyu siz iptal ettiniz",
+      business: "İşletme tarafından iptal edildi",
+    },
   },
   validation: {
     email: "Geçerli bir e-posta adresi girin.",
@@ -222,6 +227,8 @@ export const tr = {
     cancelConfirmBody: "Bu işlem geri alınamaz.",
     keepIt: "Vazgeç",
     cancelledToast: "Randevu iptal edildi.",
+    cancelReasonLabel: "Sebep (isteğe bağlı)",
+    cancelReasonShown: "Sebep: {{reason}}",
     status: {
       confirmed: "Onaylandı",
       pending: "Beklemede",
@@ -261,6 +268,11 @@ export const tr = {
     bookingUpdatedToast: "Randevu güncellendi.",
     customer: "Müşteri",
     reschedule: "Saati değiştir",
+    cancelReasonPlaceholder: "Örn. Personel o gün izinli",
+    cancelledBy: {
+      customer: "Müşteri iptal etti",
+      business: "İşletme iptal etti",
+    },
   },
   services: {
     searchPlaceholder: "Hizmet ara...",

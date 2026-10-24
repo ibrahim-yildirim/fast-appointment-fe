@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
@@ -15,6 +16,8 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 import type { CustomerBookingView } from "@/features/my-bookings/api/customerBookingsApi"
 import { useCancelCustomerBooking } from "@/features/my-bookings/hooks/useCancelCustomerBooking"
@@ -39,6 +42,7 @@ export function BookingDetailDialog({
   const { formatTime, formatMoney, formatDate } = useFormatters()
 
   const cancelBooking = useCancelCustomerBooking()
+  const [cancelReason, setCancelReason] = useState("")
 
   if (!booking) return null
 
@@ -70,6 +74,10 @@ export function BookingDetailDialog({
             <span>{t("booking.with", { name: booking.staffName })}</span>
             <span>{formatMoney(booking.price)}</span>
             {booking.notes && <span>{t("account.notes", { notes: booking.notes })}</span>}
+            {booking.cancelledBy && <span>{t(`account.cancelledBy.${booking.cancelledBy}`)}</span>}
+            {booking.cancellationReason && (
+              <span>{t("booking.cancelReasonShown", { reason: booking.cancellationReason })}</span>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -77,7 +85,7 @@ export function BookingDetailDialog({
               <Link to={`/${booking.businessSlug}`}>{t("account.viewBusiness")}</Link>
             </Button>
             {booking.status !== "cancelled" && (
-              <AlertDialog>
+              <AlertDialog onOpenChange={(isOpen) => isOpen && setCancelReason("")}>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive" disabled={cancelBooking.isPending}>
                     {t("booking.cancelBooking")}
@@ -88,12 +96,25 @@ export function BookingDetailDialog({
                     <AlertDialogTitle>{t("booking.cancelConfirmTitle")}</AlertDialogTitle>
                     <AlertDialogDescription>{t("booking.cancelConfirmBody")}</AlertDialogDescription>
                   </AlertDialogHeader>
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="customer-cancel-reason">{t("booking.cancelReasonLabel")}</Label>
+                    <Textarea
+                      id="customer-cancel-reason"
+                      maxLength={500}
+                      value={cancelReason}
+                      onChange={(event) => setCancelReason(event.target.value)}
+                      placeholder={t("account.cancelReasonPlaceholder")}
+                    />
+                  </div>
                   <AlertDialogFooter>
                     <AlertDialogCancel>{t("booking.keepIt")}</AlertDialogCancel>
                     <AlertDialogAction
                       variant="destructive"
                       onClick={() =>
-                        cancelBooking.mutate(booking.id, { onSuccess: () => onOpenChange(false) })
+                        cancelBooking.mutate(
+                          { bookingId: booking.id, reason: cancelReason.trim() || null },
+                          { onSuccess: () => onOpenChange(false) },
+                        )
                       }
                     >
                       {t("booking.cancelBooking")}

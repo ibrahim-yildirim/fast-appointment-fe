@@ -6,7 +6,7 @@ import { businessNow } from "@/lib/datetime"
 import { ApiError } from "@/api/types"
 import { bookings } from "@/fixtures"
 import { generateBookingReference } from "@/lib/bookingReference"
-import type { Booking, BookingStatus } from "@/types"
+import type { Booking, BookingStatus, CancelledBy } from "@/types"
 
 type BookingResponse = {
   id: number
@@ -18,6 +18,8 @@ type BookingResponse = {
   endsAt: string
   status: "PENDING" | "CONFIRMED" | "CANCELLED"
   notes: string | null
+  cancelledBy: "CUSTOMER" | "BUSINESS" | null
+  cancellationReason: string | null
 }
 
 // Guest fields and the reference code don't exist in the backend yet (guest booking is postponed).
@@ -36,6 +38,8 @@ function toBooking(response: BookingResponse): Booking {
     endsAt: toWallClock(response.endsAt),
     status: response.status.toLowerCase() as BookingStatus,
     notes: response.notes ?? "",
+    cancelledBy: response.cancelledBy === null ? null : (response.cancelledBy.toLowerCase() as CancelledBy),
+    cancellationReason: response.cancellationReason,
   }
 }
 
@@ -134,6 +138,8 @@ export const bookingsApi = {
         reference: generateBookingReference(),
         businessId,
         status: "confirmed",
+        cancelledBy: null,
+        cancellationReason: null,
         ...input,
       }
       bookings.push(booking)
@@ -184,20 +190,28 @@ export const bookingsApi = {
   update: async (
     businessId: string,
     bookingId: string,
-    patch: Partial<Pick<Booking, "staffId" | "startsAt" | "endsAt" | "status" | "notes">>,
+    patch: Partial<
+      Pick<Booking, "staffId" | "startsAt" | "endsAt" | "status" | "notes" | "cancellationReason">
+    >,
   ): Promise<Booking> => {
     if (USE_FIXTURES) {
       const index = bookings.findIndex(
         (booking) => booking.businessId === businessId && booking.id === bookingId,
       )
       if (index === -1) throw new Error("errors.bookingNotFound")
-      const updated: Booking = { ...bookings[index], ...patch }
+      const updated: Booking = {
+        ...bookings[index],
+        ...patch,
+        ...(patch.status === "cancelled" && { cancelledBy: "business" as const }),
+      }
       bookings[index] = updated
       return updated
     }
     // The backend cancels with DELETE and replaces the whole booking with PUT.
     if (patch.status === "cancelled") {
-      await apiClient.delete<void>(endpoints.bookings.ownerById(bookingId))
+      await apiClient.delete<void>(endpoints.bookings.ownerById(bookingId), {
+        reason: patch.cancellationReason ?? null,
+      })
       return bookingsApi.byIdForOwner(businessId, bookingId)
     }
     const current = await bookingsApi.byIdForOwner(businessId, bookingId)

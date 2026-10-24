@@ -1,5 +1,7 @@
 export type BookingStatus = "confirmed" | "pending" | "cancelled"
 
+export type CancelledBy = "customer" | "business"
+
 export type Booking = {
   id: string
   /** Short human-friendly code guests use to look their booking up again. */
@@ -16,6 +18,8 @@ export type Booking = {
   endsAt: string
   status: BookingStatus
   notes: string
+  cancelledBy: CancelledBy | null
+  cancellationReason: string | null
 }
 
 /** Flattened booking with business/service/staff names resolved, for display. */
@@ -32,4 +36,6 @@ export type BookingSummary = {
   status: BookingStatus
   price: number
   notes: string
+  cancelledBy: CancelledBy | null
+  cancellationReason: string | null
 }

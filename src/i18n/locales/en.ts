@@ -125,6 +125,11 @@ export const en: typeof tr = {
     bookNew: "Book a new appointment",
     viewBusiness: "View business",
     notes: "Notes: {{notes}}",
+    cancelReasonPlaceholder: "e.g. Something came up",
+    cancelledBy: {
+      customer: "You cancelled this booking",
+      business: "Cancelled by the business",
+    },
   },
   validation: {
     email: "Enter a valid email address.",
@@ -220,6 +225,8 @@ export const en: typeof tr = {
     cancelConfirmBody: "This can't be undone.",
     keepIt: "Keep it",
     cancelledToast: "Booking cancelled.",
+    cancelReasonLabel: "Reason (optional)",
+    cancelReasonShown: "Reason: {{reason}}",
     status: {
       confirmed: "Confirmed",
       pending: "Pending",
@@ -259,6 +266,11 @@ export const en: typeof tr = {
     bookingUpdatedToast: "Booking updated.",
     customer: "Customer",
     reschedule: "Reschedule",
+    cancelReasonPlaceholder: "e.g. Staff member is off that day",
+    cancelledBy: {
+      customer: "Cancelled by the customer",
+      business: "Cancelled by the business",
+    },
   },
   services: {
     searchPlaceholder: "Search services...",

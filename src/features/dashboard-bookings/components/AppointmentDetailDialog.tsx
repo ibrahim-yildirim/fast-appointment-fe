@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
   AlertDialog,
@@ -20,6 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 import type { Staff } from "@/types"
@@ -46,11 +49,12 @@ export function AppointmentDetailDialog({
   onOpenChange: (open: boolean) => void
   eligibleStaff: Staff[]
   onReassign: (staffId: string) => void
-  onCancel: () => void
+  onCancel: (reason: string | null) => void
   isSaving: boolean
 }) {
   const { formatTime, formatMoney } = useFormatters()
   const { t } = useTranslation()
+  const [cancelReason, setCancelReason] = useState("")
 
   if (!appointment) return null
 
@@ -76,6 +80,12 @@ export function AppointmentDetailDialog({
               {formatDurationLabel(appointment.durationMinutes, t)} &middot; {formatMoney(appointment.price)}
             </span>
             {appointment.notes && <span>{t("account.notes", { notes: appointment.notes })}</span>}
+            {appointment.cancelledBy && (
+              <span>{t(`dashboard.cancelledBy.${appointment.cancelledBy}`)}</span>
+            )}
+            {appointment.cancellationReason && (
+              <span>{t("booking.cancelReasonShown", { reason: appointment.cancellationReason })}</span>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -99,7 +109,7 @@ export function AppointmentDetailDialog({
           </div>
 
           {appointment.status !== "cancelled" && (
-            <AlertDialog>
+            <AlertDialog onOpenChange={(isOpen) => isOpen && setCancelReason("")}>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" disabled={isSaving}>
                   {t("dashboard.cancelAppointment")}
@@ -112,9 +122,22 @@ export function AppointmentDetailDialog({
                     {t("dashboard.cancelAppointmentBody", { name: appointment.customerName })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="owner-cancel-reason">{t("booking.cancelReasonLabel")}</Label>
+                  <Textarea
+                    id="owner-cancel-reason"
+                    maxLength={500}
+                    value={cancelReason}
+                    onChange={(event) => setCancelReason(event.target.value)}
+                    placeholder={t("dashboard.cancelReasonPlaceholder")}
+                  />
+                </div>
                 <AlertDialogFooter>
                   <AlertDialogCancel>{t("booking.keepIt")}</AlertDialogCancel>
-                  <AlertDialogAction variant="destructive" onClick={onCancel}>
+                  <AlertDialogAction
+                    variant="destructive"
+                    onClick={() => onCancel(cancelReason.trim() || null)}
+                  >
                     {t("dashboard.cancelAppointment")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
