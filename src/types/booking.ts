@@ -1,4 +1,4 @@
-export type BookingStatus = "confirmed" | "pending" | "cancelled"
+export type BookingStatus = "confirmed" | "pending" | "cancelled" | "no_show"
 
 export type CancelledBy = "customer" | "business"
 

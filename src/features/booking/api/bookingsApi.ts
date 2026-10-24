@@ -16,7 +16,7 @@ type BookingResponse = {
   customerId: number | null
   startsAt: string
   endsAt: string
-  status: "PENDING" | "CONFIRMED" | "CANCELLED"
+  status: "PENDING" | "CONFIRMED" | "CANCELLED" | "NO_SHOW"
   notes: string | null
   cancelledBy: "CUSTOMER" | "BUSINESS" | null
   cancellationReason: string | null
@@ -206,6 +206,12 @@ export const bookingsApi = {
       }
       bookings[index] = updated
       return updated
+    }
+    if (patch.status === "no_show") {
+      const response = await apiClient.put<BookingResponse>(
+        endpoints.bookings.ownerNoShow(bookingId),
+      )
+      return toBooking(response)
     }
     // The backend cancels with DELETE and replaces the whole booking with PUT.
     if (patch.status === "cancelled") {

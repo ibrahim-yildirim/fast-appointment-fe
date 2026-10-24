@@ -26,13 +26,14 @@ import { Textarea } from "@/components/ui/textarea"
 
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 import type { Staff } from "@/types"
-import { useFormatters } from "@/lib/datetime"
+import { businessNow, useFormatters } from "@/lib/datetime"
 import { formatDurationLabel } from "@/features/services/lib/durations"
 
 const statusVariant = {
   confirmed: "secondary",
   pending: "outline",
   cancelled: "destructive",
+  no_show: "outline",
 } as const
 
 export function AppointmentDetailDialog({
@@ -42,6 +43,7 @@ export function AppointmentDetailDialog({
   eligibleStaff,
   onReassign,
   onCancel,
+  onMarkNoShow,
   isSaving,
 }: {
   appointment: CalendarAppointment | null
@@ -50,13 +52,19 @@ export function AppointmentDetailDialog({
   eligibleStaff: Staff[]
   onReassign: (staffId: string) => void
   onCancel: (reason: string | null) => void
+  onMarkNoShow: () => void
   isSaving: boolean
 }) {
-  const { formatTime, formatMoney } = useFormatters()
+  const { formatTime, formatMoney, formatDate } = useFormatters()
   const { t } = useTranslation()
   const [cancelReason, setCancelReason] = useState("")
 
   if (!appointment) return null
+
+  const isOpen = appointment.status === "confirmed" || appointment.status === "pending"
+  // Wall-clock strings compare directly with businessNow() (see lib/datetime).
+  const hasStarted =
+    new Date(`${appointment.dateKey}T${appointment.startTime}:00.000Z`) <= businessNow()
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -72,7 +80,14 @@ export function AppointmentDetailDialog({
             </Badge>
           </div>
           <div className="flex flex-col gap-1 text-sm text-muted-foreground">
-            <span>{appointment.dateKey}</span>
+            <span>
+              {formatDate(`${appointment.dateKey}T00:00:00.000Z`, {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
             <span>
               {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
             </span>
@@ -92,7 +107,7 @@ export function AppointmentDetailDialog({
             <span className="text-sm font-medium">{t("dashboard.staff")}</span>
             <Select
               value={appointment.staffId}
-              disabled={appointment.status === "cancelled" || isSaving}
+              disabled={!isOpen || isSaving}
               onValueChange={onReassign}
             >
               <SelectTrigger className="w-full">
@@ -108,7 +123,13 @@ export function AppointmentDetailDialog({
             </Select>
           </div>
 
-          {appointment.status !== "cancelled" && (
+          {appointment.status === "confirmed" && hasStarted && (
+            <Button variant="outline" disabled={isSaving} onClick={onMarkNoShow}>
+              {t("dashboard.markNoShow")}
+            </Button>
+          )}
+
+          {isOpen && (
             <AlertDialog onOpenChange={(isOpen) => isOpen && setCancelReason("")}>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" disabled={isSaving}>

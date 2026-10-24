@@ -12,6 +12,7 @@ const statusVariant = {
   confirmed: "secondary",
   pending: "outline",
   cancelled: "destructive",
+  no_show: "outline",
 } as const
 
 export function ListView({

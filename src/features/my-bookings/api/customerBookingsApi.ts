@@ -16,7 +16,7 @@ type CustomerBookingResponse = {
   staffName: string
   startsAt: string
   endsAt: string
-  status: "PENDING" | "CONFIRMED" | "CANCELLED"
+  status: "PENDING" | "CONFIRMED" | "CANCELLED" | "NO_SHOW"
   price: number
   notes: string | null
   cancelledBy: "CUSTOMER" | "BUSINESS" | null

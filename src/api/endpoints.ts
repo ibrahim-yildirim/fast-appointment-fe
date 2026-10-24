@@ -29,6 +29,7 @@ export const endpoints = {
     list: (businessId: string) => `/api/businesses/${businessId}/bookings`,
     ownerList: () => `/api/business/bookings`,
     ownerById: (bookingId: string) => `/api/business/bookings/${bookingId}`,
+    ownerNoShow: (bookingId: string) => `/api/business/bookings/${bookingId}/no-show`,
     byId: (businessId: string, bookingId: string) =>
       `/api/businesses/${businessId}/bookings/${bookingId}`,
   },

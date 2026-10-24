@@ -124,6 +124,10 @@ export function DashboardBookingsPage() {
           if (!selectedAppointmentId) return
           updateBooking.mutate({ bookingId: selectedAppointmentId, patch: { staffId } })
         }}
+        onMarkNoShow={() => {
+          if (!selectedAppointmentId) return
+          updateBooking.mutate({ bookingId: selectedAppointmentId, patch: { status: "no_show" } })
+        }}
         onCancel={(reason) => {
           if (!selectedAppointmentId) return
           updateBooking.mutate(

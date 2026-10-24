@@ -11,6 +11,7 @@ const statusVariant = {
   confirmed: "secondary",
   pending: "outline",
   cancelled: "destructive",
+  no_show: "outline",
 } as const
 
 export function AppointmentChip({
@@ -41,6 +42,7 @@ export function AppointmentChip({
             // Read the status at a glance: pending is still tentative, cancelled no longer holds the time.
             appointment.status === "pending" && "border-dashed",
             appointment.status === "cancelled" && "text-muted-foreground line-through opacity-70",
+            appointment.status === "no_show" && "text-muted-foreground opacity-70",
             className,
           )}
         >

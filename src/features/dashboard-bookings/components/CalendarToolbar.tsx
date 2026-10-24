@@ -158,6 +158,7 @@ export function CalendarToolbar({
             <SelectItem value="confirmed">{t("booking.status.confirmed")}</SelectItem>
             <SelectItem value="pending">{t("booking.status.pending")}</SelectItem>
             <SelectItem value="cancelled">{t("booking.status.cancelled")}</SelectItem>
+            <SelectItem value="no_show">{t("booking.status.no_show")}</SelectItem>
           </SelectContent>
         </Select>
       </div>

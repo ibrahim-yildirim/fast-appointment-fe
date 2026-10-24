@@ -19,12 +19,14 @@ const statusVariant = {
   confirmed: "secondary",
   pending: "outline",
   cancelled: "destructive",
+  no_show: "outline",
 } as const
 
 const statusDot = {
   confirmed: "bg-foreground",
   pending: "bg-muted-foreground",
   cancelled: "bg-destructive",
+  no_show: "bg-muted-foreground",
 } as const
 
 function BookingChip({
@@ -48,6 +50,7 @@ function BookingChip({
             // Same status cues as the owner calendar.
             booking.status === "pending" && "border-dashed",
             booking.status === "cancelled" && "text-muted-foreground line-through opacity-70",
+            booking.status === "no_show" && "text-muted-foreground opacity-70",
           )}
         >
           <span className={cn("size-2 shrink-0 rounded-full", statusDot[booking.status])} />

@@ -233,6 +233,7 @@ export const tr = {
       confirmed: "Onaylandı",
       pending: "Beklemede",
       cancelled: "İptal edildi",
+      no_show: "Gelmedi",
     },
   },
   dashboard: {
@@ -268,6 +269,7 @@ export const tr = {
     bookingUpdatedToast: "Randevu güncellendi.",
     customer: "Müşteri",
     reschedule: "Saati değiştir",
+    markNoShow: "Gelmedi olarak işaretle",
     cancelReasonPlaceholder: "Örn. Personel o gün izinli",
     cancelledBy: {
       customer: "Müşteri iptal etti",

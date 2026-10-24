@@ -231,6 +231,7 @@ export const en: typeof tr = {
       confirmed: "Confirmed",
       pending: "Pending",
       cancelled: "Cancelled",
+      no_show: "No-show",
     },
   },
   dashboard: {
@@ -266,6 +267,7 @@ export const en: typeof tr = {
     bookingUpdatedToast: "Booking updated.",
     customer: "Customer",
     reschedule: "Reschedule",
+    markNoShow: "Mark as no-show",
     cancelReasonPlaceholder: "e.g. Staff member is off that day",
     cancelledBy: {
       customer: "Cancelled by the customer",
