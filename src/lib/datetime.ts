@@ -70,6 +70,28 @@ export function businessToday(): Date {
   return new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
 }
 
+const businessOffsetFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: BUSINESS_TIME_ZONE,
+  timeZoneName: "longOffset",
+})
+
+/**
+ * The real instant behind a stored wall-clock string (`...Z` meaning Istanbul time), for
+ * anything leaving the app, like calendar exports, where the reader applies its own zone.
+ */
+export function wallClockToInstant(wallClock: string): Date {
+  const pinned = new Date(wallClock)
+  // "GMT+03:00"; plain "GMT" when the offset is zero.
+  const offset =
+    businessOffsetFormatter.formatToParts(pinned).find((part) => part.type === "timeZoneName")
+      ?.value ?? "GMT"
+  const match = /([+-])(\d{2}):(\d{2})/.exec(offset)
+  const offsetMinutes = match
+    ? (match[1] === "-" ? -1 : 1) * (Number(match[2]) * 60 + Number(match[3]))
+    : 0
+  return new Date(pinned.getTime() - offsetMinutes * 60_000)
+}
+
 /** `"14:10"` in Turkish, `"2:10 PM"` in English. */
 export function formatTime(time: string, language: Language) {
   const [hours, minutes] = time.split(":").map(Number)

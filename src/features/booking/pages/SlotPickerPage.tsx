@@ -75,8 +75,11 @@ export function SlotPickerPage() {
       </div>
 
       <div className="grid gap-8 md:grid-cols-[auto_minmax(0,1fr)] md:gap-10">
+        {/* Two months from lg up: late in the month most of the 30-day window sits in the next one.
+            Below lg the second month is hidden, so there's still room for the times beside it. */}
         <Calendar
           mode="single"
+          numberOfMonths={2}
           locale={locale}
           // react-day-picker's nav/day aria-labels are English defaults; the
           // date-fns locale doesn't cover them.
@@ -93,7 +96,7 @@ export function SlotPickerPage() {
           disabled={(day) =>
             day < today || (availableDates !== undefined && !availableDates.has(toDateKey(day)))
           }
-          className="border-border bg-card self-start rounded-lg border p-3 [--cell-size:--spacing(10)] [--primary-foreground:var(--gold-foreground)] [--primary:var(--gold)] max-md:mx-auto"
+          className="border-border bg-card self-start rounded-lg border p-3 [--cell-size:--spacing(10)] [--primary-foreground:var(--gold-foreground)] [--primary:var(--gold)] max-md:mx-auto lg:[--cell-size:--spacing(8.5)] max-lg:[&_.rdp-month+.rdp-month]:hidden lg:[&_.rdp-outside]:invisible"
         />
 
         <section aria-live="polite" className="flex flex-col gap-6">
@@ -107,7 +110,7 @@ export function SlotPickerPage() {
                 <h3 className="text-muted-foreground text-sm font-medium">
                   {t(`booking.dayParts.${group.part}`)}
                 </h3>
-                <div className="grid grid-cols-4 gap-2 sm:grid-cols-5 lg:grid-cols-6">
+                <div className="grid grid-cols-4 gap-2 sm:grid-cols-5 lg:grid-cols-3">
                   {group.slots.map((slot) => {
                     // Taken times stay visible (greyed, with the reason) so the day reads as a whole.
                     const statusLabel =

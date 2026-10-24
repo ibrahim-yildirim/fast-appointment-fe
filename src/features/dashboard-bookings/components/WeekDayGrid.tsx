@@ -1,11 +1,11 @@
 import { format, isSameDay } from "date-fns"
-import { Fragment, useMemo } from "react"
+import { Fragment, useEffect, useMemo, useState } from "react"
 
 import { AppointmentChip } from "@/features/dashboard-bookings/components/AppointmentChip"
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 import { hourRows } from "@/lib/calendarUtils"
 import { timeStringToMinutes, toDateKey } from "@/features/booking/lib/slotUtils"
-import { businessToday, useFormatters } from "@/lib/datetime"
+import { businessNow, businessToday, useFormatters } from "@/lib/datetime"
 import { cn } from "@/lib/utils"
 
 export function WeekDayGrid({
@@ -21,6 +21,7 @@ export function WeekDayGrid({
 }) {
   const { locale, formatHour } = useFormatters()
   const today = businessToday()
+  const now = useBusinessNow()
 
   const appointmentsByDateHour = useMemo(() => {
     const map = new Map<string, CalendarAppointment[]>()
@@ -66,6 +67,7 @@ export function WeekDayGrid({
               const dateKey = toDateKey(day)
               const key = `${dateKey}-${hour}`
               const cellAppointments = appointmentsByDateHour.get(key) ?? []
+              const showNowLine = isSameDay(day, today) && now.getUTCHours() === hour
               return (
                 <div
                   key={key}
@@ -75,8 +77,17 @@ export function WeekDayGrid({
                     const id = event.dataTransfer.getData("text/plain")
                     if (id) onReschedule(id, dateKey, hour)
                   }}
-                  className="flex min-h-12 flex-col gap-1 border-r border-b border-border p-1 last:border-r-0"
+                  className="relative flex min-h-12 flex-col gap-1 border-r border-b border-border p-1 last:border-r-0"
                 >
+                  {showNowLine && (
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-x-0 z-10 h-0.5 bg-gold"
+                      style={{ top: `${(now.getUTCMinutes() / 60) * 100}%` }}
+                    >
+                      <span className="absolute -top-[3px] -left-1 size-2 rounded-full bg-gold" />
+                    </div>
+                  )}
                   {cellAppointments.map((appointment) => (
                     <AppointmentChip
                       key={appointment.id}
@@ -92,4 +103,14 @@ export function WeekDayGrid({
       </div>
     </div>
   )
+}
+
+/** Istanbul "now", refreshed every minute so the now line moves while the page stays open. */
+function useBusinessNow() {
+  const [now, setNow] = useState(businessNow)
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(businessNow()), 60_000)
+    return () => window.clearInterval(timer)
+  }, [])
+  return now
 }

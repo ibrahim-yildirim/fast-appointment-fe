@@ -1,4 +1,4 @@
-import { CheckIcon } from "lucide-react"
+import { CheckIcon, ClockIcon, XIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useParams } from "react-router-dom"
 
@@ -6,8 +6,14 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BookingSummary } from "@/features/booking/components/BookingSummary"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
+import {
+  downloadIcs,
+  googleCalendarUrl,
+  type CalendarEvent,
+} from "@/features/booking/lib/calendarExport"
 import { useCustomerBooking } from "@/features/my-bookings/hooks/useCustomerBooking"
 import { useFormatters } from "@/lib/datetime"
+import { cn } from "@/lib/utils"
 
 export function BookingConfirmationPage() {
   const { t } = useTranslation()
@@ -24,17 +30,35 @@ export function BookingConfirmationPage() {
     return <p className="text-muted-foreground">{t("booking.notFound")}</p>
   }
 
+  const cancelled = booking.status === "cancelled"
+  const StatusIcon = cancelled ? XIcon : booking.status === "pending" ? ClockIcon : CheckIcon
+
+  const location = [booking.businessName, business.address].filter(Boolean).join(", ")
+  const calendarEvent: CalendarEvent = {
+    id: booking.id,
+    title: `${booking.serviceName} · ${booking.businessName}`,
+    details: t("booking.with", { name: booking.staffName }),
+    location,
+    startsAt: booking.startsAt,
+    endsAt: booking.endsAt,
+  }
+
   return (
     <div className="flex max-w-md flex-col gap-8">
       <div className="flex flex-col items-start gap-4">
         <span
           aria-hidden="true"
-          className="bg-gold text-gold-foreground flex size-12 items-center justify-center rounded-full"
+          className={cn(
+            "flex size-12 items-center justify-center rounded-full",
+            booking.status === "confirmed"
+              ? "bg-gold text-gold-foreground"
+              : "bg-muted text-muted-foreground",
+          )}
         >
-          <CheckIcon className="size-6" strokeWidth={2.5} />
+          <StatusIcon className="size-6" strokeWidth={2.5} />
         </span>
         <h1 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
-          {t("booking.confirmedTitle")}
+          {t(`booking.statusTitle.${booking.status}`)}
         </h1>
       </div>
 
@@ -52,8 +76,42 @@ export function BookingConfirmationPage() {
             emphasis: true,
           },
           { label: t("booking.summary.price"), value: formatMoney(booking.price), emphasis: true },
+          {
+            label: t("booking.summary.place"),
+            value: (
+              <>
+                {booking.businessName}
+                {business.address && (
+                  <span className="text-muted-foreground block font-normal">
+                    {business.address}
+                  </span>
+                )}
+              </>
+            ),
+          },
         ]}
       />
+
+      {!cancelled && (
+        <div className="flex flex-col gap-3">
+          <h2 className="text-muted-foreground text-sm font-medium">
+            {t("booking.addToCalendar")}
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" asChild>
+              <a href={googleCalendarUrl(calendarEvent)} target="_blank" rel="noreferrer">
+                Google Calendar
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => downloadIcs(calendarEvent, `booking-${booking.id}.ics`)}
+            >
+              {t("booking.downloadIcs")}
+            </Button>
+          </div>
+        </div>
+      )}
 
       {booking.reference && (
         <div className="bg-muted/60 flex flex-col gap-1 rounded-lg p-4">

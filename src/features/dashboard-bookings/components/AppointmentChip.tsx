@@ -38,6 +38,9 @@ export function AppointmentChip({
           onClick={() => onSelect(appointment.id)}
           className={cn(
             "flex w-full items-center gap-1.5 truncate rounded-md border border-border px-1.5 py-1 text-left text-xs transition-colors hover:bg-secondary",
+            // Read the status at a glance: pending is still tentative, cancelled no longer holds the time.
+            appointment.status === "pending" && "border-dashed",
+            appointment.status === "cancelled" && "text-muted-foreground line-through opacity-70",
             className,
           )}
         >

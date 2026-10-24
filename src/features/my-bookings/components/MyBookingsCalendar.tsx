@@ -43,7 +43,12 @@ function BookingChip({
         <button
           type="button"
           onClick={() => onSelect(booking.id)}
-          className="flex w-full items-center gap-1.5 truncate rounded-md border border-border px-1.5 py-1 text-left text-xs transition-colors hover:bg-secondary"
+          className={cn(
+            "flex w-full items-center gap-1.5 truncate rounded-md border border-border px-1.5 py-1 text-left text-xs transition-colors hover:bg-secondary",
+            // Same status cues as the owner calendar.
+            booking.status === "pending" && "border-dashed",
+            booking.status === "cancelled" && "text-muted-foreground line-through opacity-70",
+          )}
         >
           <span className={cn("size-2 shrink-0 rounded-full", statusDot[booking.status])} />
           <span className="truncate">
