@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useLocation, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
+import { revokeSession } from "@/api/session"
 import { authApi } from "@/features/auth/api/authApi"
 import { businessApi } from "@/features/business/api/businessApi"
 import type {
@@ -50,6 +51,7 @@ export function useBusinessAuth() {
   })
 
   const logout = () => {
+    revokeSession()
     clearSession()
     navigate("/business/login", { replace: true })
   }

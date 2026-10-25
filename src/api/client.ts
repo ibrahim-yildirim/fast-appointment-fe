@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "@/api/config"
+import { refreshSession } from "@/api/session"
 import { ApiError, type ApiErrorBody } from "@/api/types"
 import i18n from "@/i18n"
 import { useAuthStore } from "@/stores/authStore"
@@ -29,11 +30,16 @@ async function readErrorBody(response: Response, path: string): Promise<ApiError
   }
 }
 
+function isAuthPath(path: string) {
+  return path.startsWith("/api/auth/") || path.startsWith("/api/business/auth/")
+}
+
 async function request<T>(
   method: string,
   path: string,
   body?: unknown,
   options?: RequestOptions,
+  retried = false,
 ): Promise<T> {
   const token = useAuthStore.getState().token
 
@@ -49,7 +55,10 @@ async function request<T>(
   })
 
   if (!response.ok) {
-    if (response.status === 401 && token) {
+    if (response.status === 401 && token && !isAuthPath(path)) {
+      // The access token is short-lived: renew it once and replay the request.
+      const freshToken = retried ? null : await refreshSession(token)
+      if (freshToken) return request<T>(method, path, body, options, true)
       useAuthStore.getState().clearSession()
     }
     throw new ApiError(await readErrorBody(response, path))

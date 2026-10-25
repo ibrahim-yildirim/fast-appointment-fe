@@ -45,5 +45,7 @@ export const endpoints = {
     customerRegister: () => `/api/auth/register`,
     businessLogin: () => `/api/business/auth/login`,
     businessRegister: () => `/api/business/auth/register`,
+    refresh: () => `/api/auth/refresh`,
+    logout: () => `/api/auth/logout`,
   },
 }

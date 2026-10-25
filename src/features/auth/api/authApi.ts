@@ -1,10 +1,9 @@
 import { apiClient } from "@/api/client"
 import { USE_FIXTURES } from "@/api/config"
 import { endpoints } from "@/api/endpoints"
-import { toId, toRole, type BackendRole } from "@/api/mappers"
+import { toAuthSession, type AuthSession, type BackendAuthResponse } from "@/api/mappers"
 import { ApiError } from "@/api/types"
 import { authAccounts, businessOwners, customers, type AuthAccount } from "@/fixtures"
-import type { Role } from "@/types"
 import type {
   BusinessLoginInput,
   BusinessRegisterInput,
@@ -13,29 +12,6 @@ import type {
   CustomerLoginInput,
   CustomerRegisterInput,
 } from "@/features/auth/schemas/customerAuthSchemas"
-
-export type AuthSession = {
-  token: string
-  role: Role
-  actorId: string
-  businessId?: string
-}
-
-type AuthResponse = {
-  token: string
-  role: BackendRole
-  actorId: number
-  businessId: number | null
-}
-
-function toAuthSession(response: AuthResponse): AuthSession {
-  return {
-    token: response.token,
-    role: toRole(response.role),
-    actorId: toId(response.actorId),
-    businessId: response.businessId === null ? undefined : toId(response.businessId),
-  }
-}
 
 function invalidCredentialsError(path: string): ApiError {
   return new ApiError({
@@ -60,6 +36,7 @@ function emailTakenError(path: string): ApiError {
 function toSession(account: AuthAccount): AuthSession {
   return {
     token: `fixture-token-${account.actorId}`,
+    refreshToken: `fixture-refresh-${account.actorId}`,
     role: account.role,
     actorId: account.actorId,
     businessId: account.role === "business_owner" ? account.businessId || undefined : undefined,
@@ -82,7 +59,9 @@ export const authApi = {
       if (!account) throw invalidCredentialsError(endpoints.auth.customerLogin())
       return toSession(account)
     }
-    return toAuthSession(await apiClient.post<AuthResponse>(endpoints.auth.customerLogin(), input))
+    return toAuthSession(
+      await apiClient.post<BackendAuthResponse>(endpoints.auth.customerLogin(), input),
+    )
   },
 
   customerRegister: async (input: CustomerRegisterInput): Promise<AuthSession> => {
@@ -100,7 +79,7 @@ export const authApi = {
       return toSession(account)
     }
     return toAuthSession(
-      await apiClient.post<AuthResponse>(endpoints.auth.customerRegister(), input),
+      await apiClient.post<BackendAuthResponse>(endpoints.auth.customerRegister(), input),
     )
   },
 
@@ -115,7 +94,9 @@ export const authApi = {
       if (!account) throw invalidCredentialsError(endpoints.auth.businessLogin())
       return toSession(account)
     }
-    return toAuthSession(await apiClient.post<AuthResponse>(endpoints.auth.businessLogin(), input))
+    return toAuthSession(
+      await apiClient.post<BackendAuthResponse>(endpoints.auth.businessLogin(), input),
+    )
   },
 
   businessRegister: async (input: BusinessRegisterInput): Promise<AuthSession> => {
@@ -134,7 +115,7 @@ export const authApi = {
       return toSession(account)
     }
     return toAuthSession(
-      await apiClient.post<AuthResponse>(endpoints.auth.businessRegister(), input),
+      await apiClient.post<BackendAuthResponse>(endpoints.auth.businessRegister(), input),
     )
   },
 }

@@ -27,6 +27,32 @@ export function toRole(role: BackendRole): Role {
   return role === "BUSINESS_OWNER" ? "business_owner" : "customer"
 }
 
+export type BackendAuthResponse = {
+  token: string
+  refreshToken: string
+  role: BackendRole
+  actorId: number
+  businessId: number | null
+}
+
+export type AuthSession = {
+  token: string
+  refreshToken: string
+  role: Role
+  actorId: string
+  businessId?: string
+}
+
+export function toAuthSession(response: BackendAuthResponse): AuthSession {
+  return {
+    token: response.token,
+    refreshToken: response.refreshToken,
+    role: toRole(response.role),
+    actorId: toId(response.actorId),
+    businessId: response.businessId === null ? undefined : toId(response.businessId),
+  }
+}
+
 export function toWeekday(day: BackendDay): Weekday {
   return dayToWeekday[day]
 }
