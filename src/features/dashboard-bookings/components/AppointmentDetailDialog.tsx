@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Badge } from "@/components/ui/badge"
+import { BookingStatusBadge } from "@/components/booking/BookingStatusBadge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
@@ -28,13 +28,6 @@ import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/us
 import type { Staff } from "@/types"
 import { businessNow, useFormatters } from "@/lib/datetime"
 import { formatDurationLabel } from "@/features/services/lib/durations"
-
-const statusVariant = {
-  confirmed: "secondary",
-  pending: "outline",
-  cancelled: "destructive",
-  no_show: "outline",
-} as const
 
 export function AppointmentDetailDialog({
   appointment,
@@ -75,9 +68,7 @@ export function AppointmentDetailDialog({
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">{appointment.customerName}</span>
-            <Badge variant={statusVariant[appointment.status]}>
-              {t(`booking.status.${appointment.status}`)}
-            </Badge>
+            <BookingStatusBadge status={appointment.status} />
           </div>
           <div className="flex flex-col gap-1 text-sm text-muted-foreground">
             <span>
@@ -124,9 +115,27 @@ export function AppointmentDetailDialog({
           </div>
 
           {appointment.status === "confirmed" && hasStarted && (
-            <Button variant="outline" disabled={isSaving} onClick={onMarkNoShow}>
-              {t("dashboard.markNoShow")}
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" disabled={isSaving}>
+                  {t("dashboard.markNoShow")}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("dashboard.markNoShowTitle")}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t("dashboard.markNoShowBody", { name: appointment.customerName })}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={onMarkNoShow}>
+                    {t("dashboard.markNoShow")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
 
           {isOpen && (

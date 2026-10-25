@@ -268,6 +268,8 @@ export const en: typeof tr = {
     customer: "Customer",
     reschedule: "Reschedule",
     markNoShow: "Mark as no-show",
+    markNoShowTitle: "Mark as no-show?",
+    markNoShowBody: "{{name}} will be recorded as not showing up. This can't be undone.",
     cancelReasonPlaceholder: "e.g. Staff member is off that day",
     cancelledBy: {
       customer: "Cancelled by the customer",

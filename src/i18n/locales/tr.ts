@@ -270,6 +270,8 @@ export const tr = {
     customer: "Müşteri",
     reschedule: "Saati değiştir",
     markNoShow: "Gelmedi olarak işaretle",
+    markNoShowTitle: "Gelmedi olarak işaretlensin mi?",
+    markNoShowBody: "{{name}} bu randevuya gelmedi olarak kaydedilecek. Bu işlem geri alınamaz.",
     cancelReasonPlaceholder: "Örn. Personel o gün izinli",
     cancelledBy: {
       customer: "Müşteri iptal etti",

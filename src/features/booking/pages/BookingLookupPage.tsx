@@ -9,6 +9,7 @@ import type { TFunction } from "i18next"
 import { z } from "zod"
 import { toast } from "sonner"
 
+import { BookingStatusBadge } from "@/components/booking/BookingStatusBadge"
 import { BackButton } from "@/components/layout/BackButton"
 import { LanguageToggle } from "@/components/layout/LanguageToggle"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
@@ -23,7 +24,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
@@ -42,13 +42,6 @@ function createLookupSchema(t: TFunction) {
 }
 
 type LookupInput = z.infer<ReturnType<typeof createLookupSchema>>
-
-const statusVariant = {
-  confirmed: "secondary",
-  pending: "outline",
-  cancelled: "destructive",
-  no_show: "outline",
-} as const
 
 export function BookingLookupPage() {
   const { t } = useTranslation()
@@ -147,7 +140,7 @@ export function BookingLookupPage() {
             <CardContent className="flex flex-col gap-4">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm font-medium">{business?.name}</span>
-                <Badge variant={statusVariant[booking.status]}>{t(`booking.status.${booking.status}`)}</Badge>
+                <BookingStatusBadge status={booking.status} />
               </div>
               <div className="flex flex-col gap-1 text-sm text-muted-foreground">
                 <span>

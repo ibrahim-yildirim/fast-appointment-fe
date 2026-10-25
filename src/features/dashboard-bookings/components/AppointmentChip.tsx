@@ -1,18 +1,11 @@
 import { useTranslation } from "react-i18next"
 
-import { Badge } from "@/components/ui/badge"
+import { BookingStatusBadge } from "@/components/booking/BookingStatusBadge"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 
 import { cn } from "@/lib/utils"
 import { useFormatters } from "@/lib/datetime"
-
-const statusVariant = {
-  confirmed: "secondary",
-  pending: "outline",
-  cancelled: "destructive",
-  no_show: "outline",
-} as const
 
 export function AppointmentChip({
   appointment,
@@ -59,9 +52,7 @@ export function AppointmentChip({
       <HoverCardContent>
         <div className="flex items-center justify-between gap-2">
           <span className="font-medium">{appointment.customerName}</span>
-          <Badge variant={statusVariant[appointment.status]}>
-            {t(`booking.status.${appointment.status}`)}
-          </Badge>
+          <BookingStatusBadge status={appointment.status} />
         </div>
         <p className="mt-1 text-xs text-muted-foreground">{appointment.serviceName}</p>
         <p className="text-xs text-muted-foreground">

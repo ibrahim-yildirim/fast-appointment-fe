@@ -4,7 +4,7 @@ import { CalendarPlus } from "lucide-react"
 import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 
-import { Badge } from "@/components/ui/badge"
+import { BookingStatusBadge } from "@/components/booking/BookingStatusBadge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { businessNow } from "@/lib/datetime"
@@ -14,13 +14,6 @@ import type { CustomerBookingView } from "@/features/my-bookings/api/customerBoo
 import { BookingDetailDialog } from "@/features/my-bookings/components/BookingDetailDialog"
 import { useCustomerBookings } from "@/features/my-bookings/hooks/useCustomerBookings"
 import { useFormatters } from "@/lib/datetime"
-
-const statusVariant = {
-  confirmed: "secondary",
-  pending: "outline",
-  cancelled: "destructive",
-  no_show: "outline",
-} as const
 
 function BookingRow({
   booking,
@@ -59,7 +52,7 @@ function BookingRow({
         </p>
       </div>
 
-      <Badge variant={statusVariant[booking.status]}>{t(`booking.status.${booking.status}`)}</Badge>
+      <BookingStatusBadge status={booking.status} />
     </button>
   )
 }

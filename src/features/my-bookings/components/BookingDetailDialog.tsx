@@ -13,7 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Badge } from "@/components/ui/badge"
+import { BookingStatusBadge } from "@/components/booking/BookingStatusBadge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
@@ -22,13 +22,6 @@ import { Textarea } from "@/components/ui/textarea"
 import type { CustomerBookingView } from "@/features/my-bookings/api/customerBookingsApi"
 import { useCancelCustomerBooking } from "@/features/my-bookings/hooks/useCancelCustomerBooking"
 import { useFormatters } from "@/lib/datetime"
-
-const statusVariant = {
-  confirmed: "secondary",
-  pending: "outline",
-  cancelled: "destructive",
-  no_show: "outline",
-} as const
 
 export function BookingDetailDialog({
   booking,
@@ -63,7 +56,7 @@ export function BookingDetailDialog({
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
             <span className="text-sm font-medium">{booking.businessName}</span>
-            <Badge variant={statusVariant[booking.status]}>{t(`booking.status.${booking.status}`)}</Badge>
+            <BookingStatusBadge status={booking.status} />
           </div>
 
           <div className="flex flex-col gap-1 text-sm text-muted-foreground">

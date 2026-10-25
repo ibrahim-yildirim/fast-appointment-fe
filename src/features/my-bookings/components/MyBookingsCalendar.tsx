@@ -3,7 +3,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
-import { Badge } from "@/components/ui/badge"
+import { BookingStatusBadge } from "@/components/booking/BookingStatusBadge"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
 import { toDateKey } from "@/features/booking/lib/slotUtils"
@@ -14,13 +14,6 @@ import { weekdayOrder } from "@/lib/constants"
 import { businessToday } from "@/lib/datetime"
 import { cn } from "@/lib/utils"
 import { useFormatters } from "@/lib/datetime"
-
-const statusVariant = {
-  confirmed: "secondary",
-  pending: "outline",
-  cancelled: "destructive",
-  no_show: "outline",
-} as const
 
 const statusDot = {
   confirmed: "bg-foreground",
@@ -63,7 +56,7 @@ function BookingChip({
       <HoverCardContent>
         <div className="flex items-center justify-between gap-2">
           <span className="font-medium">{booking.serviceName}</span>
-          <Badge variant={statusVariant[booking.status]}>{t(`booking.status.${booking.status}`)}</Badge>
+          <BookingStatusBadge status={booking.status} />
         </div>
         <p className="mt-1 text-xs text-muted-foreground">{booking.businessName}</p>
         <p className="text-xs text-muted-foreground">

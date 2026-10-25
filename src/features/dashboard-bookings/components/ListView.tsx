@@ -1,19 +1,12 @@
 import { useMemo } from "react"
 
-import { Badge } from "@/components/ui/badge"
 
+import { BookingStatusBadge } from "@/components/booking/BookingStatusBadge"
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 import { useTranslation } from "react-i18next"
 import { businessTodayKey, useFormatters } from "@/lib/datetime"
 
 type ListSection = "today" | "upcoming" | "past"
-
-const statusVariant = {
-  confirmed: "secondary",
-  pending: "outline",
-  cancelled: "destructive",
-  no_show: "outline",
-} as const
 
 export function ListView({
   appointments,
@@ -85,9 +78,7 @@ export function ListView({
                   </p>
                 </div>
               </div>
-              <Badge variant={statusVariant[appointment.status]}>
-                {t(`booking.status.${appointment.status}`)}
-              </Badge>
+              <BookingStatusBadge status={appointment.status} />
             </button>
           ))}
         </section>
