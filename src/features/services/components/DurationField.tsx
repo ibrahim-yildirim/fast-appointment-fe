@@ -7,8 +7,8 @@ import {
   formatDurationLabel,
   maxServiceDuration,
   minServiceDuration,
+  serviceDurationStep,
 } from "@/features/services/lib/durations"
-import { SLOT_INTERVAL_MINUTES } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 
 /**
@@ -29,6 +29,12 @@ export function DurationField({
 
   const clamp = (minutes: number) =>
     Math.min(maxServiceDuration, Math.max(minServiceDuration, minutes))
+
+  // Snap to the step grid so an off-grid value (e.g. 45) lands on 40/50, not 35/55.
+  const stepDown = () =>
+    onChange(clamp((Math.ceil(value / serviceDurationStep) - 1) * serviceDurationStep))
+  const stepUp = () =>
+    onChange(clamp((Math.floor(value / serviceDurationStep) + 1) * serviceDurationStep))
 
   return (
     <div className="flex flex-col gap-3">
@@ -55,9 +61,9 @@ export function DurationField({
             type="button"
             variant="outline"
             size="icon-sm"
-            aria-label={t("services.durationDecrease", { step: SLOT_INTERVAL_MINUTES })}
+            aria-label={t("services.durationDecrease", { step: serviceDurationStep })}
             disabled={value <= minServiceDuration}
-            onClick={() => onChange(clamp(value - SLOT_INTERVAL_MINUTES))}
+            onClick={stepDown}
           >
             <MinusIcon className="h-4 w-4" />
           </Button>
@@ -74,9 +80,9 @@ export function DurationField({
             type="button"
             variant="outline"
             size="icon-sm"
-            aria-label={t("services.durationIncrease", { step: SLOT_INTERVAL_MINUTES })}
+            aria-label={t("services.durationIncrease", { step: serviceDurationStep })}
             disabled={value >= maxServiceDuration}
-            onClick={() => onChange(clamp(value + SLOT_INTERVAL_MINUTES))}
+            onClick={stepUp}
           >
             <PlusIcon className="h-4 w-4" />
           </Button>

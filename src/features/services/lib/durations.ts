@@ -1,14 +1,14 @@
 import type { TFunction } from "i18next"
 
-import { SLOT_INTERVAL_MINUTES } from "@/lib/constants"
-
-export const minServiceDuration = SLOT_INTERVAL_MINUTES
+// Independent of the slot grid: a 50-minute service still starts on the 30-minute grid.
+export const serviceDurationStep = 10
+export const minServiceDuration = serviceDurationStep
 export const maxServiceDuration = 240
 
-/** Every valid service length: 10 min up to 4 hours, in booking-interval steps. */
+/** Every valid service length: 10 min up to 4 hours, in 10-minute steps. */
 export const serviceDurationOptions = Array.from(
-  { length: maxServiceDuration / SLOT_INTERVAL_MINUTES },
-  (_, index) => (index + 1) * SLOT_INTERVAL_MINUTES,
+  { length: maxServiceDuration / serviceDurationStep },
+  (_, index) => (index + 1) * serviceDurationStep,
 )
 
 /**
