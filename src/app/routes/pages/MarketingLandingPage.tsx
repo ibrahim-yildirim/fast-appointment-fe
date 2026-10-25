@@ -5,6 +5,7 @@ import { Link } from "react-router-dom"
 import { LanguageToggle } from "@/components/layout/LanguageToggle"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import { Button } from "@/components/ui/button"
+import { getSavedGuestBookings } from "@/features/booking/lib/guestBookingStorage"
 import { useBusinesses } from "@/features/business/hooks/useBusinesses"
 import { useAuthStore } from "@/stores/authStore"
 
@@ -36,6 +37,7 @@ function useAccountLink() {
 export function MarketingLandingPage() {
   const { t } = useTranslation()
   const account = useAccountLink()
+  const hasGuestBookings = !account && getSavedGuestBookings().length > 0
 
   return (
     <>
@@ -80,6 +82,11 @@ export function MarketingLandingPage() {
               <Link to="/login">{t("auth.logIn")}</Link>
             )}
           </Button>
+          {hasGuestBookings && (
+            <Button size="lg" variant="outline" asChild>
+              <Link to="/guest-bookings">{t("landing.deviceBookings")}</Link>
+            </Button>
+          )}
         </div>
 
         <div className="mt-12 grid gap-6 text-left sm:grid-cols-3">

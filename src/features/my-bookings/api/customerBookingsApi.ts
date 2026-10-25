@@ -3,12 +3,13 @@ import { USE_FIXTURES } from "@/api/config"
 import { endpoints } from "@/api/endpoints"
 import { toId, toWallClock } from "@/api/mappers"
 import { bookings, businesses, services, staff } from "@/fixtures"
-import type { BookingStatus, BookingSummary, CancelledBy } from "@/types"
+import type { Booking, BookingStatus, BookingSummary, CancelledBy } from "@/types"
 
 export type CustomerBookingView = BookingSummary
 
-type CustomerBookingResponse = {
+export type CustomerBookingResponse = {
   id: number
+  uid: string
   businessId: number
   businessName: string
   businessSlug: string
@@ -23,11 +24,10 @@ type CustomerBookingResponse = {
   cancellationReason: string | null
 }
 
-// There is no booking reference in the backend yet; it arrives with guest booking.
-function toCustomerBooking(response: CustomerBookingResponse): CustomerBookingView {
+export function toCustomerBooking(response: CustomerBookingResponse): CustomerBookingView {
   return {
     id: toId(response.id),
-    reference: "",
+    uid: response.uid,
     businessId: toId(response.businessId),
     businessName: response.businessName,
     businessSlug: response.businessSlug,
@@ -43,32 +43,35 @@ function toCustomerBooking(response: CustomerBookingResponse): CustomerBookingVi
   }
 }
 
+/** Fixture mode: resolves names the way the backend does. The fixture uid is just the id. */
+export function toFixtureCustomerBooking(booking: Booking): CustomerBookingView {
+  const business = businesses.find((candidate) => candidate.id === booking.businessId)
+  const service = services.find((candidate) => candidate.id === booking.serviceId)
+  const staffMember = staff.find((candidate) => candidate.id === booking.staffId)
+  return {
+    id: booking.id,
+    uid: booking.id,
+    businessId: booking.businessId,
+    businessName: business?.name ?? "Unknown business",
+    businessSlug: business?.slug ?? "",
+    serviceName: service?.name ?? "Unknown service",
+    staffName: staffMember?.name ?? "Unknown staff",
+    startsAt: booking.startsAt,
+    endsAt: booking.endsAt,
+    status: booking.status,
+    price: service?.price ?? 0,
+    cancelledBy: booking.cancelledBy,
+    cancellationReason: booking.cancellationReason,
+    notes: booking.notes,
+  }
+}
+
 export const customerBookingsApi = {
   list: async (customerId: string): Promise<CustomerBookingView[]> => {
     if (USE_FIXTURES) {
       return bookings
         .filter((booking) => booking.customerId === customerId)
-        .map((booking) => {
-          const business = businesses.find((candidate) => candidate.id === booking.businessId)
-          const service = services.find((candidate) => candidate.id === booking.serviceId)
-          const staffMember = staff.find((candidate) => candidate.id === booking.staffId)
-          return {
-            id: booking.id,
-            reference: booking.reference,
-            businessId: booking.businessId,
-            businessName: business?.name ?? "Unknown business",
-            businessSlug: business?.slug ?? "",
-            serviceName: service?.name ?? "Unknown service",
-            staffName: staffMember?.name ?? "Unknown staff",
-            startsAt: booking.startsAt,
-            endsAt: booking.endsAt,
-            status: booking.status,
-            price: service?.price ?? 0,
-            cancelledBy: booking.cancelledBy,
-            cancellationReason: booking.cancellationReason,
-            notes: booking.notes,
-          }
-        })
+        .map(toFixtureCustomerBooking)
     }
     const response = await apiClient.get<CustomerBookingResponse[]>(
       endpoints.customerBookings.list(),

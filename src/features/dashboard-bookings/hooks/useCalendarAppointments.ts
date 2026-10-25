@@ -57,7 +57,7 @@ export function useCalendarAppointments(business: BusinessRef, filters: Calendar
       if (!service || !staffMember) return []
 
       const customer = customers.find((candidate) => candidate.id === booking.customerId)
-      const customerName = customer?.name ?? booking.guestName ?? "Unknown customer"
+      const customerName = customer?.name ?? "Unknown customer"
 
       const appointment: CalendarAppointment = {
         id: booking.id,

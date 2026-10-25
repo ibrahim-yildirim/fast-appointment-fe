@@ -113,15 +113,6 @@ export function BookingConfirmationPage() {
         </div>
       )}
 
-      {booking.reference && (
-        <div className="bg-muted/60 flex flex-col gap-1 rounded-lg p-4">
-          <span className="text-muted-foreground text-sm">{t("booking.reference")}</span>
-          <span className="font-mono text-lg font-semibold tracking-wider">
-            {booking.reference}
-          </span>
-        </div>
-      )}
-
       <div className="flex flex-col gap-2 sm:flex-row">
         <Button size="xl" asChild>
           <Link to="/account/bookings">{t("booking.viewMyBookings")}</Link>

@@ -25,13 +25,14 @@ export const endpoints = {
       `/api/businesses/${businessId}/staff/${staffId}/time-off/${timeOffId}`,
   },
   bookings: {
-    lookup: () => `/api/bookings/lookup`,
     list: (businessId: string) => `/api/businesses/${businessId}/bookings`,
     ownerList: () => `/api/business/bookings`,
     ownerById: (bookingId: string) => `/api/business/bookings/${bookingId}`,
     ownerNoShow: (bookingId: string) => `/api/business/bookings/${bookingId}/no-show`,
     byId: (businessId: string, bookingId: string) =>
       `/api/businesses/${businessId}/bookings/${bookingId}`,
+    guestCreate: (businessSlug: string) => `/api/businesses/${businessSlug}/bookings`,
+    manage: (uid: string) => `/api/bookings/manage/${uid}`,
   },
   customers: {
     list: () => `/api/customers`,
