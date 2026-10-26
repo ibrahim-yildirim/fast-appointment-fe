@@ -5,7 +5,9 @@ import { ThemeProvider } from "@/app/providers/ThemeProvider"
 import { Toaster } from "@/components/ui/sonner"
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(
+    () => new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: false } } }),
+  )
 
   return (
     <ThemeProvider>
