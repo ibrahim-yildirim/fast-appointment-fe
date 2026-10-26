@@ -2,6 +2,7 @@ import { format, isSameDay, isSameMonth } from "date-fns"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 import { BookingStatusBadge } from "@/components/booking/BookingStatusBadge"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { toDateKey } from "@/features/booking/lib/slotUtils"
 import type { CustomerBookingView } from "@/features/my-bookings/api/customerBookingsApi"
 import { BookingDetailDialog } from "@/features/my-bookings/components/BookingDetailDialog"
+import { CustomerDayBookingsDialog } from "@/features/my-bookings/components/CustomerDayBookingsDialog"
 import { getMonthGridDays, navigateDate } from "@/lib/calendarUtils"
 import { weekdayOrder } from "@/lib/constants"
 import { businessToday } from "@/lib/datetime"
@@ -74,9 +76,12 @@ function BookingChip({
 export function MyBookingsCalendar({ bookings }: { bookings: CustomerBookingView[] }) {
   const { t } = useTranslation()
   const { locale } = useFormatters()
+  const navigate = useNavigate()
   const today = businessToday()
+  const todayKey = toDateKey(today)
   const [referenceDate, setReferenceDate] = useState(() => businessToday())
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null)
+  const [dayDialogDateKey, setDayDialogDateKey] = useState<string | null>(null)
 
   const days = useMemo(() => getMonthGridDays(referenceDate), [referenceDate])
 
@@ -129,18 +134,34 @@ export function MyBookingsCalendar({ bookings }: { bookings: CustomerBookingView
         {days.map((day) => {
           const dateKey = toDateKey(day)
           const dayBookings = bookingsByDate.get(dateKey) ?? []
+          const hasBookings = dayBookings.length > 0
+          const dayLabel = format(day, "d MMMM", { locale })
 
           return (
             <div
               key={dateKey}
               className={cn(
-                "flex min-h-24 flex-col gap-1 bg-background p-1",
+                "relative flex min-h-24 flex-col gap-1 bg-background p-1",
                 !isSameMonth(day, referenceDate) && "bg-muted/30 text-muted-foreground",
               )}
             >
+              {(hasBookings || dateKey >= todayKey) && (
+                <button
+                  type="button"
+                  aria-label={
+                    hasBookings
+                      ? t("account.dayBookingsOn", { date: dayLabel })
+                      : t("account.bookOn", { date: dayLabel })
+                  }
+                  onClick={() =>
+                    hasBookings ? setDayDialogDateKey(dateKey) : navigate("/businesses")
+                  }
+                  className="absolute inset-0 cursor-pointer hover:bg-muted/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+                />
+              )}
               <span
                 className={cn(
-                  "flex size-6 items-center justify-center text-xs",
+                  "pointer-events-none relative flex size-6 items-center justify-center text-xs",
                   isSameDay(day, today) &&
                     "rounded-full bg-gold font-semibold text-gold-foreground",
                 )}
@@ -148,16 +169,26 @@ export function MyBookingsCalendar({ bookings }: { bookings: CustomerBookingView
                 {format(day, "d", { locale })}
               </span>
               {dayBookings.map((booking) => (
-                <BookingChip
-                  key={booking.id}
-                  booking={booking}
-                  onSelect={setSelectedBookingId}
-                />
+                <div key={booking.id} className="relative min-w-0">
+                  <BookingChip booking={booking} onSelect={setSelectedBookingId} />
+                </div>
               ))}
             </div>
           )
         })}
       </div>
+
+      <CustomerDayBookingsDialog
+        dateKey={dayDialogDateKey}
+        bookings={dayDialogDateKey ? (bookingsByDate.get(dayDialogDateKey) ?? []) : []}
+        open={dayDialogDateKey !== null}
+        onOpenChange={(open) => !open && setDayDialogDateKey(null)}
+        onSelectBooking={(id) => {
+          setDayDialogDateKey(null)
+          setSelectedBookingId(id)
+        }}
+        canBookNew={dayDialogDateKey !== null && dayDialogDateKey >= todayKey}
+      />
 
       <BookingDetailDialog
         booking={bookings.find((booking) => booking.id === selectedBookingId) ?? null}
