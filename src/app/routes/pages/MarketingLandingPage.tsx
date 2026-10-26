@@ -27,7 +27,7 @@ function useAccountLink() {
     const slug = businesses?.find((business) => business.id === businessId)?.slug
     // An owner without a business yet is sent to onboarding.
     return {
-      to: slug ? `/${slug}/dashboard` : "/onboarding/business",
+      to: slug ? `/${slug}/dashboard/bookings` : "/onboarding/business",
       label: t("landing.myDashboard"),
     }
   }

@@ -39,6 +39,7 @@ import {
 } from "@/features/my-bookings/pages"
 import { ServiceEditPage, ServiceNewPage, ServicesListPage } from "@/features/services/pages"
 import { StaffAvailabilityPage, StaffListPage } from "@/features/staff-calendar/pages"
+import { CustomersPage } from "@/features/customers/pages"
 
 export const router = createBrowserRouter([
   {
@@ -120,6 +121,7 @@ export const router = createBrowserRouter([
                         element: <StaffAvailabilityPage />,
                       },
                       { path: "bookings", element: <DashboardBookingsPage /> },
+                      { path: "customers", element: <CustomersPage /> },
                       { path: "settings", element: <DashboardSettingsPage /> },
                     ],
                   },

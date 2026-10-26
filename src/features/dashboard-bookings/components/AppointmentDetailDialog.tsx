@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
@@ -34,6 +35,7 @@ export function AppointmentDetailDialog({
   open,
   onOpenChange,
   eligibleStaff,
+  onReschedule,
   onReassign,
   onCancel,
   onMarkNoShow,
@@ -43,6 +45,7 @@ export function AppointmentDetailDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
   eligibleStaff: Staff[]
+  onReschedule: (dateKey: string, startTime: string) => void
   onReassign: (staffId: string) => void
   onCancel: (reason: string | null) => void
   onMarkNoShow: () => void
@@ -51,6 +54,9 @@ export function AppointmentDetailDialog({
   const { formatTime, formatMoney, formatDate } = useFormatters()
   const { t } = useTranslation()
   const [cancelReason, setCancelReason] = useState("")
+  const [isEditingTime, setIsEditingTime] = useState(false)
+  const [newDate, setNewDate] = useState(appointment?.dateKey ?? "")
+  const [newTime, setNewTime] = useState(appointment?.startTime ?? "")
 
   if (!appointment) return null
 
@@ -66,8 +72,18 @@ export function AppointmentDetailDialog({
           <DialogTitle>{appointment.serviceName}</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">{appointment.customerName}</span>
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex flex-col">
+              <span className="text-sm font-medium">{appointment.customerName}</span>
+              {appointment.customerPhone && (
+                <a
+                  href={`tel:${appointment.customerPhone}`}
+                  className="text-sm text-muted-foreground underline-offset-4 hover:underline"
+                >
+                  {appointment.customerPhone}
+                </a>
+              )}
+            </div>
             <BookingStatusBadge status={appointment.status} />
           </div>
           <div className="flex flex-col gap-1 text-sm text-muted-foreground">
@@ -93,6 +109,53 @@ export function AppointmentDetailDialog({
               <span>{t("booking.cancelReasonShown", { reason: appointment.cancellationReason })}</span>
             )}
           </div>
+
+          {isOpen && !isEditingTime && (
+            <Button variant="outline" disabled={isSaving} onClick={() => setIsEditingTime(true)}>
+              {t("dashboard.reschedule")}
+            </Button>
+          )}
+          {isOpen && isEditingTime && (
+            <div className="flex flex-col gap-3 rounded-lg border border-border p-3">
+              <span className="text-sm font-medium">{t("dashboard.rescheduleTitle")}</span>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="reschedule-date">{t("dashboard.form.date")}</Label>
+                  <Input
+                    id="reschedule-date"
+                    type="date"
+                    value={newDate}
+                    onChange={(event) => setNewDate(event.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="reschedule-time">{t("dashboard.form.time")}</Label>
+                  <Input
+                    id="reschedule-time"
+                    type="time"
+                    step={300}
+                    value={newTime}
+                    onChange={(event) => setNewTime(event.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  className="flex-1"
+                  disabled={isSaving || !newDate || !newTime}
+                  onClick={() => {
+                    onReschedule(newDate, newTime)
+                    setIsEditingTime(false)
+                  }}
+                >
+                  {t("dashboard.saveTime")}
+                </Button>
+                <Button variant="outline" onClick={() => setIsEditingTime(false)}>
+                  {t("common.cancel")}
+                </Button>
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col gap-1.5">
             <span className="text-sm font-medium">{t("dashboard.staff")}</span>

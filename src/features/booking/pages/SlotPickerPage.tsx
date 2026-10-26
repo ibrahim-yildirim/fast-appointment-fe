@@ -1,3 +1,4 @@
+import { format } from "date-fns"
 import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
@@ -86,6 +87,14 @@ export function SlotPickerPage() {
           labels={{
             labelPrevious: () => t("booking.previousMonth"),
             labelNext: () => t("booking.nextMonth"),
+            labelDayButton: (day, modifiers) =>
+              [
+                modifiers.today && t("dashboard.today"),
+                format(day, "PPPP", { locale }),
+                modifiers.selected && t("booking.selectedDay"),
+              ]
+                .filter(Boolean)
+                .join(", "),
           }}
           selected={date}
           defaultMonth={date}

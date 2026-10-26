@@ -13,11 +13,13 @@ export function WeekDayGrid({
   appointments,
   onSelectAppointment,
   onReschedule,
+  previewsDisabled,
 }: {
   days: Date[]
   appointments: CalendarAppointment[]
   onSelectAppointment: (id: string) => void
   onReschedule: (id: string, dateKey: string, hour: number) => void
+  previewsDisabled: boolean
 }) {
   const { locale, formatHour } = useFormatters()
   const today = businessToday()
@@ -39,7 +41,7 @@ export function WeekDayGrid({
     <div className="overflow-x-auto rounded-lg border border-border">
       <div
         className="grid min-w-[600px]"
-        style={{ gridTemplateColumns: `4rem repeat(${days.length}, minmax(120px, 1fr))` }}
+        style={{ gridTemplateColumns: `4rem repeat(${days.length}, minmax(80px, 1fr))` }}
       >
         <div className="border-r border-b border-border" />
         {days.map((day) => (
@@ -93,6 +95,7 @@ export function WeekDayGrid({
                       key={appointment.id}
                       appointment={appointment}
                       onSelect={onSelectAppointment}
+                      previewDisabled={previewsDisabled}
                     />
                   ))}
                 </div>

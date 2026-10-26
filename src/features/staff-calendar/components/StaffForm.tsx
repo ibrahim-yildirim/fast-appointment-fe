@@ -14,7 +14,17 @@ import {
 import { cn } from "@/lib/utils"
 import type { Service } from "@/types"
 
-const colorOptions = ["#171717", "#404040", "#525252", "#737373", "#a3a3a3", "#d4d4d4"]
+// Mid-tone hues: each keeps at least 3:1 contrast on both the ivory and the dark background.
+const colorOptions = [
+  "#2f7d6d",
+  "#4a6fa5",
+  "#b0563b",
+  "#8a6d1f",
+  "#8b5aa8",
+  "#b3476b",
+  "#5f7f2e",
+  "#6b7280",
+]
 
 export function StaffForm({
   defaultValues,
@@ -70,12 +80,13 @@ export function StaffForm({
             control={control}
             name="colorTag"
             render={({ field }) => (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {colorOptions.map((color) => (
                   <button
                     key={color}
                     type="button"
                     aria-label={color}
+                    aria-pressed={field.value === color}
                     onClick={() => field.onChange(color)}
                     className={cn(
                       "size-6 rounded-full ring-offset-2 ring-offset-background",

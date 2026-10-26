@@ -18,7 +18,7 @@ async function fallbackRedirect(businessId?: string) {
   if (!businessId) return "/onboarding/business"
   const businesses = await businessApi.list()
   const business = businesses.find((candidate) => candidate.id === businessId)
-  return business ? `/${business.slug}/dashboard` : "/onboarding/business"
+  return business ? `/${business.slug}/dashboard/bookings` : "/onboarding/business"
 }
 
 export function useBusinessAuth() {

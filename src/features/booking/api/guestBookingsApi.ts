@@ -27,7 +27,7 @@ export const guestBookingsApi = {
   create: async (business: BusinessRef, input: CreateGuestBookingInput): Promise<string> => {
     if (USE_FIXTURES) {
       const customerId = `cust-${Date.now()}`
-      customers.push({ id: customerId, name: input.name, email: input.email })
+      customers.push({ id: customerId, name: input.name, phone: input.phone, email: input.email })
       const id = `booking-${Date.now()}`
       bookings.push({
         id,

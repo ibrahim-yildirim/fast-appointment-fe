@@ -3,6 +3,7 @@ export type Role = "customer" | "business_owner"
 export type Customer = {
   id: string
   name: string
+  phone: string
   email: string
 }
 

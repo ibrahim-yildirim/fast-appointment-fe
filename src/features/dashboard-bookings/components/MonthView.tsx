@@ -17,6 +17,7 @@ export function MonthView({
   appointments,
   onSelectAppointment,
   onReschedule,
+  previewsDisabled,
   onShowMore,
 }: {
   referenceDate: Date
@@ -24,6 +25,7 @@ export function MonthView({
   onSelectAppointment: (id: string) => void
   onReschedule: (id: string, dateKey: string) => void
   onShowMore: (date: Date) => void
+  previewsDisabled: boolean
 }) {
   const { t } = useTranslation()
   const { locale } = useFormatters()
@@ -65,7 +67,7 @@ export function MonthView({
               if (id) onReschedule(id, dateKey)
             }}
             className={cn(
-              "flex min-h-24 flex-col gap-1 bg-background p-1",
+              "flex min-h-24 min-w-0 flex-col gap-1 bg-background p-0.5 sm:p-1",
               !isSameMonth(day, referenceDate) && "bg-muted/30 text-muted-foreground",
             )}
           >
@@ -83,6 +85,7 @@ export function MonthView({
                 key={appointment.id}
                 appointment={appointment}
                 onSelect={onSelectAppointment}
+                previewDisabled={previewsDisabled}
               />
             ))}
             {overflow > 0 && (
@@ -91,7 +94,7 @@ export function MonthView({
                 onClick={() => onShowMore(day)}
                 className="text-left text-xs text-muted-foreground hover:text-foreground"
               >
-                +{overflow} more
+                {t("dashboard.showMore", { count: overflow })}
               </button>
             )}
           </div>

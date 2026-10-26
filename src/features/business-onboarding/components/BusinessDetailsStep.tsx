@@ -16,7 +16,12 @@ export function BusinessDetailsStep({ form }: { form: UseFormReturn<BusinessOnbo
     watch,
     formState: { errors },
   } = form
-  const [slugTouched, setSlugTouched] = useState(false)
+  // This step remounts when the user comes back to it, so derive "touched" from the values
+  // instead of starting fresh, otherwise a hand-typed slug gets overwritten.
+  const [slugTouched, setSlugTouched] = useState(() => {
+    const { name: currentName, slug } = form.getValues()
+    return !!slug && slug !== slugify(currentName ?? "")
+  })
   const name = watch("name")
 
   useEffect(() => {

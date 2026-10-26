@@ -3,6 +3,7 @@ export const endpoints = {
     list: () => `/api/businesses`,
     bySlug: (slug: string) => `/api/businesses/${slug}`,
     create: () => `/api/businesses`,
+    ownerUpdate: () => `/api/business`,
   },
   services: {
     list: (businessSlug: string) => `/api/businesses/${businessSlug}/services`,
@@ -36,6 +37,8 @@ export const endpoints = {
   },
   customers: {
     list: () => `/api/customers`,
+    create: () => `/api/customers`,
+    me: () => `/api/customers/me`,
   },
   customerBookings: {
     list: () => `/api/bookings`,

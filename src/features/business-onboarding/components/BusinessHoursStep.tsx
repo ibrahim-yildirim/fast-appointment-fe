@@ -15,28 +15,36 @@ export function BusinessHoursStep({ form }: { form: UseFormReturn<BusinessOnboar
       {fields.map((field, index) => {
         const enabled = watch(`hours.${index}.enabled`)
         return (
-          <div key={field.id} className="flex items-center gap-4 rounded-lg border border-border p-3">
-            <Controller
-              control={control}
-              name={`hours.${index}.enabled`}
-              render={({ field: switchField }) => (
-                <Switch checked={switchField.value} onCheckedChange={switchField.onChange} />
-              )}
-            />
-            <span className="w-28 text-sm font-medium">{t(`weekday.${field.day}`)}</span>
-            <Input
-              type="time"
-              className="w-32"
-              disabled={!enabled}
-              {...register(`hours.${index}.start`)}
-            />
-            <span className="text-sm text-muted-foreground">{t("staff.rangeTo")}</span>
-            <Input
-              type="time"
-              className="w-32"
-              disabled={!enabled}
-              {...register(`hours.${index}.end`)}
-            />
+          <div
+            key={field.id}
+            className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-border p-3"
+          >
+            {/* On a phone the day takes the first line and both times share the second. */}
+            <div className="flex basis-full items-center gap-4 sm:basis-auto">
+              <Controller
+                control={control}
+                name={`hours.${index}.enabled`}
+                render={({ field: switchField }) => (
+                  <Switch checked={switchField.value} onCheckedChange={switchField.onChange} />
+                )}
+              />
+              <span className="w-28 text-sm font-medium">{t(`weekday.${field.day}`)}</span>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Input
+                type="time"
+                className="w-[8.5rem]"
+                disabled={!enabled}
+                {...register(`hours.${index}.start`)}
+              />
+              <span className="text-sm text-muted-foreground">{t("staff.rangeTo")}</span>
+              <Input
+                type="time"
+                className="w-[8.5rem]"
+                disabled={!enabled}
+                {...register(`hours.${index}.end`)}
+              />
+            </div>
           </div>
         )
       })}

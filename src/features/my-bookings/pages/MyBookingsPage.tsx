@@ -101,11 +101,14 @@ export function MyBookingsPage() {
   const { upcoming, past } = useMemo(() => {
     const now = businessNow()
     const all = bookings ?? []
+    // A cancelled booking no longer holds a time, so it belongs with the history even if it's in the future.
+    const isUpcoming = (booking: (typeof all)[number]) =>
+      booking.status !== "cancelled" && new Date(booking.startsAt) >= now
     const upcoming = all
-      .filter((booking) => new Date(booking.startsAt) >= now)
+      .filter(isUpcoming)
       .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
     const past = all
-      .filter((booking) => new Date(booking.startsAt) < now)
+      .filter((booking) => !isUpcoming(booking))
       .sort((a, b) => b.startsAt.localeCompare(a.startsAt))
     return { upcoming, past }
   }, [bookings])

@@ -23,7 +23,7 @@ export function useCreateBusiness() {
         current ? [...current, business] : current,
       )
       setBusinessId(business.id)
-      navigate(`/${business.slug}/dashboard`, { replace: true })
+      navigate(`/${business.slug}/dashboard/services`, { replace: true })
     },
     onError: (error: Error) => toast.error(i18n.t(error.message)),
   })

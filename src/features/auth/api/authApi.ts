@@ -75,7 +75,7 @@ export const authApi = {
         actorId,
       }
       authAccounts.push(account)
-      customers.push({ id: actorId, name: input.name, email: input.email })
+      customers.push({ id: actorId, name: input.name, phone: "", email: input.email })
       return toSession(account)
     }
     return toAuthSession(

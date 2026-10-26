@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { BookingStatusBadge } from "@/components/booking/BookingStatusBadge"
@@ -10,17 +11,29 @@ import { useFormatters } from "@/lib/datetime"
 export function AppointmentChip({
   appointment,
   onSelect,
+  previewDisabled = false,
   className,
 }: {
   appointment: CalendarAppointment
   onSelect: (id: string) => void
+  // True while a booking dialog is open: a late hover timer would otherwise pop the preview over it.
+  previewDisabled?: boolean
   className?: string
 }) {
   const { t } = useTranslation()
   const { formatTime } = useFormatters()
+  const [previewOpen, setPreviewOpen] = useState(false)
 
   return (
-    <HoverCard openDelay={150} closeDelay={50}>
+    <HoverCard
+      open={previewOpen && !previewDisabled}
+      onOpenChange={(open) => {
+        if (open && previewDisabled) return
+        setPreviewOpen(open)
+      }}
+      openDelay={150}
+      closeDelay={50}
+    >
       <HoverCardTrigger asChild>
         <button
           type="button"
@@ -29,9 +42,12 @@ export function AppointmentChip({
             event.dataTransfer.setData("text/plain", appointment.id)
             event.dataTransfer.effectAllowed = "move"
           }}
-          onClick={() => onSelect(appointment.id)}
+          onClick={() => {
+            setPreviewOpen(false)
+            onSelect(appointment.id)
+          }}
           className={cn(
-            "flex w-full items-center gap-1.5 truncate rounded-md border border-border px-1.5 py-1 text-left text-xs transition-colors hover:bg-secondary",
+            "flex w-full items-center gap-1.5 truncate rounded-md border border-border px-0.5 py-1 text-left text-[11px] transition-colors hover:bg-secondary sm:px-1.5 sm:text-xs",
             // Read the status at a glance: pending is still tentative, cancelled no longer holds the time.
             appointment.status === "pending" && "border-dashed",
             appointment.status === "cancelled" && "text-muted-foreground line-through opacity-70",
@@ -40,11 +56,13 @@ export function AppointmentChip({
           )}
         >
           <span
-            className="size-2 shrink-0 rounded-full"
+            className="hidden size-2 shrink-0 rounded-full sm:block"
             style={{ backgroundColor: appointment.staffColor }}
           />
+          {/* Phone-width month cells only fit the time; the name is in the detail dialog. */}
           <span className="truncate">
-            {formatTime(appointment.startTime)} &middot; {appointment.customerName}
+            {formatTime(appointment.startTime)}
+            <span className="hidden sm:inline"> &middot; {appointment.customerName}</span>
           </span>
         </button>
       </HoverCardTrigger>

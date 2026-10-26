@@ -1,4 +1,5 @@
 import { useMemo } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useBookings } from "@/features/booking/hooks/useBookings"
 import { useCustomers } from "@/features/customers/hooks/useCustomers"
@@ -9,6 +10,7 @@ import type { BookingStatus, BusinessRef, CancelledBy } from "@/types"
 export type CalendarAppointment = {
   id: string
   customerName: string
+  customerPhone: string
   serviceName: string
   serviceId: string
   price: number
@@ -40,6 +42,7 @@ export const defaultCalendarFilters: CalendarFilters = {
 }
 
 export function useCalendarAppointments(business: BusinessRef, filters: CalendarFilters) {
+  const { t } = useTranslation()
   const bookingsQuery = useBookings(business.id)
   const servicesQuery = useOwnerServices(business.id)
   const staffQuery = useOwnerStaff(business.id)
@@ -57,11 +60,12 @@ export function useCalendarAppointments(business: BusinessRef, filters: Calendar
       if (!service || !staffMember) return []
 
       const customer = customers.find((candidate) => candidate.id === booking.customerId)
-      const customerName = customer?.name ?? "Unknown customer"
+      const customerName = customer?.name ?? t("dashboard.unknownCustomer")
 
       const appointment: CalendarAppointment = {
         id: booking.id,
         customerName,
+        customerPhone: customer?.phone ?? "",
         serviceName: service.name,
         serviceId: service.id,
         price: service.price,
@@ -93,7 +97,7 @@ export function useCalendarAppointments(business: BusinessRef, filters: Calendar
       }
       return true
     })
-  }, [bookingsQuery.data, servicesQuery.data, staffQuery.data, customersQuery.data, filters])
+  }, [bookingsQuery.data, servicesQuery.data, staffQuery.data, customersQuery.data, filters, t])
 
   const isLoading =
     bookingsQuery.isLoading ||

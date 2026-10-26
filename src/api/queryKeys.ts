@@ -30,6 +30,7 @@ export const queryKeys = {
   },
   customers: {
     list: () => ["customers"] as const,
+    me: () => ["customers", "me"] as const,
   },
   customerBookings: {
     list: () => ["customer-bookings"] as const,

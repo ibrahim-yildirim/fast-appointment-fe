@@ -44,6 +44,19 @@ export type CreateBookingInput = {
   notes: string
 }
 
+// Walk-in or phone booking entered by the owner; the backend finds or creates the
+// notebook customer by phone.
+export type CreateOwnerBookingInput = {
+  serviceId: string
+  staffId: string
+  startsAt: string
+  endsAt: string
+  customerName: string
+  customerPhone: string
+  customerEmail: string
+  notes: string
+}
+
 export const bookingsApi = {
   list: async (businessId: string): Promise<Booking[]> => {
     if (USE_FIXTURES) {
@@ -84,6 +97,40 @@ export const bookingsApi = {
       notes: input.notes,
     })
     return { id: toId(response.id) }
+  },
+
+  createForOwner: async (
+    businessId: string,
+    input: CreateOwnerBookingInput,
+  ): Promise<Booking> => {
+    if (USE_FIXTURES) {
+      const booking: Booking = {
+        id: `booking-${Date.now()}`,
+        businessId,
+        serviceId: input.serviceId,
+        staffId: input.staffId,
+        customerId: null,
+        startsAt: input.startsAt,
+        endsAt: input.endsAt,
+        status: "confirmed",
+        notes: input.notes,
+        cancelledBy: null,
+        cancellationReason: null,
+      }
+      bookings.push(booking)
+      return booking
+    }
+    const response = await apiClient.post<BookingResponse>(endpoints.bookings.ownerList(), {
+      serviceId: toBackendId(input.serviceId),
+      staffId: toBackendId(input.staffId),
+      startsAt: toBusinessLocal(input.startsAt),
+      endsAt: toBusinessLocal(input.endsAt),
+      customerName: input.customerName,
+      customerPhone: input.customerPhone,
+      customerEmail: input.customerEmail || null,
+      notes: input.notes || null,
+    })
+    return toBooking(response)
   },
 
   update: async (

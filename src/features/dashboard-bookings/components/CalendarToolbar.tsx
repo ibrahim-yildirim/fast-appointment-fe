@@ -31,12 +31,16 @@ function rangeLabel(
   t: TFunction,
 ): string {
   if (view === "month") return format(referenceDate, "MMMM yyyy", { locale })
-  if (view === "day") return format(referenceDate, "EEEE, MMMM d, yyyy", { locale })
+  if (view === "day") return format(referenceDate, "PPPP", { locale })
   if (view === "list") return t("dashboard.allAppointments")
   const week = getWeekDays(referenceDate)
   const start = week[0]
   const end = week[6]
-  return `${format(start, "MMM d", { locale })} - ${format(end, "MMM d, yyyy", { locale })}`
+  // Turkish puts the day before the month ("26 Eki – 1 Kas 2026").
+  if (locale.code === "tr") {
+    return `${format(start, "d MMM", { locale })} – ${format(end, "d MMM yyyy", { locale })}`
+  }
+  return `${format(start, "MMM d", { locale })} – ${format(end, "MMM d, yyyy", { locale })}`
 }
 
 export function CalendarToolbar({

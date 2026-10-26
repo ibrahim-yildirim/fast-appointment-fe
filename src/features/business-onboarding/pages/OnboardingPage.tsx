@@ -55,7 +55,7 @@ export function OnboardingPage() {
   if (businessId) {
     if (!businesses) return null
     const existingBusiness = businesses.find((candidate) => candidate.id === businessId)
-    return <Navigate to={existingBusiness ? `/${existingBusiness.slug}/dashboard` : "/"} replace />
+    return <Navigate to={existingBusiness ? `/${existingBusiness.slug}/dashboard/bookings` : "/"} replace />
   }
 
   const isLastStep = step === stepKeys.length - 1
