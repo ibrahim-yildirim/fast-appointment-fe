@@ -8,7 +8,7 @@ import type { Business, BusinessHours } from "@/types"
 
 export type UpdateBusinessInput = Pick<
   Business,
-  "name" | "description" | "timezone" | "address" | "phone" | "email"
+  "name" | "description" | "timezone" | "address" | "city" | "phone" | "email"
 > & { hours: BusinessHours[] }
 
 export type BusinessResponse = Omit<Business, "id" | "defaultHours"> & {

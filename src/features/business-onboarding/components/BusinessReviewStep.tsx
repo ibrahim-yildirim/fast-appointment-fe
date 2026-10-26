@@ -15,6 +15,7 @@ export function BusinessReviewStep({ form }: { form: UseFormReturn<BusinessOnboa
         <p className="mt-1 text-muted-foreground">{values.description}</p>
       </div>
       <div className="flex flex-col gap-0.5 text-muted-foreground">
+        <span>{values.city}</span>
         <span>{values.address}</span>
         <span>{values.phone}</span>
         <span>{values.email}</span>

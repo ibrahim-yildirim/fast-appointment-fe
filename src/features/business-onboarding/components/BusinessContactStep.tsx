@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { cities } from "@/lib/constants"
 import type { BusinessOnboardingInput } from "@/features/business-onboarding/schemas/businessOnboardingSchema"
 
 const timezones = [
@@ -34,6 +35,30 @@ export function BusinessContactStep({ form }: { form: UseFormReturn<BusinessOnbo
 
   return (
     <FieldGroup>
+      <Field data-invalid={!!errors.city}>
+        <FieldLabel required htmlFor="onboarding-city">
+          {t("onboarding.city")}
+        </FieldLabel>
+        <Controller
+          control={control}
+          name="city"
+          render={({ field }) => (
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger id="onboarding-city" className="w-full">
+                <SelectValue placeholder={t("onboarding.cityPlaceholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                {cities.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
+        <FieldError errors={[errors.city]} />
+      </Field>
       <Field data-invalid={!!errors.address}>
         <FieldLabel required htmlFor="onboarding-address">
           {t("onboarding.address")}

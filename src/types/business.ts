@@ -14,6 +14,7 @@ export type Business = {
   description: string
   timezone: string
   address: string
+  city: string | null
   phone: string
   email: string
   defaultHours: BusinessHours[]

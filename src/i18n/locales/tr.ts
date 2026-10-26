@@ -83,6 +83,10 @@ export const tr = {
   directory: {
     title: "İşletme bul",
     empty: "Şu anda görüntülenecek işletme yok.",
+    searchPlaceholder: "İşletme adıyla ara",
+    city: "Şehir",
+    allCities: "Tüm şehirler",
+    noResults: "Aramanıza uygun işletme bulunamadı.",
   },
   auth: {
     email: "E-posta",
@@ -417,6 +421,8 @@ export const tr = {
     contactEmail: "İletişim e-postası",
     timezone: "Saat dilimi",
     timezonePlaceholder: "Saat dilimi seçin",
+    city: "Şehir",
+    cityPlaceholder: "Şehir seçin",
     open: "Açık",
     closed: "Kapalı",
     back: "Geri",
@@ -432,6 +438,7 @@ export const tr = {
       addressRequired: "Adres zorunludur.",
       phoneRequired: "Telefon numarası zorunludur.",
       timezoneRequired: "Saat dilimi zorunludur.",
+      cityRequired: "Şehir zorunludur.",
     },
   },
   duration: {

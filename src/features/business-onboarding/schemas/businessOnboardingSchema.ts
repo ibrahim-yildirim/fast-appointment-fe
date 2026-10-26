@@ -14,6 +14,7 @@ export function createBusinessOnboardingSchema(t: TFunction) {
       .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, t("onboarding.validation.slugFormat")),
     description: z.string().min(1, t("onboarding.validation.descriptionRequired")),
     address: z.string().min(1, t("onboarding.validation.addressRequired")),
+    city: z.string().min(1, t("onboarding.validation.cityRequired")),
     phone: z.string().min(1, t("onboarding.validation.phoneRequired")),
     email: z.email(t("validation.email")),
     timezone: z.string().min(1, t("onboarding.validation.timezoneRequired")),
@@ -33,5 +34,5 @@ export function createBusinessOnboardingSchema(t: TFunction) {
 export type BusinessOnboardingInput = z.infer<ReturnType<typeof createBusinessOnboardingSchema>>
 
 export const businessDetailsFields = ["name", "slug", "description"] as const
-export const businessContactFields = ["address", "phone", "email", "timezone"] as const
+export const businessContactFields = ["city", "address", "phone", "email", "timezone"] as const
 export const businessHoursFields = ["hours"] as const

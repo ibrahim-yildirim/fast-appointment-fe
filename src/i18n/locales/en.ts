@@ -81,6 +81,10 @@ export const en: typeof tr = {
   directory: {
     title: "Find a business",
     empty: "No businesses available right now.",
+    searchPlaceholder: "Search by business name",
+    city: "City",
+    allCities: "All cities",
+    noResults: "No businesses match your search.",
   },
   auth: {
     email: "Email",
@@ -415,6 +419,8 @@ export const en: typeof tr = {
     contactEmail: "Contact email",
     timezone: "Timezone",
     timezonePlaceholder: "Select a timezone",
+    city: "City",
+    cityPlaceholder: "Select a city",
     open: "Open",
     closed: "Closed",
     back: "Back",
@@ -430,6 +436,7 @@ export const en: typeof tr = {
       addressRequired: "Address is required.",
       phoneRequired: "Phone number is required.",
       timezoneRequired: "Timezone is required.",
+      cityRequired: "City is required.",
     },
   },
   duration: {

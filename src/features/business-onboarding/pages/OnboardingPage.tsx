@@ -40,6 +40,7 @@ export function OnboardingPage() {
       slug: "",
       description: "",
       address: "",
+      city: "",
       phone: "",
       email: "",
       timezone: "Europe/Istanbul",

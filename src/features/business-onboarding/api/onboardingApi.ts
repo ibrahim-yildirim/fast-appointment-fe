@@ -20,6 +20,7 @@ export const onboardingApi = {
         description: input.description,
         timezone: input.timezone,
         address: input.address,
+        city: input.city,
         phone: input.phone,
         email: input.email,
         defaultHours: input.hours,
