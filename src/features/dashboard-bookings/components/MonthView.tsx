@@ -1,4 +1,5 @@
 import { format, isSameDay, isSameMonth } from "date-fns"
+import { Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useMemo } from "react"
 
@@ -85,8 +86,15 @@ export function MonthView({
                     : t("dashboard.newBookingOn", { date: dayLabel })
                 }
                 onClick={() => onDayClick(dateKey)}
-                className="absolute inset-0 cursor-pointer hover:bg-muted/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
-              />
+                className="group/day absolute inset-0 flex cursor-pointer items-center justify-center hover:bg-muted/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+              >
+                {!hasBookings && (
+                  <Plus
+                    aria-hidden="true"
+                    className="size-5 text-muted-foreground opacity-40 transition-opacity sm:opacity-0 sm:group-hover/day:opacity-100 sm:group-focus-visible/day:opacity-100"
+                  />
+                )}
+              </button>
             )}
             <span
               className={cn(
