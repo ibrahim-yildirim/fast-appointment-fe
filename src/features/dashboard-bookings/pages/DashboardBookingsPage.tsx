@@ -9,6 +9,7 @@ import { useUpdateBooking } from "@/features/booking/hooks/useUpdateBooking"
 import { minutesToTimeString, timeStringToMinutes } from "@/features/booking/lib/slotUtils"
 import { AppointmentDetailDialog } from "@/features/dashboard-bookings/components/AppointmentDetailDialog"
 import { CalendarToolbar } from "@/features/dashboard-bookings/components/CalendarToolbar"
+import { DayBookingsDialog } from "@/features/dashboard-bookings/components/DayBookingsDialog"
 import { ListView } from "@/features/dashboard-bookings/components/ListView"
 import { MonthView } from "@/features/dashboard-bookings/components/MonthView"
 import { NewBookingDialog } from "@/features/dashboard-bookings/components/NewBookingDialog"
@@ -19,7 +20,7 @@ import {
   type CalendarFilters,
 } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 import { getWeekDays, navigateDate, type CalendarView } from "@/lib/calendarUtils"
-import { businessToday } from "@/lib/datetime"
+import { businessToday, businessTodayKey } from "@/lib/datetime"
 import { useOwnerServices } from "@/features/services/hooks/useOwnerServices"
 import { useOwnerStaff } from "@/features/staff-calendar/hooks/useOwnerStaff"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -30,6 +31,8 @@ export function DashboardBookingsPage() {
   // Bumped on every open so the dialog mounts with a fresh form.
   const [newBookingKey, setNewBookingKey] = useState(0)
   const [newBookingOpen, setNewBookingOpen] = useState(false)
+  const [newBookingDate, setNewBookingDate] = useState<string | undefined>(undefined)
+  const [dayDialogDateKey, setDayDialogDateKey] = useState<string | null>(null)
   const [view, setView] = useState<CalendarView>("month")
   const [referenceDate, setReferenceDate] = useState(() => businessToday())
   const [filters, setFilters] = useState<CalendarFilters>(defaultCalendarFilters)
@@ -64,7 +67,21 @@ export function DashboardBookingsPage() {
     moveBooking(id, dateKey, hour !== undefined ? minutesToTimeString(hour * 60) : appointment.startTime)
   }
 
-  const dialogOpen = selectedAppointmentId !== null || newBookingOpen
+  function openNewBooking(dateKey?: string) {
+    setNewBookingDate(dateKey)
+    setNewBookingKey((key) => key + 1)
+    setNewBookingOpen(true)
+  }
+
+  function handleDayClick(dateKey: string) {
+    if (appointments.some((appointment) => appointment.dateKey === dateKey)) {
+      setDayDialogDateKey(dateKey)
+    } else {
+      openNewBooking(dateKey)
+    }
+  }
+
+  const dialogOpen = selectedAppointmentId !== null || newBookingOpen || dayDialogDateKey !== null
   const selectedAppointment =
     appointments.find((appointment) => appointment.id === selectedAppointmentId) ?? null
   const eligibleStaff = selectedAppointment
@@ -80,12 +97,7 @@ export function DashboardBookingsPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-end">
-        <Button
-          onClick={() => {
-            setNewBookingKey((key) => key + 1)
-            setNewBookingOpen(true)
-          }}
-        >
+        <Button onClick={() => openNewBooking()}>
           <Plus data-icon="inline-start" />
           {t("dashboard.newBooking")}
         </Button>
@@ -114,6 +126,7 @@ export function DashboardBookingsPage() {
               onSelectAppointment={setSelectedAppointmentId}
               onReschedule={handleReschedule}
               previewsDisabled={dialogOpen}
+              onDayClick={handleDayClick}
               onShowMore={(date) => {
                 setReferenceDate(date)
                 setView("day")
@@ -151,6 +164,26 @@ export function DashboardBookingsPage() {
         onOpenChange={setNewBookingOpen}
         services={services ?? []}
         staff={staff ?? []}
+        initialDate={newBookingDate}
+      />
+
+      <DayBookingsDialog
+        dateKey={dayDialogDateKey}
+        appointments={appointments}
+        open={dayDialogDateKey !== null}
+        onOpenChange={(open) => !open && setDayDialogDateKey(null)}
+        onSelectAppointment={(id) => {
+          setDayDialogDateKey(null)
+          setSelectedAppointmentId(id)
+        }}
+        onCreateBooking={
+          dayDialogDateKey !== null && dayDialogDateKey >= businessTodayKey()
+            ? (dateKey) => {
+                setDayDialogDateKey(null)
+                openNewBooking(dateKey)
+              }
+            : undefined
+        }
       />
 
       <AppointmentDetailDialog

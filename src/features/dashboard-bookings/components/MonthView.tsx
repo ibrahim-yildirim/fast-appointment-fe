@@ -19,6 +19,7 @@ export function MonthView({
   onReschedule,
   previewsDisabled,
   onShowMore,
+  onDayClick,
 }: {
   referenceDate: Date
   appointments: CalendarAppointment[]
@@ -26,10 +27,12 @@ export function MonthView({
   onReschedule: (id: string, dateKey: string) => void
   onShowMore: (date: Date) => void
   previewsDisabled: boolean
+  onDayClick: (dateKey: string) => void
 }) {
   const { t } = useTranslation()
   const { locale } = useFormatters()
   const today = businessToday()
+  const todayKey = toDateKey(today)
 
   const days = useMemo(() => getMonthGridDays(referenceDate), [referenceDate])
 
@@ -56,6 +59,8 @@ export function MonthView({
         const dayAppointments = appointmentsByDate.get(dateKey) ?? []
         const visible = dayAppointments.slice(0, VISIBLE_LIMIT)
         const overflow = dayAppointments.length - visible.length
+        const hasBookings = dayAppointments.length > 0
+        const dayLabel = format(day, "d MMMM", { locale })
 
         return (
           <div
@@ -67,13 +72,25 @@ export function MonthView({
               if (id) onReschedule(id, dateKey)
             }}
             className={cn(
-              "flex min-h-24 min-w-0 flex-col gap-1 bg-background p-0.5 sm:p-1",
+              "relative flex min-h-24 min-w-0 flex-col gap-1 bg-background p-0.5 sm:p-1",
               !isSameMonth(day, referenceDate) && "bg-muted/30 text-muted-foreground",
             )}
           >
+            {(hasBookings || dateKey >= todayKey) && (
+              <button
+                type="button"
+                aria-label={
+                  hasBookings
+                    ? t("dashboard.dayBookingsOn", { date: dayLabel })
+                    : t("dashboard.newBookingOn", { date: dayLabel })
+                }
+                onClick={() => onDayClick(dateKey)}
+                className="absolute inset-0 cursor-pointer hover:bg-muted/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+              />
+            )}
             <span
               className={cn(
-                "flex size-6 items-center justify-center text-xs",
+                "pointer-events-none relative flex size-6 items-center justify-center text-xs",
                 isSameDay(day, today) &&
                   "rounded-full bg-gold font-semibold text-gold-foreground",
               )}
@@ -81,18 +98,19 @@ export function MonthView({
               {format(day, "d", { locale })}
             </span>
             {visible.map((appointment) => (
-              <AppointmentChip
-                key={appointment.id}
-                appointment={appointment}
-                onSelect={onSelectAppointment}
-                previewDisabled={previewsDisabled}
-              />
+              <div key={appointment.id} className="relative min-w-0">
+                <AppointmentChip
+                  appointment={appointment}
+                  onSelect={onSelectAppointment}
+                  previewDisabled={previewsDisabled}
+                />
+              </div>
             ))}
             {overflow > 0 && (
               <button
                 type="button"
                 onClick={() => onShowMore(day)}
-                className="text-left text-xs text-muted-foreground hover:text-foreground"
+                className="relative self-start text-left text-xs text-muted-foreground hover:text-foreground"
               >
                 {t("dashboard.showMore", { count: overflow })}
               </button>

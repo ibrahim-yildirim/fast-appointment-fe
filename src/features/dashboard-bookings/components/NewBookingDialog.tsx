@@ -37,12 +37,14 @@ export function NewBookingDialog({
   onOpenChange,
   services,
   staff,
+  initialDate,
 }: {
   businessId: string
   open: boolean
   onOpenChange: (open: boolean) => void
   services: Service[]
   staff: Staff[]
+  initialDate?: string
 }) {
   const { t } = useTranslation()
   const { formatTime } = useFormatters()
@@ -62,7 +64,7 @@ export function NewBookingDialog({
     defaultValues: {
       serviceId: "",
       staffId: "",
-      date: businessTodayKey(),
+      date: initialDate ?? businessTodayKey(),
       time: "",
       customerName: "",
       customerPhone: "",
