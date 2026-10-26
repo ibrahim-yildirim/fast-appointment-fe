@@ -1,4 +1,4 @@
-import { CheckIcon, ClockIcon, CopyIcon, XIcon } from "lucide-react"
+import { CheckIcon, ClockIcon, CopyIcon, PrinterIcon, XIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useParams } from "react-router-dom"
@@ -22,11 +22,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { BookingSummary } from "@/features/booking/components/BookingSummary"
 import { useCancelGuestBooking } from "@/features/booking/hooks/useCancelGuestBooking"
 import { useGuestBooking } from "@/features/booking/hooks/useGuestBooking"
-import {
-  downloadIcs,
-  googleCalendarUrl,
-  type CalendarEvent,
-} from "@/features/booking/lib/calendarExport"
+import { googleCalendarUrl, type CalendarEvent } from "@/features/booking/lib/calendarExport"
 import { forgetGuestBooking, saveGuestBooking } from "@/features/booking/lib/guestBookingStorage"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
 import { businessNow, useFormatters } from "@/lib/datetime"
@@ -62,7 +58,6 @@ export function GuestBookingPage() {
 
   const location = [booking.businessName, business.address].filter(Boolean).join(", ")
   const calendarEvent: CalendarEvent = {
-    id: booking.uid,
     title: `${booking.serviceName} · ${booking.businessName}`,
     details: t("booking.with", { name: booking.staffName }),
     location,
@@ -133,7 +128,7 @@ export function GuestBookingPage() {
         ]}
       />
 
-      <div className="bg-muted/60 flex flex-col gap-3 rounded-lg p-4">
+      <div className="bg-muted/60 flex flex-col gap-3 rounded-lg p-4 print:hidden">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-medium">{t("booking.keepLinkTitle")}</span>
           <span className="text-muted-foreground text-sm">{t("booking.keepLinkBody")}</span>
@@ -145,7 +140,7 @@ export function GuestBookingPage() {
       </div>
 
       {!cancelled && (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 print:hidden">
           <h2 className="text-muted-foreground text-sm font-medium">
             {t("booking.addToCalendar")}
           </h2>
@@ -155,14 +150,11 @@ export function GuestBookingPage() {
                 Google Calendar
               </a>
             </Button>
-            <Button variant="outline" onClick={() => downloadIcs(calendarEvent, "booking.ics")}>
-              {t("booking.downloadIcs")}
-            </Button>
           </div>
         </div>
       )}
 
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap print:hidden">
         {booking.status === "confirmed" && isUpcoming && (
           <AlertDialog onOpenChange={(isOpen) => isOpen && setCancelReason("")}>
             <AlertDialogTrigger asChild>
@@ -196,6 +188,10 @@ export function GuestBookingPage() {
             </AlertDialogContent>
           </AlertDialog>
         )}
+        <Button size="xl" variant="outline" onClick={() => window.print()}>
+          <PrinterIcon aria-hidden="true" />
+          {t("booking.print")}
+        </Button>
         <Button size="xl" variant="outline" asChild>
           <Link to={`/${business.slug}/book`}>{t("booking.bookAnother")}</Link>
         </Button>

@@ -220,7 +220,7 @@ export const tr = {
     viewMyBookings: "Randevularımı gör",
     bookAnother: "Başka bir hizmet için randevu al",
     addToCalendar: "Takvime ekle",
-    downloadIcs: "Apple / Outlook (.ics)",
+    print: "Yazdır",
     cancelBooking: "Randevuyu iptal et",
     cancelConfirmTitle: "Bu randevu iptal edilsin mi?",
     cancelConfirmBody: "Bu işlem geri alınamaz.",

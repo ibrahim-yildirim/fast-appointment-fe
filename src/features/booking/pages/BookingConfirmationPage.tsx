@@ -1,4 +1,4 @@
-import { CheckIcon, ClockIcon, XIcon } from "lucide-react"
+import { CheckIcon, ClockIcon, PrinterIcon, XIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useParams } from "react-router-dom"
 
@@ -6,11 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BookingSummary } from "@/features/booking/components/BookingSummary"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
-import {
-  downloadIcs,
-  googleCalendarUrl,
-  type CalendarEvent,
-} from "@/features/booking/lib/calendarExport"
+import { googleCalendarUrl, type CalendarEvent } from "@/features/booking/lib/calendarExport"
 import { useCustomerBooking } from "@/features/my-bookings/hooks/useCustomerBooking"
 import { useFormatters } from "@/lib/datetime"
 import { cn } from "@/lib/utils"
@@ -35,7 +31,6 @@ export function BookingConfirmationPage() {
 
   const location = [booking.businessName, business.address].filter(Boolean).join(", ")
   const calendarEvent: CalendarEvent = {
-    id: booking.id,
     title: `${booking.serviceName} · ${booking.businessName}`,
     details: t("booking.with", { name: booking.staffName }),
     location,
@@ -93,7 +88,7 @@ export function BookingConfirmationPage() {
       />
 
       {!cancelled && (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 print:hidden">
           <h2 className="text-muted-foreground text-sm font-medium">
             {t("booking.addToCalendar")}
           </h2>
@@ -103,19 +98,17 @@ export function BookingConfirmationPage() {
                 Google Calendar
               </a>
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => downloadIcs(calendarEvent, `booking-${booking.id}.ics`)}
-            >
-              {t("booking.downloadIcs")}
-            </Button>
           </div>
         </div>
       )}
 
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap print:hidden">
         <Button size="xl" asChild>
           <Link to="/account/bookings">{t("booking.viewMyBookings")}</Link>
+        </Button>
+        <Button size="xl" variant="outline" onClick={() => window.print()}>
+          <PrinterIcon aria-hidden="true" />
+          {t("booking.print")}
         </Button>
         <Button size="xl" variant="outline" asChild>
           <Link to={`/${business.slug}/book`}>{t("booking.bookAnother")}</Link>

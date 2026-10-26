@@ -218,7 +218,7 @@ export const en: typeof tr = {
     viewMyBookings: "View my bookings",
     bookAnother: "Book another service",
     addToCalendar: "Add to calendar",
-    downloadIcs: "Apple / Outlook (.ics)",
+    print: "Print",
     cancelBooking: "Cancel booking",
     cancelConfirmTitle: "Cancel this booking?",
     cancelConfirmBody: "This can't be undone.",
