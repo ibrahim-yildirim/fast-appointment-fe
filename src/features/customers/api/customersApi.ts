@@ -65,7 +65,7 @@ export const customersApi = {
     }
     const response = await apiClient.put<CustomerResponse>(endpoints.customers.me(), {
       name: input.name,
-      phone: input.phone || null,
+      phone: input.phone,
     })
     return toCustomer(response)
   },

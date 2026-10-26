@@ -34,15 +34,12 @@ function ProfileForm({ profile }: { profile: Customer }) {
     () =>
       z.object({
         name: z.string().trim().min(1, t("validation.nameRequired")).max(120),
-        // Optional: an empty phone clears it, anything else must look like a number.
-        phone: z.union([
-          z.literal(""),
-          z
-            .string()
-            .min(6, t("validation.phoneRequired"))
-            .max(32, t("validation.phoneRequired"))
-            .regex(/^[0-9+()\s-]+$/, t("validation.phoneRequired")),
-        ]),
+        phone: z
+          .string()
+          .trim()
+          .min(6, t("validation.phoneRequired"))
+          .max(32, t("validation.phoneRequired"))
+          .regex(/^[0-9+()\s-]+$/, t("validation.phoneRequired")),
       }),
     [t],
   )
@@ -58,7 +55,7 @@ function ProfileForm({ profile }: { profile: Customer }) {
   return (
     <form
       onSubmit={handleSubmit((values) =>
-        updateProfile.mutate({ name: values.name.trim(), phone: values.phone.trim() }),
+        updateProfile.mutate({ name: values.name.trim(), phone: values.phone }),
       )}
       className="flex flex-col gap-5"
     >
@@ -71,7 +68,9 @@ function ProfileForm({ profile }: { profile: Customer }) {
           <FieldError errors={[errors.name]} />
         </Field>
         <Field data-invalid={!!errors.phone}>
-          <FieldLabel htmlFor="profile-phone">{t("account.phoneOptional")}</FieldLabel>
+          <FieldLabel required htmlFor="profile-phone">
+            {t("booking.phone")}
+          </FieldLabel>
           <Input id="profile-phone" type="tel" autoComplete="tel" {...register("phone")} />
           <FieldError errors={[errors.phone]} />
         </Field>

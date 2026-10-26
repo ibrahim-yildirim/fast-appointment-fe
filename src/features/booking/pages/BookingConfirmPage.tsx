@@ -1,8 +1,11 @@
 import { addMinutes } from "date-fns"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, Navigate, useLocation, useParams, useSearchParams } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
+import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
 import { BookingSteps } from "@/features/booking/components/BookingSteps"
@@ -11,6 +14,8 @@ import { GuestBookingForm } from "@/features/booking/components/GuestBookingForm
 import { useCreateBooking } from "@/features/booking/hooks/useCreateBooking"
 import { useCreateGuestBooking } from "@/features/booking/hooks/useCreateGuestBooking"
 import type { GuestBookingInput } from "@/features/booking/schemas/guestBookingSchema"
+import { useMyProfile } from "@/features/customers/hooks/useMyProfile"
+import { useUpdateMyProfile } from "@/features/customers/hooks/useUpdateMyProfile"
 import { formatDurationLabel } from "@/features/services/lib/durations"
 import { useService } from "@/features/services/hooks/useService"
 import { useStaffMember } from "@/features/staff-calendar/hooks/useStaffMember"
@@ -36,6 +41,11 @@ export function BookingConfirmPage() {
   const { data: staff, isLoading: staffLoading } = useStaffMember(business, staffId ?? "")
   const createBooking = useCreateBooking(business.id, business.slug)
   const createGuestBooking = useCreateGuestBooking(business)
+  const { data: profile } = useMyProfile(isCustomer)
+  const updateProfile = useUpdateMyProfile()
+  const [phone, setPhone] = useState("")
+  const [phoneError, setPhoneError] = useState(false)
+  const needsPhone = isCustomer && profile !== undefined && !profile.phone
 
   if (!date || !time || !staffId) {
     return <Navigate to={`/${business.slug}/book/${serviceId}`} replace />
@@ -53,6 +63,22 @@ export function BookingConfirmPage() {
   const endsAt = addMinutes(startsAt, service.durationMinutes)
 
   function submitBooking() {
+    if (needsPhone) {
+      const trimmed = phone.trim()
+      const valid = trimmed.length >= 6 && trimmed.length <= 32 && /^[0-9+()\s-]+$/.test(trimmed)
+      setPhoneError(!valid)
+      if (valid) {
+        updateProfile.mutate(
+          { name: profile.name, phone: trimmed },
+          { onSuccess: createCustomerBooking },
+        )
+      }
+      return
+    }
+    createCustomerBooking()
+  }
+
+  function createCustomerBooking() {
     createBooking.mutate({
       serviceId: service!.id,
       staffId: staff!.id,
@@ -105,9 +131,34 @@ export function BookingConfirmPage() {
         />
 
         {isCustomer ? (
-          <Button size="xl" disabled={createBooking.isPending} onClick={submitBooking}>
-            {createBooking.isPending ? t("booking.confirming") : t("booking.confirm")}
-          </Button>
+          <>
+            {needsPhone && (
+              <Field data-invalid={phoneError}>
+                <FieldLabel required htmlFor="confirm-phone">
+                  {t("booking.phone")}
+                </FieldLabel>
+                <Input
+                  id="confirm-phone"
+                  type="tel"
+                  autoComplete="tel"
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                  aria-invalid={phoneError}
+                />
+                <FieldDescription>{t("account.phoneNeeded")}</FieldDescription>
+                {phoneError && <FieldError>{t("validation.phoneRequired")}</FieldError>}
+              </Field>
+            )}
+            <Button
+              size="xl"
+              disabled={createBooking.isPending || updateProfile.isPending}
+              onClick={submitBooking}
+            >
+              {createBooking.isPending || updateProfile.isPending
+                ? t("booking.confirming")
+                : t("booking.confirm")}
+            </Button>
+          </>
         ) : (
           <>
             <GuestBookingForm

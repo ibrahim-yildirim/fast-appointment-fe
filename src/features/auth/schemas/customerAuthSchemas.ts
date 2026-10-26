@@ -15,6 +15,12 @@ export function createCustomerRegisterSchema(t: TFunction) {
     .object({
       name: z.string().min(1, t("validation.nameRequired")),
       email: z.email(t("validation.email")),
+      phone: z
+        .string()
+        .trim()
+        .min(6, t("validation.phoneRequired"))
+        .max(32, t("validation.phoneRequired"))
+        .regex(/^[0-9+()\s-]+$/, t("validation.phoneRequired")),
       password: z.string().min(8, t("validation.passwordLength")),
       confirmPassword: z.string().min(1, t("validation.confirmPassword")),
     })

@@ -52,6 +52,18 @@ export function CustomerRegisterPage() {
               />
               <FieldError errors={[errors.email]} />
             </Field>
+            <Field data-invalid={!!errors.phone}>
+              <FieldLabel required htmlFor="customer-register-phone">
+                {t("auth.phone")}
+              </FieldLabel>
+              <Input
+                id="customer-register-phone"
+                type="tel"
+                autoComplete="tel"
+                {...register("phone")}
+              />
+              <FieldError errors={[errors.phone]} />
+            </Field>
             <Field data-invalid={!!errors.password}>
               <FieldLabel required htmlFor="customer-register-password">
                 {t("auth.password")}
