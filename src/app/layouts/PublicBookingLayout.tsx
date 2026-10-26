@@ -1,3 +1,4 @@
+import { CalendarCheck } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, Outlet } from "react-router-dom"
 
@@ -28,6 +29,15 @@ export function PublicBookingLayout() {
       <header className="border-border border-b">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="flex min-w-0 items-center gap-2">
+            <Link
+              to="/"
+              aria-label={t("common.appName")}
+              className="flex shrink-0 items-center gap-2 rounded-md font-semibold"
+            >
+              <CalendarCheck aria-hidden="true" className="text-primary size-5" />
+              <span className="hidden md:inline">{t("common.appName")}</span>
+            </Link>
+            <span aria-hidden="true" className="bg-border mx-1 h-6 w-px shrink-0" />
             <BackButton />
             <Link to={`/${business.slug}`} className="flex min-w-0 items-center gap-3 rounded-md">
               <span
