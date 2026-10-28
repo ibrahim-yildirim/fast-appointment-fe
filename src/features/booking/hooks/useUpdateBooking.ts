@@ -19,9 +19,11 @@ export function useUpdateBooking(businessId: string) {
   return useMutation({
     mutationFn: ({ bookingId, patch }: UpdateBookingArgs) =>
       bookingsApi.update(businessId, bookingId, patch),
-    onSuccess: () => {
+    onSuccess: (_, { patch }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.bookings.list(businessId) })
-      toast.success(i18n.t("dashboard.bookingUpdatedToast"))
+      toast.success(
+        i18n.t(patch.status === "cancelled" ? "booking.cancelledToast" : "dashboard.bookingUpdatedToast"),
+      )
     },
     onError: (error: Error) => toast.error(i18n.t(error.message)),
   })

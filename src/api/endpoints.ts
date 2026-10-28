@@ -19,12 +19,6 @@ export const endpoints = {
     ownerList: () => `/api/business/staff`,
     create: () => `/api/staff`,
     byId: (staffId: string) => `/api/staff/${staffId}`,
-    availability: (businessId: string, staffId: string) =>
-      `/api/businesses/${businessId}/staff/${staffId}/availability`,
-    timeOff: (businessId: string, staffId: string) =>
-      `/api/businesses/${businessId}/staff/${staffId}/time-off`,
-    timeOffById: (businessId: string, staffId: string, timeOffId: string) =>
-      `/api/businesses/${businessId}/staff/${staffId}/time-off/${timeOffId}`,
   },
   bookings: {
     list: (businessId: string) => `/api/businesses/${businessId}/bookings`,

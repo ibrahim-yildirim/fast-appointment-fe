@@ -3,8 +3,6 @@ import {
   CalendarDays,
   CalendarRange,
   LogOut,
-  Settings,
-  Shield,
   User,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -20,7 +18,6 @@ const navItems = [
   { to: "/account/bookings", labelKey: "account.bookings", icon: CalendarDays },
   { to: "/account/calendar", labelKey: "account.calendar", icon: CalendarRange },
   { to: "/account/profile", labelKey: "account.profile", icon: User },
-  { to: "/account/settings", labelKey: "account.settings", icon: Settings },
 ]
 
 function navLinkClass({ isActive }: { isActive: boolean }) {
@@ -43,13 +40,6 @@ export function CustomerAccountLayout() {
     </NavLink>
   ))
 
-  const privacyLink = (className?: string) => (
-    <NavLink to="/account/privacy" className={(state) => cn(navLinkClass(state), className)}>
-      <Shield className="h-4 w-4" />
-      {t("account.privacyPolicy")}
-    </NavLink>
-  )
-
   const appName = (
     <div className="flex items-center gap-2 px-2 font-semibold">
       <CalendarCheck className="h-5 w-5 text-primary" />
@@ -62,7 +52,6 @@ export function CustomerAccountLayout() {
       <aside className="hidden flex-col border-r border-border px-4 py-6 md:flex">
         <div className="mb-6">{appName}</div>
         <nav className="flex flex-col gap-1">{links}</nav>
-        {privacyLink("mt-auto")}
       </aside>
       <div className="flex min-w-0 flex-col">
         <header className="flex items-center gap-2 border-b border-border px-4 py-4 md:px-6">
@@ -77,7 +66,6 @@ export function CustomerAccountLayout() {
         </header>
         <nav className="flex gap-1 overflow-x-auto border-b border-border px-4 py-2 [scrollbar-width:none] md:hidden">
           {links}
-          {privacyLink()}
         </nav>
         <main className="flex-1 px-4 py-6 md:px-6">
           <Outlet />

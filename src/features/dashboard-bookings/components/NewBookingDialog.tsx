@@ -197,6 +197,9 @@ export function NewBookingDialog({
                   </Select>
                 )}
               />
+              {activeServices.length === 0 && (
+                <p className="text-sm text-muted-foreground">{t("dashboard.form.noServices")}</p>
+              )}
               <FieldError errors={[errors.serviceId]} />
             </Field>
 

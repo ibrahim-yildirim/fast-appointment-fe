@@ -134,6 +134,7 @@ export function BookingTimeField({
   options,
   dateReady,
   invalid = false,
+  disabled = false,
 }: {
   id: string
   value: string
@@ -141,15 +142,16 @@ export function BookingTimeField({
   options: string[]
   dateReady: boolean
   invalid?: boolean
+  disabled?: boolean
 }) {
   const { t } = useTranslation()
   const { formatTime } = useFormatters()
   const [text, setText] = useState(value)
   const popover = useAnchoredPopover(id)
-  const isDisabled = options.length === 0
+  const isDisabled = disabled || options.length === 0
   const placeholder = !dateReady
     ? t("dashboard.form.pickDateFirst")
-    : isDisabled
+    : options.length === 0
       ? t("dashboard.form.noTimes")
       : t("dashboard.form.timePlaceholder")
 

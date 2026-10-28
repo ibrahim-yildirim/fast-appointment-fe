@@ -31,14 +31,12 @@ import { BusinessDirectoryPage } from "@/features/business/pages/BusinessDirecto
 import { OnboardingPage, DashboardOverviewPage, DashboardSettingsPage } from "@/features/business-onboarding/pages"
 import { DashboardBookingsPage } from "@/features/dashboard-bookings/pages"
 import {
-  AccountSettingsPage,
   MyBookingsCalendarPage,
   MyBookingsPage,
   MyProfilePage,
-  PrivacyPolicyPage,
 } from "@/features/my-bookings/pages"
 import { ServiceEditPage, ServiceNewPage, ServicesListPage } from "@/features/services/pages"
-import { StaffAvailabilityPage, StaffListPage } from "@/features/staff-calendar/pages"
+import { StaffListPage } from "@/features/staff-calendar/pages"
 import { CustomersPage } from "@/features/customers/pages"
 
 export const router = createBrowserRouter([
@@ -78,8 +76,6 @@ export const router = createBrowserRouter([
               { path: "bookings", element: <MyBookingsPage /> },
               { path: "calendar", element: <MyBookingsCalendarPage /> },
               { path: "profile", element: <MyProfilePage /> },
-              { path: "settings", element: <AccountSettingsPage /> },
-              { path: "privacy", element: <PrivacyPolicyPage /> },
             ],
           },
         ],
@@ -116,10 +112,6 @@ export const router = createBrowserRouter([
                       { path: "services/new", element: <ServiceNewPage /> },
                       { path: "services/:serviceId/edit", element: <ServiceEditPage /> },
                       { path: "staff", element: <StaffListPage /> },
-                      {
-                        path: "staff/:staffId/availability",
-                        element: <StaffAvailabilityPage />,
-                      },
                       { path: "bookings", element: <DashboardBookingsPage /> },
                       { path: "customers", element: <CustomersPage /> },
                       { path: "settings", element: <DashboardSettingsPage /> },

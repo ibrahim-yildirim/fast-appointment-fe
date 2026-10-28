@@ -18,7 +18,9 @@ function fallbackMessageKey(status: number) {
 async function readErrorBody(response: Response, path: string): Promise<ApiErrorBody> {
   const text = await response.text()
   try {
-    return JSON.parse(text) as ApiErrorBody
+    const body = JSON.parse(text) as ApiErrorBody
+    if (body.message) return body
+    return { ...body, message: fallbackMessageKey(response.status) }
   } catch {
     return {
       timestamp: new Date().toISOString(),

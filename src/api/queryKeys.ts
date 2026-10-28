@@ -13,10 +13,6 @@ export const queryKeys = {
     list: (businessId: string) => ["staff", businessId] as const,
     ownerList: (businessId: string) => ["staff", businessId, "owner"] as const,
     byId: (businessId: string, staffId: string) => ["staff", businessId, staffId] as const,
-    availability: (businessId: string, staffId: string) =>
-      ["staff", businessId, staffId, "availability"] as const,
-    timeOff: (businessId: string, staffId: string) =>
-      ["staff", businessId, staffId, "time-off"] as const,
   },
   bookings: {
     list: (businessId: string) => ["bookings", businessId] as const,

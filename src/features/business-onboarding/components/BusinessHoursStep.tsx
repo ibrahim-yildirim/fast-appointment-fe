@@ -1,13 +1,20 @@
 import { Controller, useFieldArray, type UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
-import type { BusinessOnboardingInput } from "@/features/business-onboarding/schemas/businessOnboardingSchema"
+import {
+  HOUR_OPTIONS,
+  type BusinessOnboardingInput,
+} from "@/features/business-onboarding/schemas/businessOnboardingSchema"
+import { BookingTimeField } from "@/features/dashboard-bookings/components/BookingSlotFields"
 
 export function BusinessHoursStep({ form }: { form: UseFormReturn<BusinessOnboardingInput> }) {
   const { t } = useTranslation()
-  const { control, register, watch } = form
+  const {
+    control,
+    watch,
+    formState: { errors },
+  } = form
   const { fields } = useFieldArray({ control, name: "hours" })
 
   return (
@@ -31,20 +38,36 @@ export function BusinessHoursStep({ form }: { form: UseFormReturn<BusinessOnboar
               <span className="w-28 text-sm font-medium">{t(`weekday.${field.day}`)}</span>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
-              <Input
-                type="time"
-                className="w-[8.5rem]"
-                disabled={!enabled}
-                {...register(`hours.${index}.start`)}
-              />
-              <span className="text-sm text-muted-foreground">{t("staff.rangeTo")}</span>
-              <Input
-                type="time"
-                className="w-[8.5rem]"
-                disabled={!enabled}
-                {...register(`hours.${index}.end`)}
-              />
+              {(["start", "end"] as const).map((part, partIndex) => (
+                <div key={part} className="flex items-center gap-2 sm:gap-4">
+                  {partIndex === 1 && (
+                    <span className="text-sm text-muted-foreground">{t("staff.rangeTo")}</span>
+                  )}
+                  <div className="w-[8.5rem]">
+                    <Controller
+                      control={control}
+                      name={`hours.${index}.${part}`}
+                      render={({ field: timeField }) => (
+                        <BookingTimeField
+                          id={`hours-${field.day}-${part}`}
+                          value={timeField.value}
+                          onChange={timeField.onChange}
+                          options={HOUR_OPTIONS}
+                          dateReady
+                          disabled={!enabled}
+                          invalid={!!errors.hours?.[index]?.[part]}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
+            {enabled && (errors.hours?.[index]?.start || errors.hours?.[index]?.end) && (
+              <p role="alert" className="basis-full text-sm text-destructive">
+                {errors.hours?.[index]?.start?.message ?? errors.hours?.[index]?.end?.message}
+              </p>
+            )}
           </div>
         )
       })}

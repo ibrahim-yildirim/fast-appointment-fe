@@ -6,6 +6,10 @@ import { BUSINESS_PHONE_PATTERN } from "@/lib/phone"
 
 export { weekdayOrder }
 
+export const HOUR_OPTIONS = Array.from({ length: 48 }, (_, index) =>
+  `${String(Math.floor(index / 2)).padStart(2, "0")}:${index % 2 === 0 ? "00" : "30"}`,
+)
+
 export function createBusinessOnboardingSchema(t: TFunction) {
   return z.object({
     name: z.string().min(1, t("onboarding.validation.nameRequired")),
@@ -21,12 +25,25 @@ export function createBusinessOnboardingSchema(t: TFunction) {
     timezone: z.string().min(1, t("onboarding.validation.timezoneRequired")),
     hours: z
       .array(
-        z.object({
-          day: z.enum(weekdayOrder),
-          enabled: z.boolean(),
-          start: z.string(),
-          end: z.string(),
-        }),
+        z
+          .object({
+            day: z.enum(weekdayOrder),
+            enabled: z.boolean(),
+            start: z.string(),
+            end: z.string(),
+          })
+          .superRefine((day, context) => {
+            if (!day.enabled) return
+            for (const part of ["start", "end"] as const) {
+              if (!HOUR_OPTIONS.includes(day[part])) {
+                context.addIssue({ code: "custom", path: [part], message: t("onboarding.validation.hoursStep") })
+                return
+              }
+            }
+            if (day.end <= day.start) {
+              context.addIssue({ code: "custom", path: ["end"], message: t("onboarding.validation.hoursOrder") })
+            }
+          }),
       )
       .length(7),
   })
