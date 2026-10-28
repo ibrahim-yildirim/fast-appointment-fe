@@ -143,6 +143,10 @@ export const en: typeof tr = {
       business: "Cancelled by the business",
     },
   },
+  phone: {
+    mobileHint: "10-digit mobile number without the leading 0 (e.g. 532 123 45 67).",
+    businessHint: "10 digits without the leading 0. Landlines are fine (e.g. 216 123 45 67).",
+  },
   validation: {
     email: "Enter a valid email address.",
     passwordRequired: "Password is required.",
@@ -150,7 +154,8 @@ export const en: typeof tr = {
     confirmPassword: "Confirm your password.",
     passwordsMismatch: "Passwords don't match.",
     nameRequired: "Name is required.",
-    phoneRequired: "Enter a valid phone number.",
+    mobilePhone: "Enter a 10-digit mobile number starting with 5, without the leading 0.",
+    businessPhone: "Enter a 10-digit phone number without the leading 0.",
   },
   booking: {
     chooseService: "What would you like to book?",
@@ -440,7 +445,6 @@ export const en: typeof tr = {
       slugFormat: "Use lowercase letters, numbers, and hyphens only.",
       descriptionRequired: "Description is required.",
       addressRequired: "Address is required.",
-      phoneRequired: "Phone number is required.",
       timezoneRequired: "Timezone is required.",
       cityRequired: "City is required.",
     },

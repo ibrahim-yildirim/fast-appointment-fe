@@ -28,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea"
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 import type { Staff } from "@/types"
 import { businessNow, useFormatters } from "@/lib/datetime"
+import { formatPhone, phoneHref } from "@/lib/phone"
 import { formatDurationLabel } from "@/features/services/lib/durations"
 
 export function AppointmentDetailDialog({
@@ -77,10 +78,10 @@ export function AppointmentDetailDialog({
               <span className="text-sm font-medium">{appointment.customerName}</span>
               {appointment.customerPhone && (
                 <a
-                  href={`tel:${appointment.customerPhone}`}
+                  href={phoneHref(appointment.customerPhone)}
                   className="text-sm text-muted-foreground underline-offset-4 hover:underline"
                 >
-                  {appointment.customerPhone}
+                  {formatPhone(appointment.customerPhone)}
                 </a>
               )}
             </div>

@@ -145,6 +145,10 @@ export const tr = {
       business: "İşletme tarafından iptal edildi",
     },
   },
+  phone: {
+    mobileHint: "Başında 0 olmadan, 10 haneli cep numarası (ör. 532 123 45 67).",
+    businessHint: "Başında 0 olmadan, 10 haneli numara. Sabit hat da olur (ör. 216 123 45 67).",
+  },
   validation: {
     email: "Geçerli bir e-posta adresi girin.",
     passwordRequired: "Şifre zorunludur.",
@@ -152,7 +156,8 @@ export const tr = {
     confirmPassword: "Şifrenizi tekrar girin.",
     passwordsMismatch: "Şifreler eşleşmiyor.",
     nameRequired: "Ad zorunludur.",
-    phoneRequired: "Geçerli bir telefon numarası girin.",
+    mobilePhone: "Başında 0 olmadan, 5 ile başlayan 10 haneli cep numarası girin.",
+    businessPhone: "Başında 0 olmadan, 10 haneli bir telefon numarası girin.",
   },
   booking: {
     chooseService: "Ne yaptırmak istersiniz?",
@@ -442,7 +447,6 @@ export const tr = {
       slugFormat: "Sadece küçük harf, rakam ve tire kullanın.",
       descriptionRequired: "Açıklama zorunludur.",
       addressRequired: "Adres zorunludur.",
-      phoneRequired: "Telefon numarası zorunludur.",
       timezoneRequired: "Saat dilimi zorunludur.",
       cityRequired: "Şehir zorunludur.",
     },

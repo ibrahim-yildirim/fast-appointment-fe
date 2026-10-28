@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { PhoneInput } from "@/components/form/PhoneInput"
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
   createGuestBookingSchema,
@@ -47,7 +48,8 @@ export function GuestBookingForm({
           <FieldLabel required htmlFor="guest-phone">
             {t("booking.phone")}
           </FieldLabel>
-          <Input id="guest-phone" type="tel" autoComplete="tel" {...register("guestPhone")} />
+          <PhoneInput id="guest-phone" {...register("guestPhone")} />
+          <FieldDescription>{t("phone.mobileHint")}</FieldDescription>
           <FieldError errors={[errors.guestPhone]} />
         </Field>
         <Field data-invalid={!!errors.guestEmail}>

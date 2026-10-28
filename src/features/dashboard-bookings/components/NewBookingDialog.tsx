@@ -11,7 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { PhoneInput } from "@/components/form/PhoneInput"
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -29,6 +30,7 @@ import {
 } from "@/features/dashboard-bookings/schemas/ownerBookingSchema"
 import { useCustomers } from "@/features/customers/hooks/useCustomers"
 import { businessTodayKey, useFormatters } from "@/lib/datetime"
+import { toPhoneDigits } from "@/lib/phone"
 import type { Service, Staff } from "@/types"
 
 export function NewBookingDialog({
@@ -105,7 +107,7 @@ export function NewBookingDialog({
     const match = (customers ?? []).find(
       (customer) => customer.phone && customer.name.toLocaleLowerCase("tr") === name,
     )
-    if (match) setValue("customerPhone", match.phone, { shouldValidate: true })
+    if (match) setValue("customerPhone", toPhoneDigits(match.phone), { shouldValidate: true })
   }
 
   function onSubmit(values: OwnerBookingInput) {
@@ -238,7 +240,8 @@ export function NewBookingDialog({
               <FieldLabel required htmlFor="new-booking-phone">
                 {t("dashboard.form.customerPhone")}
               </FieldLabel>
-              <Input id="new-booking-phone" type="tel" {...register("customerPhone")} />
+              <PhoneInput id="new-booking-phone" {...register("customerPhone")} />
+              <FieldDescription>{t("phone.mobileHint")}</FieldDescription>
               <FieldError errors={[errors.customerPhone]} />
             </Field>
             <Field data-invalid={!!errors.customerEmail}>

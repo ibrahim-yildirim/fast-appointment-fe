@@ -12,9 +12,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { PhoneInput } from "@/components/form/PhoneInput"
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { useCreateCustomer } from "@/features/customers/hooks/useCreateCustomer"
+import { MOBILE_PHONE_PATTERN } from "@/lib/phone"
 
 export function AddCustomerDialog({
   open,
@@ -29,11 +31,7 @@ export function AddCustomerDialog({
     () =>
       z.object({
         name: z.string().trim().min(1, t("validation.nameRequired")).max(120),
-        phone: z
-          .string()
-          .min(6, t("validation.phoneRequired"))
-          .max(32, t("validation.phoneRequired"))
-          .regex(/^[0-9+()\s-]+$/, t("validation.phoneRequired")),
+        phone: z.string().regex(MOBILE_PHONE_PATTERN, t("validation.mobilePhone")),
         email: z.union([z.literal(""), z.email(t("validation.email"))]),
       }),
     [t],
@@ -75,7 +73,8 @@ export function AddCustomerDialog({
               <FieldLabel required htmlFor="customer-phone">
                 {t("booking.phone")}
               </FieldLabel>
-              <Input id="customer-phone" type="tel" {...register("phone")} />
+              <PhoneInput id="customer-phone" {...register("phone")} />
+              <FieldDescription>{t("phone.mobileHint")}</FieldDescription>
               <FieldError errors={[errors.phone]} />
             </Field>
             <Field data-invalid={!!errors.email}>

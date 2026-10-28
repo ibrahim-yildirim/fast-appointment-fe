@@ -2,6 +2,7 @@ import type { TFunction } from "i18next"
 import { z } from "zod"
 
 import { weekdayOrder } from "@/lib/constants"
+import { BUSINESS_PHONE_PATTERN } from "@/lib/phone"
 
 export { weekdayOrder }
 
@@ -15,7 +16,7 @@ export function createBusinessOnboardingSchema(t: TFunction) {
     description: z.string().min(1, t("onboarding.validation.descriptionRequired")),
     address: z.string().min(1, t("onboarding.validation.addressRequired")),
     city: z.string().min(1, t("onboarding.validation.cityRequired")),
-    phone: z.string().min(1, t("onboarding.validation.phoneRequired")),
+    phone: z.string().regex(BUSINESS_PHONE_PATTERN, t("validation.businessPhone")),
     email: z.email(t("validation.email")),
     timezone: z.string().min(1, t("onboarding.validation.timezoneRequired")),
     hours: z

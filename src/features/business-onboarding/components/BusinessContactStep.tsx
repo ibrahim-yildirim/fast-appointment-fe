@@ -1,7 +1,8 @@
 import { Controller, type UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { PhoneInput } from "@/components/form/PhoneInput"
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -70,7 +71,8 @@ export function BusinessContactStep({ form }: { form: UseFormReturn<BusinessOnbo
         <FieldLabel required htmlFor="onboarding-phone">
           {t("onboarding.phone")}
         </FieldLabel>
-        <Input id="onboarding-phone" type="tel" {...register("phone")} />
+        <PhoneInput id="onboarding-phone" placeholder="XXX XXX XX XX" {...register("phone")} />
+        <FieldDescription>{t("phone.businessHint")}</FieldDescription>
         <FieldError errors={[errors.phone]} />
       </Field>
       <Field data-invalid={!!errors.email}>

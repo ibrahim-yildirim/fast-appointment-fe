@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AddCustomerDialog } from "@/features/customers/components/AddCustomerDialog"
 import { useCustomers } from "@/features/customers/hooks/useCustomers"
+import { formatPhone, phoneHref } from "@/lib/phone"
 
 export function CustomersPage() {
   const { t } = useTranslation()
@@ -64,7 +65,9 @@ export function CustomersPage() {
             >
               <span className="font-medium">{customer.name}</span>
               <div className="flex flex-wrap gap-x-4 text-sm text-muted-foreground">
-                {customer.phone && <a href={`tel:${customer.phone}`}>{customer.phone}</a>}
+                {customer.phone && (
+                  <a href={phoneHref(customer.phone)}>{formatPhone(customer.phone)}</a>
+                )}
                 {customer.email && <span>{customer.email}</span>}
               </div>
             </div>

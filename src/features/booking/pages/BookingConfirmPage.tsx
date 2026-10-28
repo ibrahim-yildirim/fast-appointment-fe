@@ -3,9 +3,9 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, Navigate, useLocation, useParams, useSearchParams } from "react-router-dom"
 
+import { PhoneInput } from "@/components/form/PhoneInput"
 import { Button } from "@/components/ui/button"
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
 import { BookingSteps } from "@/features/booking/components/BookingSteps"
@@ -20,6 +20,7 @@ import { formatDurationLabel } from "@/features/services/lib/durations"
 import { useService } from "@/features/services/hooks/useService"
 import { useStaffMember } from "@/features/staff-calendar/hooks/useStaffMember"
 import { useFormatters } from "@/lib/datetime"
+import { MOBILE_PHONE_PATTERN } from "@/lib/phone"
 import { useAuthStore } from "@/stores/authStore"
 
 export function BookingConfirmPage() {
@@ -64,14 +65,10 @@ export function BookingConfirmPage() {
 
   function submitBooking() {
     if (needsPhone) {
-      const trimmed = phone.trim()
-      const valid = trimmed.length >= 6 && trimmed.length <= 32 && /^[0-9+()\s-]+$/.test(trimmed)
+      const valid = MOBILE_PHONE_PATTERN.test(phone)
       setPhoneError(!valid)
       if (valid) {
-        updateProfile.mutate(
-          { name: profile.name, phone: trimmed },
-          { onSuccess: createCustomerBooking },
-        )
+        updateProfile.mutate({ name: profile.name, phone }, { onSuccess: createCustomerBooking })
       }
       return
     }
@@ -137,16 +134,15 @@ export function BookingConfirmPage() {
                 <FieldLabel required htmlFor="confirm-phone">
                   {t("booking.phone")}
                 </FieldLabel>
-                <Input
+                <PhoneInput
                   id="confirm-phone"
-                  type="tel"
-                  autoComplete="tel"
                   value={phone}
                   onChange={(event) => setPhone(event.target.value)}
                   aria-invalid={phoneError}
                 />
                 <FieldDescription>{t("account.phoneNeeded")}</FieldDescription>
-                {phoneError && <FieldError>{t("validation.phoneRequired")}</FieldError>}
+                <FieldDescription>{t("phone.mobileHint")}</FieldDescription>
+                {phoneError && <FieldError>{t("validation.mobilePhone")}</FieldError>}
               </Field>
             )}
             <Button

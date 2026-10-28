@@ -17,6 +17,7 @@ import {
 } from "@/features/business-onboarding/schemas/businessOnboardingSchema"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
 import { useUpdateBusiness } from "@/features/business/hooks/useUpdateBusiness"
+import { toPhoneDigits } from "@/lib/phone"
 
 export function DashboardSettingsPage() {
   const { t } = useTranslation()
@@ -32,7 +33,7 @@ export function DashboardSettingsPage() {
       description: business.description,
       address: business.address,
       city: business.city ?? "",
-      phone: business.phone,
+      phone: toPhoneDigits(business.phone),
       email: business.email,
       timezone: business.timezone,
       hours: weekdayOrder.map((day) => {

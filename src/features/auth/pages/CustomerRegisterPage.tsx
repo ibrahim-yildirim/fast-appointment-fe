@@ -6,7 +6,8 @@ import { Link } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { PhoneInput } from "@/components/form/PhoneInput"
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { useCustomerAuth } from "@/features/auth/hooks/useCustomerAuth"
 import {
@@ -56,12 +57,8 @@ export function CustomerRegisterPage() {
               <FieldLabel required htmlFor="customer-register-phone">
                 {t("auth.phone")}
               </FieldLabel>
-              <Input
-                id="customer-register-phone"
-                type="tel"
-                autoComplete="tel"
-                {...register("phone")}
-              />
+              <PhoneInput id="customer-register-phone" {...register("phone")} />
+              <FieldDescription>{t("phone.mobileHint")}</FieldDescription>
               <FieldError errors={[errors.phone]} />
             </Field>
             <Field data-invalid={!!errors.password}>

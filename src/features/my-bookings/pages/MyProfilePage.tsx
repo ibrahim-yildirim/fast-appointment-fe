@@ -5,11 +5,13 @@ import { useTranslation } from "react-i18next"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { PhoneInput } from "@/components/form/PhoneInput"
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useMyProfile } from "@/features/customers/hooks/useMyProfile"
 import { useUpdateMyProfile } from "@/features/customers/hooks/useUpdateMyProfile"
+import { MOBILE_PHONE_PATTERN, toPhoneDigits } from "@/lib/phone"
 import type { Customer } from "@/types"
 
 export function MyProfilePage() {
@@ -34,12 +36,7 @@ function ProfileForm({ profile }: { profile: Customer }) {
     () =>
       z.object({
         name: z.string().trim().min(1, t("validation.nameRequired")).max(120),
-        phone: z
-          .string()
-          .trim()
-          .min(6, t("validation.phoneRequired"))
-          .max(32, t("validation.phoneRequired"))
-          .regex(/^[0-9+()\s-]+$/, t("validation.phoneRequired")),
+        phone: z.string().regex(MOBILE_PHONE_PATTERN, t("validation.mobilePhone")),
       }),
     [t],
   )
@@ -49,7 +46,7 @@ function ProfileForm({ profile }: { profile: Customer }) {
     formState: { errors },
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: { name: profile.name, phone: profile.phone },
+    defaultValues: { name: profile.name, phone: toPhoneDigits(profile.phone) },
   })
 
   return (
@@ -71,7 +68,8 @@ function ProfileForm({ profile }: { profile: Customer }) {
           <FieldLabel required htmlFor="profile-phone">
             {t("booking.phone")}
           </FieldLabel>
-          <Input id="profile-phone" type="tel" autoComplete="tel" {...register("phone")} />
+          <PhoneInput id="profile-phone" {...register("phone")} />
+          <FieldDescription>{t("phone.mobileHint")}</FieldDescription>
           <FieldError errors={[errors.phone]} />
         </Field>
         <Field>

@@ -6,6 +6,7 @@ import { weekdayForDate } from "@/features/booking/lib/slotUtils"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
 import { weekdayOrder } from "@/lib/constants"
 import { businessToday, useFormatters } from "@/lib/datetime"
+import { formatPhone, phoneHref } from "@/lib/phone"
 import { cn } from "@/lib/utils"
 
 export function BusinessPublicProfilePage() {
@@ -38,10 +39,10 @@ export function BusinessPublicProfilePage() {
               <dt className="text-muted-foreground">{t("booking.phone")}</dt>
               <dd className="mt-0.5 tabular-nums">
                 <a
-                  href={`tel:${business.phone.replace(/\s/g, "")}`}
+                  href={phoneHref(business.phone)}
                   className="hover:text-gold underline-offset-4 hover:underline"
                 >
-                  {business.phone}
+                  {formatPhone(business.phone)}
                 </a>
               </dd>
             </div>
