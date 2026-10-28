@@ -1,6 +1,8 @@
+import { ArrowLeftIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
@@ -21,7 +23,12 @@ export function ServiceEditPage() {
 
   return (
     <Card className="max-w-xl">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center gap-2">
+        <Button variant="ghost" size="icon-sm" asChild>
+          <Link to={`/${business.slug}/dashboard/services`} aria-label={t("common.back")}>
+            <ArrowLeftIcon className="h-4 w-4" />
+          </Link>
+        </Button>
         <CardTitle>{t("services.editService")}</CardTitle>
       </CardHeader>
       <CardContent>
