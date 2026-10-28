@@ -181,8 +181,10 @@ export function BookingTimeField({
         </div>
       </PopoverAnchor>
       <PopoverContent
-        className="max-h-80 w-80 overflow-y-auto"
+        className="max-h-80 w-80 overflow-y-auto overscroll-contain"
         {...popover.contentProps}
+        onWheel={(event) => event.stopPropagation()}
+        onTouchMove={(event) => event.stopPropagation()}
         onOpenAutoFocus={(event) => {
           event.preventDefault()
           const content = event.currentTarget as HTMLElement
