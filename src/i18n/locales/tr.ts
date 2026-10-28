@@ -55,28 +55,31 @@ export const tr = {
     sun: "Paz",
   },
   landing: {
+    eyebrow: "ONLİNE RANDEVU",
+    steps: {
+      pickBusiness: { title: "İşletmeyi seçin", body: "Ada ve şehre göre arayın." },
+      pickTime: { title: "Saati seçin", body: "Boş saatler anında görünür." },
+      leaveDetails: { title: "Adınızı ve telefonunuzu yazın", body: "Randevunuz anında onaylanır." },
+    },
+    ticket: {
+      label: "RANDEVUNUZ",
+      confirmed: "Onaylandı",
+      business: "Kuaför Selin",
+      service: "Saç kesimi · 40 dk",
+      day: "Yarın",
+    },
     deviceBookings: "Bu cihazdaki randevularım",
-    headline: "Her hizmet işletmesi için randevu sistemi",
-    subheadline: "Hizmetleri, personel uygunluğunu ve randevuları tek yerden yönetin.",
+    headline: "Randevunuzu üç adımda alın.",
+    subheadline: "Kuaför, berber, güzellik salonu: boş saatleri görün, size uyanı seçin.",
     findBusiness: "İşletme bul",
+    noAccountTitle: "Üyelik gerekmez.",
+    noAccountBody: "Sadece adınız ve telefon numaranızla randevu alın.",
+    customerTitle: "Randevu mu alacaksınız?",
+    customerBody: "Tüm işletmelerdeki randevularınızı tek hesaptan yönetin.",
     ownBusiness: "Hizmet işletmeniz mi var?",
     ownBusinessBody:
       "Hizmetlerinizi yayınlayın, personel programını yönetin ve randevuları online alın.",
     listYourBusiness: "İşletmenizi ekleyin",
-    highlights: {
-      oneAccount: {
-        title: "Tek hesap, tüm işletmeler",
-        description: "Platformdaki her işletmeden randevu alın ve tek yerden yönetin.",
-      },
-      runBusiness: {
-        title: "İşletmenizi yönetin",
-        description: "Hizmetleri, personeli ve takviminizi tek panelden yönetin.",
-      },
-      realtime: {
-        title: "Anlık uygunluk",
-        description: "Personel programına göre boş saatleri anında görün, yazışmaya gerek yok.",
-      },
-    },
   },
   directory: {
     title: "İşletme bul",

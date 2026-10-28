@@ -54,27 +54,30 @@ export const en: typeof tr = {
     sun: "Sun",
   },
   landing: {
+    eyebrow: "ONLINE BOOKING",
+    steps: {
+      pickBusiness: { title: "Choose a business", body: "Search by name and city." },
+      pickTime: { title: "Pick a time", body: "Free times show up instantly." },
+      leaveDetails: { title: "Leave your name and phone", body: "Your booking is confirmed right away." },
+    },
+    ticket: {
+      label: "YOUR BOOKING",
+      confirmed: "Confirmed",
+      business: "Studio Selin",
+      service: "Haircut · 40 min",
+      day: "Tomorrow",
+    },
     deviceBookings: "My bookings on this device",
-    headline: "Appointment booking for any service business",
-    subheadline: "Manage services, staff availability, and bookings in one place.",
+    headline: "Book your appointment in three steps.",
+    subheadline: "Hair salons, barbers, beauty studios: see the free times and pick the one that suits you.",
     findBusiness: "Find a business",
+    noAccountTitle: "No account needed.",
+    noAccountBody: "Book with just your name and phone number.",
+    customerTitle: "Booking an appointment?",
+    customerBody: "Keep your bookings at every business in one account.",
     ownBusiness: "Own a service business?",
     ownBusinessBody: "List your services, manage staff schedules, and take bookings online.",
     listYourBusiness: "List your business",
-    highlights: {
-      oneAccount: {
-        title: "One account, any business",
-        description: "Book and manage appointments across every business on the platform.",
-      },
-      runBusiness: {
-        title: "Run your business",
-        description: "Manage services, staff, and your calendar from one dashboard.",
-      },
-      realtime: {
-        title: "Real-time availability",
-        description: "See open slots instantly based on staff schedules, no back-and-forth.",
-      },
-    },
   },
   directory: {
     title: "Find a business",
