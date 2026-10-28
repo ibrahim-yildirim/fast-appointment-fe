@@ -356,6 +356,7 @@ export const en: typeof tr = {
     removeBody: "This can't be undone. They'll no longer be assignable to bookings.",
     name: "Name",
     email: "Email",
+    phoneOptional: "Phone (optional)",
     colorTag: "Color tag",
     assignedServices: "Assigned services (optional)",
     noServices: "No services yet.",

@@ -3,14 +3,16 @@ import { useMemo } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
+import { PhoneInput } from "@/components/form/PhoneInput"
 import { Button } from "@/components/ui/button"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import {
   createStaffFormSchema,
   type StaffFormInput,
 } from "@/features/staff-calendar/schemas/staffFormSchema"
+import { toPhoneDigits } from "@/lib/phone"
 import { cn } from "@/lib/utils"
 import type { Service } from "@/types"
 
@@ -54,6 +56,7 @@ export function StaffForm({
       colorTag: colorOptions[0],
       serviceIds: [],
       ...defaultValues,
+      phone: toPhoneDigits(defaultValues?.phone),
     },
   })
 
@@ -73,6 +76,12 @@ export function StaffForm({
           </FieldLabel>
           <Input id="staff-email" type="email" {...register("email")} />
           <FieldError errors={[errors.email]} />
+        </Field>
+        <Field data-invalid={!!errors.phone}>
+          <FieldLabel htmlFor="staff-phone">{t("staff.phoneOptional")}</FieldLabel>
+          <PhoneInput id="staff-phone" {...register("phone")} />
+          <FieldDescription>{t("phone.mobileHint")}</FieldDescription>
+          <FieldError errors={[errors.phone]} />
         </Field>
         <Field data-invalid={!!errors.colorTag}>
           <FieldLabel required>{t("staff.colorTag")}</FieldLabel>

@@ -23,6 +23,7 @@ import { useCreateStaff } from "@/features/staff-calendar/hooks/useCreateStaff"
 import { useDeleteStaff } from "@/features/staff-calendar/hooks/useDeleteStaff"
 import { useOwnerStaff } from "@/features/staff-calendar/hooks/useOwnerStaff"
 import { useUpdateStaff } from "@/features/staff-calendar/hooks/useUpdateStaff"
+import { formatPhone, phoneHref } from "@/lib/phone"
 import type { Staff } from "@/types"
 
 export function StaffListPage() {
@@ -74,7 +75,21 @@ export function StaffListPage() {
                 />
                 <div>
                   <div className="font-medium">{member.name}</div>
-                  <p className="text-sm text-muted-foreground">{member.email}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {member.email}
+                    {member.phone && (
+                      <>
+                        {" "}
+                        &middot;{" "}
+                        <a
+                          href={phoneHref(member.phone)}
+                          className="underline-offset-4 hover:underline"
+                        >
+                          {formatPhone(member.phone)}
+                        </a>
+                      </>
+                    )}
+                  </p>
                   <div className="mt-1 flex flex-wrap gap-1">
                     {member.serviceIds
                       .map((id) => services?.find((service) => service.id === id)?.name)

@@ -15,6 +15,7 @@ type PublicStaffResponse = {
 type StaffResponse = PublicStaffResponse & {
   businessId: number
   email: string
+  phone: string | null
   active: boolean
   serviceIds: number[]
 }
@@ -26,6 +27,7 @@ function toPublicStaff(response: PublicStaffResponse, businessId: string): Staff
     id: toId(response.id),
     businessId,
     email: "",
+    phone: "",
     serviceIds: [],
     active: true,
   }
@@ -36,12 +38,13 @@ function toStaff(response: StaffResponse): Staff {
     ...response,
     id: toId(response.id),
     businessId: toId(response.businessId),
+    phone: response.phone ?? "",
     serviceIds: response.serviceIds.map(toId),
   }
 }
 
 function toStaffRequest(input: StaffFormInput) {
-  return { ...input, serviceIds: input.serviceIds.map(toBackendId) }
+  return { ...input, phone: input.phone || null, serviceIds: input.serviceIds.map(toBackendId) }
 }
 
 export const staffApi = {

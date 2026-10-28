@@ -358,6 +358,7 @@ export const tr = {
     removeBody: "Bu işlem geri alınamaz. Bu kişi artık randevulara atanamaz.",
     name: "Ad Soyad",
     email: "E-posta",
+    phoneOptional: "Telefon (isteğe bağlı)",
     colorTag: "Renk etiketi",
     assignedServices: "Verdiği hizmetler (isteğe bağlı)",
     noServices: "Henüz hizmet yok.",

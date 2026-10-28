@@ -3,6 +3,7 @@ export type Staff = {
   businessId: string
   name: string
   email: string
+  phone: string
   colorTag: string
   serviceIds: string[]
   active: boolean
