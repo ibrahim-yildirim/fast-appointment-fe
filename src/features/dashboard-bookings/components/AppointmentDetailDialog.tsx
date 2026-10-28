@@ -65,6 +65,7 @@ export function AppointmentDetailDialog({
   // Wall-clock strings compare directly with businessNow() (see lib/datetime).
   const hasStarted =
     new Date(`${appointment.dateKey}T${appointment.startTime}:00.000Z`) <= businessNow()
+  const canChange = isOpen && !hasStarted
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -111,12 +112,12 @@ export function AppointmentDetailDialog({
             )}
           </div>
 
-          {isOpen && !isEditingTime && (
+          {canChange && !isEditingTime && (
             <Button variant="outline" disabled={isSaving} onClick={() => setIsEditingTime(true)}>
               {t("dashboard.reschedule")}
             </Button>
           )}
-          {isOpen && isEditingTime && (
+          {canChange && isEditingTime && (
             <div className="flex flex-col gap-3 rounded-lg border border-border p-3">
               <span className="text-sm font-medium">{t("dashboard.rescheduleTitle")}</span>
               <div className="grid grid-cols-2 gap-3">
@@ -162,7 +163,7 @@ export function AppointmentDetailDialog({
             <span className="text-sm font-medium">{t("dashboard.staff")}</span>
             <Select
               value={appointment.staffId}
-              disabled={!isOpen || isSaving}
+              disabled={!canChange || isSaving}
               onValueChange={onReassign}
             >
               <SelectTrigger className="w-full">
@@ -202,7 +203,7 @@ export function AppointmentDetailDialog({
             </AlertDialog>
           )}
 
-          {isOpen && (
+          {canChange && (
             <AlertDialog onOpenChange={(isOpen) => isOpen && setCancelReason("")}>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" disabled={isSaving}>

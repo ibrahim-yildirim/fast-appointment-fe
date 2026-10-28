@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea"
 
 import type { CustomerBookingView } from "@/features/my-bookings/api/customerBookingsApi"
 import { useCancelCustomerBooking } from "@/features/my-bookings/hooks/useCancelCustomerBooking"
-import { useFormatters } from "@/lib/datetime"
+import { businessNow, useFormatters } from "@/lib/datetime"
 
 export function BookingDetailDialog({
   booking,
@@ -39,6 +39,8 @@ export function BookingDetailDialog({
   const [cancelReason, setCancelReason] = useState("")
 
   if (!booking) return null
+
+  const canCancel = booking.status === "confirmed" && new Date(booking.startsAt) > businessNow()
 
   const dateLabel = formatDate(booking.startsAt, {
     weekday: "long",
@@ -78,7 +80,7 @@ export function BookingDetailDialog({
             <Button variant="outline" asChild>
               <Link to={`/${booking.businessSlug}`}>{t("account.viewBusiness")}</Link>
             </Button>
-            {booking.status !== "cancelled" && (
+            {canCancel && (
               <AlertDialog onOpenChange={(isOpen) => isOpen && setCancelReason("")}>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive" disabled={cancelBooking.isPending}>
