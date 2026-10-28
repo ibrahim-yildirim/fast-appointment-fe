@@ -1,3 +1,4 @@
+import { differenceInMinutes } from "date-fns"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -55,7 +56,7 @@ export function useCalendarAppointments(business: BusinessRef, filters: Calendar
     const mapped = bookings.flatMap((booking) => {
       const service = services.find((candidate) => candidate.id === booking.serviceId)
       const staffMember = staff.find((candidate) => candidate.id === booking.staffId)
-      if (!service || !staffMember) return []
+      if (!staffMember) return []
 
       const customer = customers.find((candidate) => candidate.id === booking.customerId)
       const customerName = customer?.name ?? t("dashboard.unknownCustomer")
@@ -64,10 +65,12 @@ export function useCalendarAppointments(business: BusinessRef, filters: Calendar
         id: booking.id,
         customerName,
         customerPhone: customer?.phone ?? "",
-        serviceName: service.name,
-        serviceId: service.id,
-        price: service.price,
-        durationMinutes: service.durationMinutes,
+        serviceName: service?.name ?? booking.serviceName ?? "",
+        serviceId: booking.serviceId,
+        price: service?.price ?? booking.servicePrice ?? 0,
+        durationMinutes:
+          service?.durationMinutes ??
+          differenceInMinutes(new Date(booking.endsAt), new Date(booking.startsAt)),
         staffId: staffMember.id,
         staffName: staffMember.name,
         staffColor: staffMember.colorTag,

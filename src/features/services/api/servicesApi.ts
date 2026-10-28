@@ -91,15 +91,14 @@ export const servicesApi = {
     return toService(response)
   },
 
-  // Bookings keep pointing at a service, so "delete" only deactivates it.
   remove: async (businessId: string, serviceId: string): Promise<void> => {
     if (USE_FIXTURES) {
-      const service = services.find(
+      const index = services.findIndex(
         (candidate) => candidate.businessId === businessId && candidate.id === serviceId,
       )
-      if (service) service.active = false
+      if (index >= 0) services.splice(index, 1)
       return
     }
-    return apiClient.delete<void>(endpoints.services.byId(serviceId))
+    return apiClient.delete<void>(endpoints.services.permanent(serviceId))
   },
 }

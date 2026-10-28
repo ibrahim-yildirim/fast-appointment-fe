@@ -6,6 +6,8 @@ export type Booking = {
   id: string
   businessId: string
   serviceId: string
+  serviceName?: string
+  servicePrice?: number
   staffId: string
   customerId: string | null
   startsAt: string

@@ -80,6 +80,7 @@ export function AppointmentDetailDialog({
   const hasStarted =
     new Date(`${appointment.dateKey}T${appointment.startTime}:00.000Z`) <= businessNow()
   const canChange = isOpen && !hasStarted
+  const canMove = canChange && appointment.serviceId !== ""
   const today = businessTodayKey()
   const maxDate = addDaysToKey(today, OWNER_BOOKING_WINDOW_DAYS)
   const rescheduleTimes = timeOptions(
@@ -134,12 +135,12 @@ export function AppointmentDetailDialog({
             )}
           </div>
 
-          {canChange && !isEditingTime && (
+          {canMove && !isEditingTime && (
             <Button variant="outline" disabled={isSaving} onClick={() => setIsEditingTime(true)}>
               {t("dashboard.reschedule")}
             </Button>
           )}
-          {canChange && isEditingTime && (
+          {canMove && isEditingTime && (
             <div className="flex flex-col gap-3 rounded-lg border border-border p-3">
               <span className="text-sm font-medium">{t("dashboard.rescheduleTitle")}</span>
               <div className="grid grid-cols-2 gap-3">
@@ -211,7 +212,7 @@ export function AppointmentDetailDialog({
             <span className="text-sm font-medium">{t("dashboard.staff")}</span>
             <Select
               value={appointment.staffId}
-              disabled={!canChange || isSaving}
+              disabled={!canMove || isSaving}
               onValueChange={onReassign}
             >
               <SelectTrigger className="w-full">

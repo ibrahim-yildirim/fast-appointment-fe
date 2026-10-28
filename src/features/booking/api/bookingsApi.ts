@@ -8,7 +8,9 @@ import type { Booking, BookingStatus, CancelledBy } from "@/types"
 type BookingResponse = {
   id: number
   businessId: number
-  serviceId: number
+  serviceId: number | null
+  serviceName: string
+  servicePrice: number
   staffId: number
   customerId: number | null
   startsAt: string
@@ -23,7 +25,9 @@ function toBooking(response: BookingResponse): Booking {
   return {
     id: toId(response.id),
     businessId: toId(response.businessId),
-    serviceId: toId(response.serviceId),
+    serviceId: response.serviceId === null ? "" : toId(response.serviceId),
+    serviceName: response.serviceName,
+    servicePrice: response.servicePrice,
     staffId: toId(response.staffId),
     customerId: response.customerId === null ? null : toId(response.customerId),
     startsAt: toWallClock(response.startsAt),

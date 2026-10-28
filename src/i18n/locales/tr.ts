@@ -351,9 +351,10 @@ export const tr = {
     empty: "Henüz hizmet yok.",
     active: "Aktif",
     inactive: "Pasif",
-    deleteTitle: "{{name}} silinsin mi?",
+    activeToggle: "{{name}} aktif mi",
+    deleteTitle: "{{name}} kalıcı olarak silinsin mi?",
     deleteBody:
-      "Müşteriler bu hizmet için artık randevu alamaz. Mevcut randevular korunur, Düzenle'den tekrar açabilirsiniz.",
+      "Bu işlem geri alınamaz. Hizmet listenizden kalkar; mevcut randevular hizmetin adını ve fiyatını korur.",
     name: "Ad",
     description: "Açıklama",
     duration: "Süre",
@@ -365,7 +366,9 @@ export const tr = {
     notFound: "Hizmet bulunamadı.",
     createdToast: "Hizmet oluşturuldu.",
     updatedToast: "Hizmet güncellendi.",
-    deletedToast: "Hizmet pasife alındı.",
+    deletedToast: "Hizmet silindi.",
+    activatedToast: "Hizmet aktif edildi.",
+    deactivatedToast: "Hizmet pasife alındı.",
     validation: {
       nameRequired: "Ad zorunludur.",
       descriptionRequired: "Açıklama zorunludur.",

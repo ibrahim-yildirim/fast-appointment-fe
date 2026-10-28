@@ -17,10 +17,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Switch } from "@/components/ui/switch"
 import { useBusinessContext } from "@/features/business/context/BusinessContext"
 import { useDeleteService } from "@/features/services/hooks/useDeleteService"
 import { useOwnerServices } from "@/features/services/hooks/useOwnerServices"
+import { useToggleServiceActive } from "@/features/services/hooks/useToggleServiceActive"
 import { useFormatters } from "@/lib/datetime"
+import { cn } from "@/lib/utils"
 import { formatDurationLabel } from "@/features/services/lib/durations"
 
 export function ServicesListPage() {
@@ -29,11 +32,25 @@ export function ServicesListPage() {
   const business = useBusinessContext()
   const { data: services, isLoading } = useOwnerServices(business.id)
   const deleteService = useDeleteService(business.id)
+  const toggleActive = useToggleServiceActive(business.id)
   const [search, setSearch] = useState("")
+  const [order, setOrder] = useState<string[] | null>(null)
 
-  const filtered = services?.filter((service) =>
-    service.name.toLowerCase().includes(search.toLowerCase()),
-  )
+  if (services && order === null) {
+    setOrder(
+      [...services]
+        .sort((a, b) => Number(b.active) - Number(a.active))
+        .map((service) => service.id),
+    )
+  }
+
+  const position = (id: string) => {
+    const index = order?.indexOf(id) ?? -1
+    return index === -1 ? Number.MAX_SAFE_INTEGER : index
+  }
+  const filtered = services
+    ?.filter((service) => service.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => position(a.id) - position(b.id))
 
   return (
     <div className="flex flex-col gap-4">
@@ -60,12 +77,15 @@ export function ServicesListPage() {
           {filtered.map((service) => (
             <div
               key={service.id}
-              className="flex items-center justify-between gap-4 rounded-lg border border-border p-4"
+              className={cn(
+                "flex flex-wrap items-center justify-between gap-4 rounded-lg border p-4",
+                service.active ? "border-border" : "border-dashed border-border bg-muted/40",
+              )}
             >
-              <div>
+              <div className={cn(!service.active && "text-muted-foreground")}>
                 <div className="flex items-center gap-2 font-medium">
                   {service.name}
-                  <Badge variant={service.active ? "secondary" : "outline"}>
+                  <Badge variant={service.active ? "default" : "outline"}>
                     {service.active ? t("services.active") : t("services.inactive")}
                   </Badge>
                 </div>
@@ -73,36 +93,45 @@ export function ServicesListPage() {
                   {formatDurationLabel(service.durationMinutes, t)} &middot; {formatMoney(service.price)}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                  {t("services.active")}
+                  <Switch
+                    checked={service.active}
+                    disabled={toggleActive.isPending}
+                    className="dark:data-checked:bg-primary/45"
+                    thumbClassName="dark:data-checked:bg-foreground"
+                    aria-label={t("services.activeToggle", { name: service.name })}
+                    onCheckedChange={(active) => toggleActive.mutate({ service, active })}
+                  />
+                </label>
                 <Button variant="outline" size="sm" asChild>
                   <Link to={`/${business.slug}/dashboard/services/${service.id}/edit`}>
                     {t("common.edit")}
                   </Link>
                 </Button>
-                {service.active && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="sm">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm">
+                      {t("common.delete")}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{t("services.deleteTitle", { name: service.name })}</AlertDialogTitle>
+                      <AlertDialogDescription>{t("services.deleteBody")}</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                      <AlertDialogAction
+                        variant="destructive"
+                        onClick={() => deleteService.mutate(service.id)}
+                      >
                         {t("common.delete")}
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>{t("services.deleteTitle", { name: service.name })}</AlertDialogTitle>
-                        <AlertDialogDescription>{t("services.deleteBody")}</AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-                        <AlertDialogAction
-                          variant="destructive"
-                          onClick={() => deleteService.mutate(service.id)}
-                        >
-                          {t("common.delete")}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           ))}

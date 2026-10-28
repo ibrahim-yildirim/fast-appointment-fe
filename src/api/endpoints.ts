@@ -10,6 +10,7 @@ export const endpoints = {
     ownerList: () => `/api/business/services`,
     create: () => `/api/services`,
     byId: (serviceId: string) => `/api/services/${serviceId}`,
+    permanent: (serviceId: string) => `/api/services/${serviceId}/permanent`,
     slots: (businessSlug: string, serviceId: string, from: string, to: string) =>
       `/api/businesses/${businessSlug}/services/${serviceId}/slots?from=${from}&to=${to}`,
   },
