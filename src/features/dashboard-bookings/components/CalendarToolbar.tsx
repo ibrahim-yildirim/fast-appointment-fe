@@ -4,7 +4,6 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -112,12 +111,6 @@ export function CalendarToolbar({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Input
-          placeholder={t("dashboard.searchAppointments")}
-          value={filters.search}
-          onChange={(event) => onFiltersChange({ ...filters, search: event.target.value })}
-          className="max-w-xs"
-        />
         <Select
           value={filters.staffId}
           onValueChange={(value) => onFiltersChange({ ...filters, staffId: value })}

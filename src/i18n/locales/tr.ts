@@ -260,7 +260,6 @@ export const tr = {
     week: "Hafta",
     day: "Gün",
     list: "Liste",
-    searchAppointments: "Müşteri veya hizmet ara...",
     allStaff: "Tüm personel",
     allServices: "Tüm hizmetler",
     allStatuses: "Tüm durumlar",

@@ -258,7 +258,6 @@ export const en: typeof tr = {
     week: "Week",
     day: "Day",
     list: "List",
-    searchAppointments: "Search customer or service...",
     allStaff: "All staff",
     allServices: "All services",
     allStatuses: "All statuses",

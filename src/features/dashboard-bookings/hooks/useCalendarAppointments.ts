@@ -28,14 +28,12 @@ export type CalendarAppointment = {
 }
 
 export type CalendarFilters = {
-  search: string
   staffId: string
   serviceId: string
   status: string
 }
 
 export const defaultCalendarFilters: CalendarFilters = {
-  search: "",
   staffId: "all",
   serviceId: "all",
   status: "all",
@@ -88,13 +86,6 @@ export function useCalendarAppointments(business: BusinessRef, filters: Calendar
       if (filters.staffId !== "all" && appointment.staffId !== filters.staffId) return false
       if (filters.serviceId !== "all" && appointment.serviceId !== filters.serviceId) return false
       if (filters.status !== "all" && appointment.status !== filters.status) return false
-      if (filters.search) {
-        const query = filters.search.toLowerCase()
-        const matches =
-          appointment.customerName.toLowerCase().includes(query) ||
-          appointment.serviceName.toLowerCase().includes(query)
-        if (!matches) return false
-      }
       return true
     })
   }, [bookingsQuery.data, servicesQuery.data, staffQuery.data, customersQuery.data, filters, t])
