@@ -128,7 +128,6 @@ export const bookingsApi = {
       serviceId: toBackendId(input.serviceId),
       staffId: toBackendId(input.staffId),
       startsAt: toBusinessLocal(input.startsAt),
-      endsAt: toBusinessLocal(input.endsAt),
       customerName: input.customerName,
       customerPhone: input.customerPhone,
       customerEmail: input.customerEmail || null,
@@ -176,7 +175,6 @@ export const bookingsApi = {
       serviceId: toBackendId(merged.serviceId),
       staffId: toBackendId(merged.staffId),
       startsAt: toBusinessLocal(merged.startsAt),
-      endsAt: toBusinessLocal(merged.endsAt),
       notes: merged.notes,
     })
     return toBooking(response)
