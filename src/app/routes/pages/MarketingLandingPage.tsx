@@ -1,6 +1,6 @@
 import { CalendarCheck, CalendarClock, LayoutDashboard, Store, Users } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
+import { Link, Navigate } from "react-router-dom"
 
 import { LanguageToggle } from "@/components/layout/LanguageToggle"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
@@ -15,29 +15,31 @@ const highlights = [
   { icon: CalendarClock, key: "realtime" },
 ] as const
 
-/** Where a logged-in visitor's own area is; null when nobody is logged in. */
-function useAccountLink() {
-  const { t } = useTranslation()
+function useAccountHome() {
   const role = useAuthStore((state) => state.role)
   const businessId = useAuthStore((state) => state.businessId)
-  const { data: businesses } = useBusinesses()
+  const { data: businesses, isLoading } = useBusinesses()
 
-  if (role === "customer") return { to: "/account/bookings", label: t("landing.myBookings") }
+  if (role === "customer") return { to: "/account/bookings", isLoading: false }
   if (role === "business_owner") {
+    if (businessId && isLoading) return { to: null, isLoading: true }
     const slug = businesses?.find((business) => business.id === businessId)?.slug
-    // An owner without a business yet is sent to onboarding.
     return {
       to: slug ? `/${slug}/dashboard/bookings` : "/onboarding/business",
-      label: t("landing.myDashboard"),
+      isLoading: false,
     }
   }
-  return null
+  return { to: null, isLoading: false }
 }
 
 export function MarketingLandingPage() {
   const { t } = useTranslation()
-  const account = useAccountLink()
-  const hasGuestBookings = !account && getSavedGuestBookings().length > 0
+  const accountHome = useAccountHome()
+
+  if (accountHome.isLoading) return null
+  if (accountHome.to) return <Navigate to={accountHome.to} replace />
+
+  const hasGuestBookings = getSavedGuestBookings().length > 0
 
   return (
     <>
@@ -47,20 +49,12 @@ export function MarketingLandingPage() {
           <span className="truncate">{t("common.appName")}</span>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {account ? (
-            <Button variant="outline" size="sm" asChild>
-              <Link to={account.to}>{account.label}</Link>
-            </Button>
-          ) : (
-            <>
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/login">{t("auth.logIn")}</Link>
-              </Button>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/business/login">{t("auth.businessLogIn")}</Link>
-              </Button>
-            </>
-          )}
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/login">{t("auth.logIn")}</Link>
+          </Button>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/business/login">{t("auth.businessLogIn")}</Link>
+          </Button>
           <LanguageToggle />
           <ThemeToggle />
         </div>
@@ -76,11 +70,7 @@ export function MarketingLandingPage() {
             <Link to="/businesses">{t("landing.findBusiness")}</Link>
           </Button>
           <Button size="lg" variant="outline" asChild>
-            {account ? (
-              <Link to={account.to}>{account.label}</Link>
-            ) : (
-              <Link to="/login">{t("auth.logIn")}</Link>
-            )}
+            <Link to="/login">{t("auth.logIn")}</Link>
           </Button>
           {hasGuestBookings && (
             <Button size="lg" variant="outline" asChild>

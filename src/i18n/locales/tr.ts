@@ -56,8 +56,6 @@ export const tr = {
   },
   landing: {
     deviceBookings: "Bu cihazdaki randevularım",
-    myBookings: "Randevularım",
-    myDashboard: "İşletme panelim",
     headline: "Her hizmet işletmesi için randevu sistemi",
     subheadline: "Hizmetleri, personel uygunluğunu ve randevuları tek yerden yönetin.",
     findBusiness: "İşletme bul",

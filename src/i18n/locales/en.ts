@@ -55,8 +55,6 @@ export const en: typeof tr = {
   },
   landing: {
     deviceBookings: "My bookings on this device",
-    myBookings: "My bookings",
-    myDashboard: "My dashboard",
     headline: "Appointment booking for any service business",
     subheadline: "Manage services, staff availability, and bookings in one place.",
     findBusiness: "Find a business",
