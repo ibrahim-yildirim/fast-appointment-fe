@@ -29,6 +29,19 @@ import {
   type OwnerBookingInput,
 } from "@/features/dashboard-bookings/schemas/ownerBookingSchema"
 import { useCustomers } from "@/features/customers/hooks/useCustomers"
+import { useBusinessContext } from "@/features/business/context/BusinessContext"
+import {
+  BookingDateField,
+  BookingTimeField,
+} from "@/features/dashboard-bookings/components/BookingSlotFields"
+import {
+  OWNER_BOOKING_WINDOW_DAYS,
+  TIME_STEP_MINUTES,
+  addDaysToKey,
+  isDateKey,
+  slotProblems,
+  timeOptions,
+} from "@/features/dashboard-bookings/lib/bookingWindow"
 import { businessTodayKey, useFormatters } from "@/lib/datetime"
 import { toPhoneDigits } from "@/lib/phone"
 import type { Service, Staff } from "@/types"
@@ -60,6 +73,7 @@ export function NewBookingDialog({
     handleSubmit,
     setValue,
     getValues,
+    setError,
     formState: { errors },
   } = useForm<OwnerBookingInput>({
     resolver: zodResolver(schema),
@@ -78,7 +92,14 @@ export function NewBookingDialog({
   const activeServices = services.filter((service) => service.active)
   const serviceId = useWatch({ control, name: "serviceId" })
   const time = useWatch({ control, name: "time" })
+  const date = useWatch({ control, name: "date" })
   const selectedService = activeServices.find((service) => service.id === serviceId)
+  const business = useBusinessContext()
+  const today = businessTodayKey()
+  const minDate = addDaysToKey(today, -OWNER_BOOKING_WINDOW_DAYS)
+  const maxDate = addDaysToKey(today, OWNER_BOOKING_WINDOW_DAYS)
+  const durationMinutes = selectedService?.durationMinutes ?? TIME_STEP_MINUTES
+  const timeChoices = timeOptions(business.defaultHours, date, durationMinutes)
   const eligibleStaff = staff.filter(
     (member) => member.active && selectedService?.eligibleStaffIds.includes(member.id),
   )
@@ -112,6 +133,20 @@ export function NewBookingDialog({
 
   function onSubmit(values: OwnerBookingInput) {
     if (!selectedService) return
+    const problems = slotProblems({
+      date: values.date,
+      time: values.time,
+      hours: business.defaultHours,
+      minDate,
+      maxDate,
+      options: timeChoices,
+    })
+    if (problems.length > 0) {
+      problems.forEach((problem) =>
+        setError(problem.field, { message: t(problem.key, problem.params) }),
+      )
+      return
+    }
     const startsAt = `${values.date}T${values.time}:00.000Z`
     const endsAt = new Date(
       new Date(startsAt).getTime() + selectedService.durationMinutes * 60_000,
@@ -202,14 +237,40 @@ export function NewBookingDialog({
                 <FieldLabel required htmlFor="new-booking-date">
                   {t("dashboard.form.date")}
                 </FieldLabel>
-                <Input id="new-booking-date" type="date" {...register("date")} />
+                <Controller
+                  control={control}
+                  name="date"
+                  render={({ field }) => (
+                    <BookingDateField
+                      id="new-booking-date"
+                      value={field.value}
+                      onChange={field.onChange}
+                      minDate={minDate}
+                      maxDate={maxDate}
+                      invalid={!!errors.date}
+                    />
+                  )}
+                />
                 <FieldError errors={[errors.date]} />
               </Field>
               <Field data-invalid={!!errors.time}>
                 <FieldLabel required htmlFor="new-booking-time">
                   {t("dashboard.form.time")}
                 </FieldLabel>
-                <Input id="new-booking-time" type="time" step={300} {...register("time")} />
+                <Controller
+                  control={control}
+                  name="time"
+                  render={({ field }) => (
+                    <BookingTimeField
+                      id="new-booking-time"
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={timeChoices}
+                      dateReady={isDateKey(date)}
+                      invalid={!!errors.time}
+                    />
+                  )}
+                />
                 <FieldError errors={[errors.time]} />
               </Field>
             </div>

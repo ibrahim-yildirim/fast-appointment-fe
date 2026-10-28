@@ -21,13 +21,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
+import { useBusinessContext } from "@/features/business/context/BusinessContext"
+import {
+  BookingDateField,
+  BookingTimeField,
+} from "@/features/dashboard-bookings/components/BookingSlotFields"
+import {
+  OWNER_BOOKING_WINDOW_DAYS,
+  addDaysToKey,
+  isDateKey,
+  slotProblems,
+  timeOptions,
+  type SlotProblem,
+} from "@/features/dashboard-bookings/lib/bookingWindow"
 import type { CalendarAppointment } from "@/features/dashboard-bookings/hooks/useCalendarAppointments"
 import type { Staff } from "@/types"
-import { businessNow, useFormatters } from "@/lib/datetime"
+import { businessNow, businessTodayKey, useFormatters } from "@/lib/datetime"
 import { formatPhone, phoneHref } from "@/lib/phone"
 import { formatDurationLabel } from "@/features/services/lib/durations"
 
@@ -58,6 +70,8 @@ export function AppointmentDetailDialog({
   const [isEditingTime, setIsEditingTime] = useState(false)
   const [newDate, setNewDate] = useState(appointment?.dateKey ?? "")
   const [newTime, setNewTime] = useState(appointment?.startTime ?? "")
+  const [slotProblem, setSlotProblem] = useState<SlotProblem | null>(null)
+  const business = useBusinessContext()
 
   if (!appointment) return null
 
@@ -66,6 +80,14 @@ export function AppointmentDetailDialog({
   const hasStarted =
     new Date(`${appointment.dateKey}T${appointment.startTime}:00.000Z`) <= businessNow()
   const canChange = isOpen && !hasStarted
+  const today = businessTodayKey()
+  const maxDate = addDaysToKey(today, OWNER_BOOKING_WINDOW_DAYS)
+  const rescheduleTimes = timeOptions(
+    business.defaultHours,
+    newDate,
+    appointment.durationMinutes,
+    newDate === today ? businessNow().toISOString().slice(11, 16) : undefined,
+  )
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -123,29 +145,55 @@ export function AppointmentDetailDialog({
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="reschedule-date">{t("dashboard.form.date")}</Label>
-                  <Input
+                  <BookingDateField
                     id="reschedule-date"
-                    type="date"
                     value={newDate}
-                    onChange={(event) => setNewDate(event.target.value)}
+                    onChange={(date) => {
+                      setNewDate(date)
+                      setSlotProblem(null)
+                    }}
+                    minDate={today}
+                    maxDate={maxDate}
+                    invalid={slotProblem?.field === "date"}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="reschedule-time">{t("dashboard.form.time")}</Label>
-                  <Input
+                  <BookingTimeField
                     id="reschedule-time"
-                    type="time"
-                    step={300}
                     value={newTime}
-                    onChange={(event) => setNewTime(event.target.value)}
+                    onChange={(time) => {
+                      setNewTime(time)
+                      setSlotProblem(null)
+                    }}
+                    options={rescheduleTimes}
+                    dateReady={isDateKey(newDate)}
+                    invalid={slotProblem?.field === "time"}
                   />
                 </div>
               </div>
+              {slotProblem && (
+                <p role="alert" className="text-sm text-destructive">
+                  {t(slotProblem.key, slotProblem.params)}
+                </p>
+              )}
               <div className="flex gap-2">
                 <Button
                   className="flex-1"
                   disabled={isSaving || !newDate || !newTime}
                   onClick={() => {
+                    const [problem] = slotProblems({
+                      date: newDate,
+                      time: newTime,
+                      hours: business.defaultHours,
+                      minDate: today,
+                      maxDate,
+                      options: rescheduleTimes,
+                    })
+                    if (problem) {
+                      setSlotProblem(problem)
+                      return
+                    }
                     onReschedule(newDate, newTime)
                     setIsEditingTime(false)
                   }}
